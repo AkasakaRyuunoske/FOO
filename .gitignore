@@ -31,5 +31,10 @@ build/
 !**/src/test/**/build/
 venv/
 .venv
+
+### Ignore dataset ###
+dataset
+*.csv
+
 ### VS Code ###
 .vscode/
