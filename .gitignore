@@ -35,6 +35,7 @@ venv/
 ### Ignore dataset ###
 dataset
 *.csv
+*.sqlite3
 
 ### VS Code ###
 .vscode/

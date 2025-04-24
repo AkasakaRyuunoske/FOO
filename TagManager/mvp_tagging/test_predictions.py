@@ -7,8 +7,8 @@ from train_custom_embedding import avg_embedding
 if __name__ == "__main__":
 
     # Load trained model and encoder for "difficulty"
-    clf_difficulty = joblib.load('models/difficulty_classifier/xgb_difficulty_model.joblib')
-    le_difficulty = joblib.load('models/difficulty_classifier/difficulty_label_encoder.joblib')
+    clf_difficulty = joblib.load('../../models/difficulty_classifier/xgb_difficulty_model.joblib')
+    le_difficulty = joblib.load('../../models/difficulty_classifier/difficulty_label_encoder.joblib')
     w2v_model = Word2Vec.load('models/w2v/recipe_word2vec.model')
 
     ingredients = "flour, 3 eggs, 1 tbs sugar"

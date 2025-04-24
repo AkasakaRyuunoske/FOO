@@ -5,7 +5,7 @@ def split(chunks=10):
     print("Let's do some DaTaScIeNcE")
 
     print("reading...")
-    df = pd.read_csv("full_dataset.csv")
+    df = pd.read_csv("../../full_dataset.csv")
 
     print("df read. Shuffling...")
     df_shuffled = df.sample(frac=1, random_state=42).reset_index(drop=True)

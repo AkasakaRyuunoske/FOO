@@ -32,7 +32,7 @@ if __name__ == "__main__":
     # df = pd.concat(df_list, ignore_index=True)
     #
     # print(f"Combined dataset size: {df.shape}")
-    df = pd.read_csv("dataset/recipies_dataset_tagged_chunk_10%")
+    df = pd.read_csv("../../dataset/recipies_dataset_tagged_chunk_10%")
     df["text"] = (df["directions"] + " " + df["ingredients"]).str.lower()
 
     # Tokenize sentences into words
@@ -69,8 +69,8 @@ if __name__ == "__main__":
     print(classification_report(y_test, y_pred, target_names=le.classes_))
 
     # Difficulty model
-    joblib.dump(clf, 'models/difficulty_classifier/xgb_difficulty_model.joblib')
-    joblib.dump(le, 'models/difficulty_classifier/difficulty_label_encoder.joblib')
+    joblib.dump(clf, '../../models/difficulty_classifier/xgb_difficulty_model.joblib')
+    joblib.dump(le, '../../models/difficulty_classifier/difficulty_label_encoder.joblib')
 
     w2v_model.save("models/w2v/recipe_word2vec.model")
 
