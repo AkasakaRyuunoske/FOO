@@ -29,7 +29,11 @@ target/
 build/
 !**/src/main/**/build/
 !**/src/test/**/build/
+
+# Virtual environments
+env/
 venv/
+.venv/
 .venv
 
 ### Ignore dataset ###
@@ -37,6 +41,12 @@ dataset
 
 *.csv
 *.sqlite3
-__pycache__
+
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
 ### VS Code ###
 .vscode/
