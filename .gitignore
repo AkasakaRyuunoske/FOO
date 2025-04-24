@@ -34,8 +34,9 @@ venv/
 
 ### Ignore dataset ###
 dataset
+
 *.csv
 *.sqlite3
-
+__pycache__
 ### VS Code ###
 .vscode/
