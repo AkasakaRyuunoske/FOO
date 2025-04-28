@@ -37,7 +37,7 @@ venv/
 .venv
 
 ### Ignore dataset ###
-dataset
+IngredientManager/dataset
 
 *.csv
 *.sqlite3
