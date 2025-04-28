@@ -32,7 +32,7 @@ if __name__ == "__main__":
     # df = pd.concat(df_list, ignore_index=True)
     #
     # print(f"Combined dataset size: {df.shape}")
-    df = pd.read_csv("../../dataset/recipies_dataset_tagged_chunk_10%")
+    df = pd.read_csv("../../IngredientManager/dataset/recipies_dataset_tagged_chunk_10%")
     df["text"] = (df["directions"] + " " + df["ingredients"]).str.lower()
 
     # Tokenize sentences into words
