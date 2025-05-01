@@ -10,7 +10,9 @@
     <div>
         <h2>Log In</h2>
 
-        <form>
+        <form method="post">
+            {% csrf_token %}
+
             <label for="username">Username</label>
             <input type="text" name="username" id="username">
 
