@@ -17,9 +17,13 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+from common import views
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # path('user/', include('UserManager.urls')),
+    path('users/', include('django.contrib.auth.urls')),
+    path('users/', include('UserManager.urls')),
+    path('home/', views.home, name='home')
     # path('recipe/', include('RecipeManager.urls')),
     # path('tag/', include('TagManager.urls')),
     # path('ingredient/', include('IngredientManager.urls')),

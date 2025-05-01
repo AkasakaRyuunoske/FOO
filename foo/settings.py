@@ -105,6 +105,9 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 AUTH_USER_MODEL = "UserManager.CustomUser"
+LOGIN_REDIRECT_URL = '/'         # Where to go after login
+LOGOUT_REDIRECT_URL = '/users/login/'  # Where to go after logout
+LOGIN_URL = '/users/login/'  # Default login URL if @login_required fails
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
