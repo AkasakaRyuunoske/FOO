@@ -1,37 +1,42 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Log In FOO</title>
+    <link rel="stylesheet" href="{% static 'UserManager/form.css' %}">
 </head>
 <body>
-    <h1>FOO</h1>
-
-    <div>
-        <h2>Log In</h2>
-
-        <form method="post">
-            {% csrf_token %}
-
-            <label for="username">Username</label>
-            <input type="text" name="username" id="username">
-
-            <label for="password">Password</label>
-            <input type="password" name="password" id="password">
-
-            <input type="submit" value="Log In">
-        </form>
+    <main class="display-center">
+        <h1>FOO</h1>
 
         <div>
-            <p>Don't have an account?</p>
-            <a href="/registration">Sign Up</a>
+            <h2>Log In</h2>
+
+            <form method="post">
+                {% csrf_token %}
+
+                <label for="username">Username</label>
+                <input type="text" name="username" id="username">
+
+                <label for="password">Password</label>
+                <input type="password" name="password" id="password">
+
+                <a href="/forgot-password">Forgot password?</a>
+
+                <input type="submit" value="Log In">
+            </form>
+
+            <div>
+                <p>Don't have an account?</p>
+                <a href="/registration">Sign Up</a>
+            </div>
         </div>
-    </div>
 
-    <div>
-        <p>Terms of UsePrivacy Policy</p>
-        <p>This site is protected by reCAPTCHA Enterprise. Google's Privacy Policy and Terms of Service apply.</p>
-    </div>
-
+        <div>
+            <p>Terms of UsePrivacy Policy</p>
+            <p>This site is protected by reCAPTCHA Enterprise. Google's Privacy Policy and Terms of Service apply.</p>
+        </div>
+    </main>
 </body>
 </html>
