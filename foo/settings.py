@@ -72,6 +72,8 @@ TEMPLATES = [
     },
 ]
 
+STATIC_URL = '/static/'
+
 WSGI_APPLICATION = 'foo.wsgi.application'
 
 
@@ -105,7 +107,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 AUTH_USER_MODEL = "UserManager.CustomUser"
-LOGIN_REDIRECT_URL = '/'         # Where to go after login
+LOGIN_REDIRECT_URL = '/home'         # Where to go after login
 LOGOUT_REDIRECT_URL = '/users/login/'  # Where to go after logout
 LOGIN_URL = '/users/login/'  # Default login URL if @login_required fails
 
