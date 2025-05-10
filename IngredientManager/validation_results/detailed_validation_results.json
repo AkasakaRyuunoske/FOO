@@ -1,0 +1,282 @@
+[
+  {
+    "test_name": "breakfast",
+    "ingredients": [
+      "eggs",
+      "bacon",
+      "toast",
+      "milk"
+    ],
+    "query_time": 0.05095028877258301,
+    "results_count": 0,
+    "flagged_count": 0,
+    "avg_relevance_score": 0,
+    "coherence": {
+      "coherence_score": 0.14178612467403562,
+      "analysis": "Low coherence - recipes somewhat related"
+    },
+    "validated_results": [],
+    "filtered_out": true
+  },
+  {
+    "test_name": "italian",
+    "ingredients": [
+      "pasta",
+      "tomato",
+      "garlic",
+      "basil"
+    ],
+    "query_time": 0.021437644958496094,
+    "results_count": 0,
+    "flagged_count": 0,
+    "avg_relevance_score": 0,
+    "coherence": {
+      "coherence_score": 0.03684996201030807,
+      "analysis": "Very low coherence - recipes seem unrelated"
+    },
+    "validated_results": [],
+    "filtered_out": true
+  },
+  {
+    "test_name": "mexican",
+    "ingredients": [
+      "tortilla",
+      "beans",
+      "avocado",
+      "salsa"
+    ],
+    "query_time": 0.021126747131347656,
+    "results_count": 0,
+    "flagged_count": 0,
+    "avg_relevance_score": 0,
+    "coherence": {
+      "coherence_score": 0.061163794271538646,
+      "analysis": "Very low coherence - recipes seem unrelated"
+    },
+    "validated_results": [],
+    "filtered_out": true
+  },
+  {
+    "test_name": "dessert",
+    "ingredients": [
+      "sugar",
+      "flour",
+      "butter",
+      "chocolate"
+    ],
+    "query_time": 0.021881580352783203,
+    "results_count": 0,
+    "flagged_count": 0,
+    "avg_relevance_score": 0,
+    "coherence": {
+      "coherence_score": 0.09388608298117589,
+      "analysis": "Very low coherence - recipes seem unrelated"
+    },
+    "validated_results": [],
+    "filtered_out": true
+  },
+  {
+    "test_name": "vegetarian",
+    "ingredients": [
+      "tofu",
+      "spinach",
+      "chickpeas",
+      "quinoa"
+    ],
+    "query_time": 0.024483680725097656,
+    "results_count": 0,
+    "flagged_count": 0,
+    "avg_relevance_score": 0,
+    "coherence": {
+      "coherence_score": 0.020009498109672168,
+      "analysis": "Very low coherence - recipes seem unrelated"
+    },
+    "validated_results": [],
+    "filtered_out": true
+  },
+  {
+    "test_name": "quick_meal",
+    "ingredients": [
+      "chicken",
+      "rice",
+      "onion",
+      "carrots"
+    ],
+    "query_time": 0.022344589233398438,
+    "results_count": 0,
+    "flagged_count": 0,
+    "avg_relevance_score": 0,
+    "coherence": {
+      "coherence_score": 0.07156726193717668,
+      "analysis": "Very low coherence - recipes seem unrelated"
+    },
+    "validated_results": [],
+    "filtered_out": true
+  },
+  {
+    "test_name": "healthy",
+    "ingredients": [
+      "salmon",
+      "kale",
+      "lemon",
+      "olive oil"
+    ],
+    "query_time": 0.018463134765625,
+    "results_count": 0,
+    "flagged_count": 0,
+    "avg_relevance_score": 0,
+    "coherence": {
+      "coherence_score": 0.14021980118531246,
+      "analysis": "Low coherence - recipes somewhat related"
+    },
+    "validated_results": [],
+    "filtered_out": true
+  },
+  {
+    "test_name": "comfort_food",
+    "ingredients": [
+      "potato",
+      "cheese",
+      "ground beef",
+      "cream"
+    ],
+    "query_time": 0.019997358322143555,
+    "results_count": 0,
+    "flagged_count": 0,
+    "avg_relevance_score": 0,
+    "coherence": {
+      "coherence_score": 0.07236753495942551,
+      "analysis": "Very low coherence - recipes seem unrelated"
+    },
+    "validated_results": [],
+    "filtered_out": true
+  },
+  {
+    "test_name": "indian",
+    "ingredients": [
+      "curry",
+      "rice",
+      "chicken",
+      "garam masala"
+    ],
+    "query_time": 0.03029656410217285,
+    "results_count": 0,
+    "flagged_count": 0,
+    "avg_relevance_score": 0,
+    "coherence": {
+      "coherence_score": 0.07344690652273056,
+      "analysis": "Very low coherence - recipes seem unrelated"
+    },
+    "validated_results": [],
+    "filtered_out": true
+  },
+  {
+    "test_name": "asian",
+    "ingredients": [
+      "soy sauce",
+      "rice",
+      "ginger",
+      "sesame oil"
+    ],
+    "query_time": 0.03050827980041504,
+    "results_count": 0,
+    "flagged_count": 0,
+    "avg_relevance_score": 0,
+    "coherence": {
+      "coherence_score": 0.08814058878197303,
+      "analysis": "Very low coherence - recipes seem unrelated"
+    },
+    "validated_results": [],
+    "filtered_out": true
+  },
+  {
+    "test_name": "unusual_combo",
+    "ingredients": [
+      "chocolate",
+      "fish",
+      "mint",
+      "garlic"
+    ],
+    "query_time": 0.032381296157836914,
+    "results_count": 0,
+    "flagged_count": 0,
+    "avg_relevance_score": 0,
+    "coherence": {
+      "coherence_score": 0.06262843073269433,
+      "analysis": "Very low coherence - recipes seem unrelated"
+    },
+    "validated_results": [],
+    "filtered_out": true
+  },
+  {
+    "test_name": "minimal",
+    "ingredients": [
+      "salt",
+      "pepper"
+    ],
+    "query_time": 0.023209333419799805,
+    "results_count": 0,
+    "flagged_count": 0,
+    "avg_relevance_score": 0,
+    "coherence": {
+      "coherence_score": 0.023343929236710005,
+      "analysis": "Very low coherence - recipes seem unrelated"
+    },
+    "validated_results": [],
+    "filtered_out": true
+  },
+  {
+    "test_name": "single",
+    "ingredients": [
+      "banana"
+    ],
+    "query_time": 0.019016504287719727,
+    "results_count": 0,
+    "flagged_count": 0,
+    "avg_relevance_score": 0,
+    "coherence": {
+      "coherence_score": 0.14509412713043457,
+      "analysis": "Low coherence - recipes somewhat related"
+    },
+    "validated_results": [],
+    "filtered_out": true
+  },
+  {
+    "test_name": "seasonal_winter",
+    "ingredients": [
+      "turkey",
+      "cranberry",
+      "potato",
+      "gravy"
+    ],
+    "query_time": 0.023792028427124023,
+    "results_count": 0,
+    "flagged_count": 0,
+    "avg_relevance_score": 0,
+    "coherence": {
+      "coherence_score": 0.09395324395010532,
+      "analysis": "Very low coherence - recipes seem unrelated"
+    },
+    "validated_results": [],
+    "filtered_out": true
+  },
+  {
+    "test_name": "seasonal_summer",
+    "ingredients": [
+      "watermelon",
+      "lime",
+      "mint",
+      "rum"
+    ],
+    "query_time": 0.023383140563964844,
+    "results_count": 0,
+    "flagged_count": 0,
+    "avg_relevance_score": 0,
+    "coherence": {
+      "coherence_score": 0.035913246394890644,
+      "analysis": "Very low coherence - recipes seem unrelated"
+    },
+    "validated_results": [],
+    "filtered_out": true
+  }
+]
