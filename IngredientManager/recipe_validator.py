@@ -3,14 +3,12 @@ import numpy as np
 import json
 import os
 import time
-import re
-import ast  # Added import for ast.literal_eval
+import ast
 from collections import Counter
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
 # Import from the same directory
-# If you named your FAISS pipeline file differently, adjust this import
 from recipe_recommender import RecipeRecommender
 
 
@@ -25,10 +23,10 @@ class RecipeValidator:
         """
         self.recommender = None
 
-        # Load or create test ingredients
+        # Load test ingredients
         self.test_ingredients = self._load_ingredients(ingredients_file)
 
-        # Load or create inappropriate terms list
+        # Load inappropriate terms list
         self.inappropriate_terms = self._load_inappropriate_terms(inappropriate_terms_file)
 
         # For storing validation results
@@ -44,27 +42,9 @@ class RecipeValidator:
                 return ingredients
             except Exception as e:
                 print(f"Error loading ingredients file: {e}")
-
-        # Default test ingredients covering different food categories
-        print("Using default ingredient test sets")
-        return {
-            "breakfast": ["eggs", "bacon", "toast", "milk"],
-            "italian": ["pasta", "tomato", "garlic", "basil"],
-            "mexican": ["tortilla", "beans", "avocado", "salsa"],
-            "dessert": ["sugar", "flour", "butter", "chocolate"],
-            "vegetarian": ["tofu", "spinach", "chickpeas", "quinoa"],
-            "quick_meal": ["chicken", "rice", "onion", "carrots"],
-            "healthy": ["salmon", "kale", "lemon", "olive oil"],
-            "comfort_food": ["potato", "cheese", "ground beef", "cream"],
-            "indian": ["curry", "rice", "chicken", "garam masala"],
-            "asian": ["soy sauce", "rice", "ginger", "sesame oil"],
-            # Various combinations to test logic
-            "unusual_combo": ["chocolate", "fish", "mint", "garlic"],
-            "minimal": ["salt", "pepper"],
-            "single": ["banana"],
-            "seasonal_winter": ["turkey", "cranberry", "potato", "gravy"],
-            "seasonal_summer": ["watermelon", "lime", "mint", "rum"]
-        }
+        else:
+            print(f"Test Ingredient file not found: {file_path}")
+        return {}
 
     def _load_inappropriate_terms(self, file_path):
         """Load inappropriate terms from a file or create default ones."""
@@ -77,40 +57,9 @@ class RecipeValidator:
             except Exception as e:
                 print(f"Error loading inappropriate terms file: {e}")
 
-        # Default list of terms to flag (simple example - expand as needed)
-        print("Using default inappropriate terms list")
-        return [
-            "alcoholic", "booze", "vodka", "whiskey", "liquor", "rum", "tequila",  # Alcohol terms
-            "raw egg", "raw meat", "undercooked",  # Food safety concerns
-            "extremely spicy", "excessively hot",  # Potentially harmful
-            "inappropriate", "nsfw", "adult",  # Generic flags
-            "non-food", "inedible", "dangerous"  # Safety concerns
-        ]
-
-    def save_test_ingredients(self, file_path):
-        """Save the current test ingredients to a JSON file."""
-        os.makedirs(os.path.dirname(file_path), exist_ok=True)
-        with open(file_path, 'w') as f:
-            json.dump(self.test_ingredients, f, indent=2)
-        print(f"Saved {len(self.test_ingredients)} ingredient test sets to {file_path}")
-
-    def save_inappropriate_terms(self, file_path):
-        """Save the current inappropriate terms to a text file."""
-        os.makedirs(os.path.dirname(file_path), exist_ok=True)
-        with open(file_path, 'w') as f:
-            for term in self.inappropriate_terms:
-                f.write(f"{term}\n")
-        print(f"Saved {len(self.inappropriate_terms)} inappropriate terms to {file_path}")
-
-    def add_test_ingredients(self, name, ingredients):
-        """Add a new set of test ingredients."""
-        self.test_ingredients[name] = ingredients
-
-    def add_inappropriate_term(self, term):
-        """Add a new inappropriate term to the filter."""
-        term = term.lower().strip()
-        if term not in self.inappropriate_terms:
-            self.inappropriate_terms.append(term)
+        else:
+            print(f"Inappropriate Terms file not found: {file_path}")
+        return {}
 
     def load_recommender(self, index_path, df_path):
         """Load an existing FAISS index and DataFrame."""
@@ -135,10 +84,16 @@ class RecipeValidator:
         coverage_results = {}
         for name, ingredients in self.test_ingredients.items():
             found = [ing for ing in ingredients if ing.lower() in all_dataset_ingredients]
+            found_count = len(found)
+            total_count = len(ingredients)
+            coverage_pct = 0
+            if total_count > 0:
+                coverage_pct = round(found_count / total_count * 100, 2)
+
             coverage_results[name] = {
-                'total': len(ingredients),
-                'found': len(found),
-                'coverage_pct': round(len(found) / len(ingredients) * 100, 2) if ingredients else 0,
+                'total': total_count,
+                'found': found_count,
+                'coverage_pct': coverage_pct,
                 'missing': [ing for ing in ingredients if ing.lower() not in all_dataset_ingredients]
             }
 
@@ -180,13 +135,22 @@ class RecipeValidator:
 
         # Calculate overlap stats
         common_ingredients = set(query_ingredients) & set(recipe_ingredients_lower)
+        common_count = len(common_ingredients)
+
+        # Calculate percentages with safety checks
+        ingredients_matched_pct = 0
+        recipe_coverage_pct = 0
+
+        if query_ingredients:
+            ingredients_matched_pct = round(common_count / len(query_ingredients) * 100, 2)
+
+        if recipe_ingredients_lower:
+            recipe_coverage_pct = round(common_count / len(recipe_ingredients_lower) * 100, 2)
 
         return {
-            'ingredients_matched': len(common_ingredients),
-            'ingredients_matched_pct': round(len(common_ingredients) / len(query_ingredients) * 100,
-                                             2) if query_ingredients else 0,
-            'recipe_coverage_pct': round(len(common_ingredients) / len(recipe_ingredients_lower) * 100,
-                                         2) if recipe_ingredients_lower else 0,
+            'ingredients_matched': common_count,
+            'ingredients_matched_pct': ingredients_matched_pct,
+            'recipe_coverage_pct': recipe_coverage_pct,
             'common_ingredients': list(common_ingredients)
         }
 
@@ -209,7 +173,7 @@ class RecipeValidator:
         if len(titles) < 2:
             return {'coherence_score': 1.0, 'analysis': "Only one recipe, coherence perfect by default"}
 
-        # Use TF-IDF vectorizer to create document vectors
+        # Use CountVectorizer to create document vectors
         vectorizer = CountVectorizer(stop_words='english')
 
         try:
@@ -219,7 +183,9 @@ class RecipeValidator:
 
             # Get average similarity (excluding self-similarity on diagonal)
             n = similarities.shape[0]
-            total_sim = (similarities.sum() - n) / (n * (n - 1))
+            total_sim = 0
+            if n > 1:  # Avoid division by zero
+                total_sim = (similarities.sum() - n) / (n * (n - 1))
 
             # Analyze feature similarity
             analysis = ""
@@ -236,8 +202,8 @@ class RecipeValidator:
                 'coherence_score': float(total_sim),
                 'analysis': analysis
             }
-        except:
-            return {'coherence_score': 0, 'analysis': "Could not compute coherence"}
+        except Exception as e:
+            return {'coherence_score': 0, 'analysis': f"Could not compute coherence: {str(e)}"}
 
     def validate_single_test_case(self, test_name, ingredients, k=10):
         """
@@ -286,6 +252,11 @@ class RecipeValidator:
         # Validate coherence across recommendations
         coherence = self.validate_recommendation_coherence(results)
 
+        # Calculate average relevance score safely
+        avg_relevance_score = 0
+        if relevance_scores:
+            avg_relevance_score = sum(relevance_scores) / len(relevance_scores)
+
         # Prepare validation summary
         validation_result = {
             'test_name': test_name,
@@ -293,7 +264,7 @@ class RecipeValidator:
             'query_time': query_time,
             'results_count': len(results),
             'flagged_count': flagged_count,
-            'avg_relevance_score': np.mean(relevance_scores) if relevance_scores else 0,
+            'avg_relevance_score': avg_relevance_score,
             'coherence': coherence,
             'validated_results': validated_results
         }
@@ -322,7 +293,7 @@ class RecipeValidator:
         Returns:
             DataFrame with validation results summary
         """
-        if k == 0:
+        if k <= 0:
             print("Skipping validation (k=0)")
             return pd.DataFrame()
 
@@ -347,24 +318,39 @@ class RecipeValidator:
             print(f"  {name}: {result['results_count']} results, {result['flagged_count']} flagged, " +
                   f"avg relevance: {result['avg_relevance_score']:.2f}%, coherence: {result['coherence']['coherence_score']:.2f}")
 
-        # Create summary DataFrame
+        # Create and return summary DataFrame
+        return self.create_summary_dataframe()
+
+    def create_summary_dataframe(self):
+        """
+        Create a summary DataFrame from validation results.
+
+        Returns:
+            DataFrame with validation summary
+        """
+        if not self.validation_results:
+            return pd.DataFrame()
+
         summary = []
         for result in self.validation_results:
+            # Calculate flagged percentage safely
+            flagged_pct = "N/A"
+            if result['results_count'] > 0:
+                flagged_pct = f"{(result['flagged_count'] / result['results_count'] * 100):.1f}%"
+
             summary.append({
                 'test_name': result['test_name'],
                 'ingredients': ', '.join(result['ingredients']),
                 'results_count': result['results_count'],
                 'query_time': f"{result['query_time']:.4f}s",
                 'flagged_count': result['flagged_count'],
-                'flagged_pct': f"{(result['flagged_count'] / result['results_count'] * 100):.1f}%" if result[
-                                                                                                          'results_count'] > 0 else "N/A",
+                'flagged_pct': flagged_pct,
                 'avg_relevance': f"{result['avg_relevance_score']:.1f}%",
                 'coherence_score': f"{result['coherence']['coherence_score']:.2f}",
                 'coherence_analysis': result['coherence']['analysis']
             })
 
-        summary_df = pd.DataFrame(summary)
-        return summary_df
+        return pd.DataFrame(summary)
 
     def save_validation_results(self, output_dir="validation_results"):
         """
@@ -393,7 +379,7 @@ class RecipeValidator:
             json.dump(results_copy, f, indent=2, default=str)
 
         # Create and save summary CSV
-        summary_df = self.run_validation(k=0)  # k=0 to avoid re-running tests
+        summary_df = self.create_summary_dataframe()
         summary_path = os.path.join(output_dir, "validation_summary.csv")
         summary_df.to_csv(summary_path, index=False)
 
@@ -433,12 +419,24 @@ class RecipeValidator:
         flagged_term_counts = Counter(all_flagged_terms)
         most_common_flagged = flagged_term_counts.most_common(5)
 
+        # Calculate average metrics safely
+        avg_query_time = 0
+        avg_relevance_score = 0
+        avg_coherence_score = 0
+
+        if query_times:
+            avg_query_time = sum(query_times) / len(query_times)
+        if all_relevance_scores:
+            avg_relevance_score = sum(all_relevance_scores) / len(all_relevance_scores)
+        if coherence_scores:
+            avg_coherence_score = sum(coherence_scores) / len(coherence_scores)
+
         # Overall statistics
         analysis = {
             'test_count': len(self.validation_results),
-            'avg_query_time': np.mean(query_times),
-            'avg_relevance_score': np.mean(all_relevance_scores) if all_relevance_scores else 0,
-            'avg_coherence_score': np.mean(coherence_scores) if coherence_scores else 0,
+            'avg_query_time': avg_query_time,
+            'avg_relevance_score': avg_relevance_score,
+            'avg_coherence_score': avg_coherence_score,
             'flagged_content': {
                 'total_flags': sum(flagged_term_counts.values()),
                 'unique_terms': len(flagged_term_counts),
@@ -449,136 +447,59 @@ class RecipeValidator:
         # Find best and worst performing tests
         if self.validation_results:
             # Sort by average relevance
-            by_relevance = sorted(self.validation_results,
-                                  key=lambda x: x['avg_relevance_score'],
-                                  reverse=True)
+            sorted_results = sorted(self.validation_results,
+                                    key=lambda x: x['avg_relevance_score'],
+                                    reverse=True)
 
             analysis['best_performing'] = {
-                'test_name': by_relevance[0]['test_name'],
-                'ingredients': by_relevance[0]['ingredients'],
-                'relevance_score': by_relevance[0]['avg_relevance_score']
+                'test_name': sorted_results[0]['test_name'],
+                'ingredients': sorted_results[0]['ingredients'],
+                'relevance_score': sorted_results[0]['avg_relevance_score']
             }
 
             analysis['worst_performing'] = {
-                'test_name': by_relevance[-1]['test_name'],
-                'ingredients': by_relevance[-1]['ingredients'],
-                'relevance_score': by_relevance[-1]['avg_relevance_score']
+                'test_name': sorted_results[-1]['test_name'],
+                'ingredients': sorted_results[-1]['ingredients'],
+                'relevance_score': sorted_results[-1]['avg_relevance_score']
             }
 
         return analysis
 
 
 def main():
-    # Create output directories
-    os.makedirs("validation", exist_ok=True)
-    os.makedirs("validation_results", exist_ok=True)
+    # k: Number of recommendations to request
+    k = 10
+
+    # test_selection: List of test names to run, or None for all
+    test_selection = None
 
     print("Recipe Recommendation Validation System")
     print("=======================================")
 
     # Initialize validator
-    validator = RecipeValidator()
+    validator = RecipeValidator(
+        ingredients_file="validation/test_ingredients.json",
+        inappropriate_terms_file="validation/inappropriate_terms.txt")
 
-    # Save default test ingredients and inappropriate terms
-    validator.save_test_ingredients("validation/test_ingredients.json")
-    validator.save_inappropriate_terms("validation/inappropriate_terms.txt")
-
-    # Load recommender model - ADJUST THESE PATHS TO MATCH YOUR SETUP
+    # Load recommender model
     model_loaded = validator.load_recommender("models/recipes_faiss.index", "models/recipes_dataframe.csv")
 
     if not model_loaded:
         print("Failed to load recommender model.")
-        print("Please enter the paths to your model files:")
-        index_path = input("FAISS index path: ").strip()
-        df_path = input("DataFrame path: ").strip()
-
-        if not index_path or not df_path:
-            print("Paths cannot be empty. Exiting.")
-            return
-
-        model_loaded = validator.load_recommender(index_path, df_path)
-        if not model_loaded:
-            print("Still unable to load models. Please check paths and try again.")
-            return
-
-    print("\nAvailable test cases:")
-    for i, (name, ingredients) in enumerate(validator.test_ingredients.items(), 1):
-        print(f"{i}. {name}: {', '.join(ingredients)}")
-
-    print("\nValidation options:")
-    print("1. Run validation on all test cases")
-    print("2. Run validation on selected test cases")
-    print("3. Add a new test case")
-    print("4. Add inappropriate terms")
-    print("5. Exit")
-
-    choice = input("Select an option (1-5): ").strip()
-
-    if choice == '1':
-        # Run all tests
-        summary_df = validator.run_validation(k=10)
-        print("\nValidation Summary:")
-        print(summary_df)
-        validator.save_validation_results()
-
-        # Show analysis
-        analysis = validator.analyze_validation_results()
-        print("\nValidation Analysis:")
-        print(json.dumps(analysis, indent=2))
-
-    elif choice == '2':
-        # Run selected tests
-        print("Enter test numbers to run (comma separated, e.g. '1,3,5'):")
-        test_nums = input("> ").strip()
-
-        try:
-            test_indices = [int(n.strip()) - 1 for n in test_nums.split(',') if n.strip()]
-            test_names = list(validator.test_ingredients.keys())
-            selected_tests = [test_names[i] for i in test_indices if 0 <= i < len(test_names)]
-
-            if not selected_tests:
-                print("No valid tests selected")
-                return
-
-            summary_df = validator.run_validation(test_selection=selected_tests, k=10)
-            print("\nValidation Summary:")
-            print(summary_df)
-            validator.save_validation_results()
-
-        except Exception as e:
-            print(f"Error running selected tests: {e}")
-
-    elif choice == '3':
-        # Add a new test case
-        name = input("Enter a name for the new test case: ").strip()
-        ingredients_input = input("Enter ingredients (comma separated): ").strip()
-
-        ingredients = [ing.strip() for ing in ingredients_input.split(',') if ing.strip()]
-        if ingredients:
-            validator.add_test_ingredients(name, ingredients)
-            validator.save_test_ingredients("validation/test_ingredients.json")
-            print(f"Added test case '{name}' with {len(ingredients)} ingredients")
-        else:
-            print("No valid ingredients entered")
-
-    elif choice == '4':
-        # Add inappropriate terms
-        terms_input = input("Enter inappropriate terms (comma separated): ").strip()
-
-        terms = [term.strip() for term in terms_input.split(',') if term.strip()]
-        for term in terms:
-            validator.add_inappropriate_term(term)
-
-        validator.save_inappropriate_terms("validation/inappropriate_terms.txt")
-        print(f"Added {len(terms)} inappropriate terms")
-
-    elif choice == '5':
-        print("Exiting...")
         return
 
-    else:
-        print("Invalid choice")
+    # Run validation
+    summary_df = validator.run_validation(test_selection=test_selection, k=k)
+    print("\nValidation Summary:")
+    print(summary_df)
+    validator.save_validation_results()
 
+    # Show analysis
+    analysis = validator.analyze_validation_results()
+    print("\nValidation Analysis:")
+    print(json.dumps(analysis, indent=2))
+
+    return validator
 
 if __name__ == "__main__":
     main()

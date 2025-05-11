@@ -41,8 +41,8 @@ dataset
 IngredientManager/dataset
 IngredientManager/validation_results
 
-
 *.csv
+*.index
 *.sqlite3
 
 

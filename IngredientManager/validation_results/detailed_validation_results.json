@@ -7,7 +7,7 @@
       "toast",
       "milk"
     ],
-    "query_time": 0.05095028877258301,
+    "query_time": 0.054168701171875,
     "results_count": 0,
     "flagged_count": 0,
     "avg_relevance_score": 0,
@@ -26,7 +26,7 @@
       "garlic",
       "basil"
     ],
-    "query_time": 0.021437644958496094,
+    "query_time": 0.024891376495361328,
     "results_count": 0,
     "flagged_count": 0,
     "avg_relevance_score": 0,
@@ -45,7 +45,7 @@
       "avocado",
       "salsa"
     ],
-    "query_time": 0.021126747131347656,
+    "query_time": 0.02643728256225586,
     "results_count": 0,
     "flagged_count": 0,
     "avg_relevance_score": 0,
@@ -64,7 +64,7 @@
       "butter",
       "chocolate"
     ],
-    "query_time": 0.021881580352783203,
+    "query_time": 0.021294832229614258,
     "results_count": 0,
     "flagged_count": 0,
     "avg_relevance_score": 0,
@@ -83,7 +83,7 @@
       "chickpeas",
       "quinoa"
     ],
-    "query_time": 0.024483680725097656,
+    "query_time": 0.019078969955444336,
     "results_count": 0,
     "flagged_count": 0,
     "avg_relevance_score": 0,
@@ -102,7 +102,7 @@
       "onion",
       "carrots"
     ],
-    "query_time": 0.022344589233398438,
+    "query_time": 0.019834041595458984,
     "results_count": 0,
     "flagged_count": 0,
     "avg_relevance_score": 0,
@@ -121,7 +121,7 @@
       "lemon",
       "olive oil"
     ],
-    "query_time": 0.018463134765625,
+    "query_time": 0.0180666446685791,
     "results_count": 0,
     "flagged_count": 0,
     "avg_relevance_score": 0,
@@ -140,7 +140,7 @@
       "ground beef",
       "cream"
     ],
-    "query_time": 0.019997358322143555,
+    "query_time": 0.019040584564208984,
     "results_count": 0,
     "flagged_count": 0,
     "avg_relevance_score": 0,
@@ -159,7 +159,7 @@
       "chicken",
       "garam masala"
     ],
-    "query_time": 0.03029656410217285,
+    "query_time": 0.018055438995361328,
     "results_count": 0,
     "flagged_count": 0,
     "avg_relevance_score": 0,
@@ -178,7 +178,7 @@
       "ginger",
       "sesame oil"
     ],
-    "query_time": 0.03050827980041504,
+    "query_time": 0.027567386627197266,
     "results_count": 0,
     "flagged_count": 0,
     "avg_relevance_score": 0,
@@ -197,7 +197,7 @@
       "mint",
       "garlic"
     ],
-    "query_time": 0.032381296157836914,
+    "query_time": 0.03330183029174805,
     "results_count": 0,
     "flagged_count": 0,
     "avg_relevance_score": 0,
@@ -214,7 +214,7 @@
       "salt",
       "pepper"
     ],
-    "query_time": 0.023209333419799805,
+    "query_time": 0.030555248260498047,
     "results_count": 0,
     "flagged_count": 0,
     "avg_relevance_score": 0,
@@ -230,7 +230,7 @@
     "ingredients": [
       "banana"
     ],
-    "query_time": 0.019016504287719727,
+    "query_time": 0.027431249618530273,
     "results_count": 0,
     "flagged_count": 0,
     "avg_relevance_score": 0,
@@ -249,7 +249,7 @@
       "potato",
       "gravy"
     ],
-    "query_time": 0.023792028427124023,
+    "query_time": 0.021770238876342773,
     "results_count": 0,
     "flagged_count": 0,
     "avg_relevance_score": 0,
@@ -268,7 +268,7 @@
       "mint",
       "rum"
     ],
-    "query_time": 0.023383140563964844,
+    "query_time": 0.019092082977294922,
     "results_count": 0,
     "flagged_count": 0,
     "avg_relevance_score": 0,
