@@ -39,6 +39,7 @@ venv/
 ### Ignore dataset ###
 IngredientManager/dataset
 IngredientManager/validation_results
+IngredientManager/models
 
 *.csv
 *.index
