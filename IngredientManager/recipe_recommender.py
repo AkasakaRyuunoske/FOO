@@ -1,175 +1,289 @@
+import json
 import faiss
 from sentence_transformers import SentenceTransformer
 import pandas as pd
-import ast  # Safer than eval
+import ast
 import os
 import time
 import numpy as np
-from pathlib import Path
 
 
 class RecipeRecommender:
+    """A recommendation system for recipes based on ingredients using FAISS and SentenceTransformer."""
+
     def __init__(self, model_name='all-MiniLM-L6-v2'):
         """Initialize the recommender with a sentence transformer model."""
+        print(f"Initializing RecipeRecommender with model: {model_name}")
         self.model = SentenceTransformer(model_name)
+        print(f"✓ Model initialized successfully")
         self.index = None
         self.df = None
 
-    def prepare_dataset(self, file_paths, output_path=None):
-        """
-        Load and prepare datasets from multiple files.
+    def load_dataset(self, file_paths, output_path=None):
+        """Load and prepare datasets from multiple files."""
+        print("\n=== LOADING DATASET ===")
 
-        Args:
-            file_paths: List of file paths or a single file path
-            output_path: Optional path to save the combined dataset
-        """
+        # Convert single path to list
         if isinstance(file_paths, str):
             file_paths = [file_paths]
 
+        # Load each file
         dfs = []
-        for file_path in file_paths:
-            print(f"Loading {file_path}...")
+        total_recipes = 0
+
+        print(f"Loading {len(file_paths)} dataset file(s)...")
+        for i, file_path in enumerate(file_paths):
+            print(f"[{i + 1}/{len(file_paths)}] Loading {os.path.basename(file_path)}...")
             try:
+                start_time = time.time()
                 df = pd.read_csv(file_path)
+                load_time = time.time() - start_time
+
                 # Keep only necessary columns
                 if all(col in df.columns for col in ["title", "NER", "link"]):
                     df = df[["title", "NER", "link"]]
-                    # Drop duplicates and missing values
+                    before_count = len(df)
                     df.dropna(subset=["NER"], inplace=True)
+                    after_count = len(df)
+
                     dfs.append(df)
+                    total_recipes += after_count
+
+                    print(f"  ✓ Loaded {after_count} recipes in {load_time:.2f}s")
+                    if before_count != after_count:
+                        print(f"    (Removed {before_count - after_count} rows with missing ingredients)")
                 else:
-                    print(f"Warning: Required columns not found in {file_path}")
+                    print(f"  ✗ Required columns not found in {file_path}")
             except Exception as e:
-                print(f"Error loading {file_path}: {e}")
+                print(f"  ✗ Error loading {file_path}: {e}")
 
         if not dfs:
+            print("✗ No valid datasets were loaded")
             raise ValueError("No valid datasets were loaded")
 
         # Combine all dataframes
-        combined_df = pd.concat(dfs, ignore_index=True)
-        combined_df.drop_duplicates(subset=["title", "NER"], inplace=True)
+        print("\nCombining datasets...")
+        start_time = time.time()
+        self.df = pd.concat(dfs, ignore_index=True)
+        print(f"✓ Combined {len(dfs)} files with {len(self.df)} total recipes in {time.time() - start_time:.2f}s")
 
+        # Remove duplicates
+        print("\nRemoving duplicate recipes...")
+        start_time = time.time()
+        before_count = len(self.df)
+        self.df.drop_duplicates(subset=["title", "NER"], inplace=True)
+        after_count = len(self.df)
+        duplicates_removed = before_count - after_count
+
+        print(f"✓ Removed {duplicates_removed} duplicates in {time.time() - start_time:.2f}s")
+        print(f"✓ Final dataset contains {after_count} unique recipes")
+
+        # Save combined dataset if requested
         if output_path:
-            os.makedirs(os.path.dirname(output_path), exist_ok=True)
-            combined_df.to_csv(output_path, index=False)
-            print(f"Combined dataset saved to {output_path}")
+            print(f"\nSaving combined dataset to {output_path}...")
+            start_time = time.time()
+            os.makedirs(os.path.dirname(output_path) if os.path.dirname(output_path) else '.', exist_ok=True)
+            self.df.to_csv(output_path, index=False)
+            print(f"✓ Dataset saved in {time.time() - start_time:.2f}s")
 
-        self.df = combined_df
-        return combined_df
+        print("=== DATASET LOADING COMPLETE ===\n")
+        return self.df
 
-    def create_embeddings(self):
-        """Create and return embeddings for the loaded dataset."""
+    def _parse_ingredients(self, ner_string):
+        """Parse ingredients from NER string."""
+        if isinstance(ner_string, str):
+            try:
+                ingredients_list = ast.literal_eval(ner_string)
+                return ' '.join(ingredients_list)
+            except (ValueError, SyntaxError):
+                return ''
+        return ''
+
+    def _create_embeddings(self):
+        """Create embeddings for the loaded dataset."""
+        print("\n=== CREATING EMBEDDINGS ===")
+
         if self.df is None:
-            raise ValueError("No dataset loaded. Call prepare_dataset first.")
+            print("✗ No dataset loaded")
+            raise ValueError("No dataset loaded. Call load_dataset first.")
 
-        # Prepare text from NER data
-        self.df['ner_text'] = self.df['NER'].apply(lambda x:
-                                                   ' '.join(ast.literal_eval(x))
-                                                   if isinstance(x, str)
-                                                   else '')
+        # Extract ingredients text
+        print("Processing ingredient data...")
+        start_time = time.time()
+        self.df['ner_text'] = self.df['NER'].apply(self._parse_ingredients)
+        print(f"✓ Processed ingredient data in {time.time() - start_time:.2f}s")
 
-        # Filter out any empty texts
+        # Filter out empty texts
+        print("Filtering out recipes with empty ingredient lists...")
+        start_time = time.time()
+        before_count = len(self.df)
         self.df = self.df[self.df['ner_text'].str.strip() != '']
+        after_count = len(self.df)
 
-        print(f"Creating embeddings for {len(self.df)} recipes...")
-        embeddings = self.model.encode(self.df['ner_text'].tolist(),
-                                       show_progress_bar=True,
-                                       convert_to_numpy=True)
+        print(
+            f"✓ Removed {before_count - after_count} recipes with empty ingredients in {time.time() - start_time:.2f}s")
+        print(f"✓ Proceeding with {after_count} valid recipes")
+
+        # Create embeddings
+        print(f"\nGenerating embeddings for {len(self.df)} recipes...")
+        print("(This is typically the most time-consuming step. Please wait...)")
+        start_time = time.time()
+
+        embeddings = self.model.encode(
+            self.df['ner_text'].tolist(),
+            show_progress_bar=True,
+            convert_to_numpy=True
+        )
+
+        total_time = time.time() - start_time
+        recipes_per_second = len(self.df) / total_time if total_time > 0 else 0
+
+        print(f"✓ Generated {len(embeddings)} embeddings of dimension {embeddings.shape[1]}")
+        print(f"✓ Embedding completed in {total_time:.2f}s ({recipes_per_second:.1f} recipes/second)")
+        print("=== EMBEDDING CREATION COMPLETE ===\n")
 
         return embeddings
 
     def build_index(self, embeddings=None, index_path=None, df_path=None):
-        """
-        Build FAISS index from embeddings.
+        """Build FAISS index from embeddings."""
+        print("\n=== BUILDING SEARCH INDEX ===")
 
-        Args:
-            embeddings: Optional pre-computed embeddings
-            index_path: Path to save the FAISS index
-            df_path: Path to save the DataFrame
-        """
+        # Create embeddings if not provided
         if embeddings is None:
-            embeddings = self.create_embeddings()
-
-        # Get embedding dimensionality
-        dimension = embeddings.shape[1]
+            print("No pre-computed embeddings provided, creating embeddings...")
+            embeddings = self._create_embeddings()
+        else:
+            print(f"Using provided embeddings with shape {embeddings.shape}")
 
         # Create FAISS index
+        print("\nInitializing FAISS index...")
+        start_time = time.time()
+        dimension = embeddings.shape[1]
         self.index = faiss.IndexFlatL2(dimension)
+        print(f"✓ Created IndexFlatL2 with dimension {dimension} in {time.time() - start_time:.2f}s")
 
-        # Add embeddings
+        # Add embeddings to index
+        print(f"Adding {len(embeddings)} vectors to index...")
+        start_time = time.time()
         self.index.add(embeddings)
+        add_time = time.time() - start_time
+        vectors_per_second = len(embeddings) / add_time if add_time > 0 else 0
 
+        print(f"✓ Added vectors in {add_time:.2f}s ({vectors_per_second:.1f} vectors/second)")
+        print(f"✓ Index now contains {self.index.ntotal} vectors")
+
+        # Save index if requested
         if index_path:
+            print(f"\nSaving FAISS index to {index_path}...")
+            start_time = time.time()
             os.makedirs(os.path.dirname(index_path) if os.path.dirname(index_path) else '.', exist_ok=True)
             faiss.write_index(self.index, index_path)
-            print(f"FAISS index saved to {index_path}")
+            print(f"✓ Index saved in {time.time() - start_time:.2f}s")
 
+        # Save DataFrame if requested
         if df_path and self.df is not None:
+            print(f"Saving DataFrame to {df_path}...")
+            start_time = time.time()
             os.makedirs(os.path.dirname(df_path) if os.path.dirname(df_path) else '.', exist_ok=True)
             self.df.to_csv(df_path, index=False)
-            print(f"DataFrame saved to {df_path}")
+            print(f"✓ DataFrame saved in {time.time() - start_time:.2f}s")
 
+        print("=== INDEX BUILDING COMPLETE ===\n")
         return self.index
 
     def load_model(self, index_path, df_path):
         """Load existing FAISS index and DataFrame."""
+        print("\n=== LOADING MODEL ===")
         try:
+            print(f"Loading FAISS index from {index_path}...")
+            start_time = time.time()
             self.index = faiss.read_index(index_path)
+            index_load_time = time.time() - start_time
+            print(f"✓ Index loaded in {index_load_time:.2f}s with {self.index.ntotal} vectors")
+
+            print(f"Loading DataFrame from {df_path}...")
+            start_time = time.time()
             self.df = pd.read_csv(df_path)
-            print(f"Loaded index with {self.index.ntotal} vectors and DataFrame with {len(self.df)} recipes")
+            df_load_time = time.time() - start_time
+            print(f"✓ DataFrame loaded in {df_load_time:.2f}s with {len(self.df)} recipes")
+
+            print("=== MODEL LOADING COMPLETE ===\n")
             return True
         except Exception as e:
-            print(f"Error loading model: {e}")
+            print(f"✗ Error loading model: {e}")
+            print("=== MODEL LOADING FAILED ===\n")
             return False
 
+    def _get_ingredients_list(self, ner_string):
+        """Convert NER string to a list of ingredients."""
+        if isinstance(ner_string, str):
+            try:
+                return ast.literal_eval(ner_string)
+            except (ValueError, SyntaxError):
+                return []
+        return []
+
     def recommend(self, ingredients, k=10):
-        """
-        Recommend recipes based on ingredients.
+        """Recommend recipes based on ingredients."""
+        print("\n=== SEARCHING FOR RECIPES ===")
 
-        Args:
-            ingredients: List of ingredient strings
-            k: Number of recommendations to return
-
-        Returns:
-            List of dictionaries with recipe info
-        """
         if self.index is None or self.df is None:
+            print("✗ Model not built or loaded yet")
             raise ValueError("Model not built or loaded yet")
 
-        # Join ingredients
-        query_text = ' '.join(ingredients)
+        # Join ingredients and create embedding
+        print(f"Searching with ingredients: {', '.join(ingredients)}")
 
-        # Embed query
+        print("Converting ingredients to embedding...")
+        start_time = time.time()
+        query_text = ' '.join(ingredients)
         query_vector = self.model.encode([query_text], convert_to_numpy=True)
+        print(f"✓ Created query embedding in {time.time() - start_time:.4f}s")
 
         # Search top k matches
-        D, I = self.index.search(query_vector, k=min(k, len(self.df)))
+        k = min(k, len(self.df))
+        print(f"Searching for top {k} matches among {self.index.ntotal} recipes...")
+        start_time = time.time()
+        distances, indices = self.index.search(query_vector, k=k)
+        search_time = time.time() - start_time
 
-        # Prepare results
+        print(f"✓ Search completed in {search_time:.4f}s")
+
+        # Format results
+        print("Formatting results...")
+        start_time = time.time()
         results = []
-        for i, idx in enumerate(I[0]):
+        for i, idx in enumerate(indices[0]):
             if idx < len(self.df):  # Ensure index is valid
+                row = self.df.iloc[idx]
+                ingredients_list = self._get_ingredients_list(row['NER'])
+
                 results.append({
-                    'score': float(D[0][i]),  # Convert numpy float to Python float
-                    'title': self.df.iloc[idx]['title'],
-                    'ingredients': ast.literal_eval(self.df.iloc[idx]['NER']) if isinstance(self.df.iloc[idx]['NER'],
-                                                                                            str) else [],
-                    'link': self.df.iloc[idx]['link'] if 'link' in self.df.columns else 'No link available'
+                    'score': float(distances[0][i]),
+                    'title': row['title'],
+                    'ingredients': ingredients_list,
+                    'link': row['link'] if 'link' in self.df.columns else 'No link available'
                 })
 
+        print(f"✓ Formatted {len(results)} results in {time.time() - start_time:.4f}s")
+        print("=== SEARCH COMPLETE ===\n")
         return results
 
 
-def test_with_ingredients(recommender, test_cases):
-    """
-    Test the recommender with multiple ingredient combinations.
+def test_recommender(recommender, test_cases_file=None):
+    """Test the recommender with sample ingredient combinations."""
+    print("\n=== TESTING RECOMMENDER ===")
 
-    Args:
-        recommender: Initialized RecipeRecommender object
-        test_cases: List of ingredient lists
-    """
+    if test_cases_file and os.path.exists(test_cases_file):
+        with open(test_cases_file, 'r') as f:
+            test_cases_dict = json.load(f)
+        test_cases = list(test_cases_dict.values())
+        print(f"✓ Loaded {len(test_cases)} test ingredient sets from {test_cases_file}")
+    else:
+        print(f"Test Ingredients file not found: {test_cases_file}")
+
     for i, ingredients in enumerate(test_cases):
-        print(f"\nTest {i + 1}: Searching with ingredients: {ingredients}")
+        print(f"\nTest {i + 1}/{len(test_cases)}: {', '.join(ingredients)}")
 
         start_time = time.time()
         results = recommender.recommend(ingredients, k=5)
@@ -180,226 +294,66 @@ def test_with_ingredients(recommender, test_cases):
         for j, recipe in enumerate(results):
             print(f"{j + 1}. {recipe['title']}")
             print(f"   Similarity score: {recipe['score']:.4f}")
-            print(f"   Ingredients: {recipe['ingredients']}")
+            print(f"   Ingredients: {', '.join(recipe['ingredients'])}")
             print(f"   Link: {recipe['link']}")
-
         print("-" * 50)
 
-
-def evaluate_dataset_sizes(base_path, chunk_sizes, out_dir='evaluation_results'):
-    """
-    Evaluate performance with different dataset sizes.
-
-    Args:
-        base_path: Base path to dataset chunks
-        chunk_sizes: List of percentages to test (e.g. [2, 4, 6])
-        out_dir: Directory to save results
-    """
-    os.makedirs(out_dir, exist_ok=True)
-
-    results = []
-    recommender = RecipeRecommender()
-
-    # Test cases to use for consistent evaluation
-    test_cases = [
-        ["milk", "sugar", "butter"],
-        ["chicken", "garlic", "onion"],
-        ["chocolate", "flour", "eggs"],
-        ["rice", "beans", "tomato"]
-    ]
-
-    # Individual chunks first
-    for size in chunk_sizes:
-        print(f"\n{'=' * 20} Testing {size}% chunk {'=' * 20}")
-        file_path = f"{base_path}/recipies_dataset_tagged_chunk_{size}%"
-
-        # Skip if file doesn't exist
-        if not os.path.exists(file_path):
-            print(f"File {file_path} not found, skipping")
-            continue
-
-        # Build index
-        start_time = time.time()
-        df = recommender.prepare_dataset(file_path)
-        embeddings = recommender.create_embeddings()
-        recommender.build_index(embeddings)
-        build_time = time.time() - start_time
-
-        # Get number of recipes
-        recipe_count = len(df)
-
-        # Test with sample queries
-        query_times = []
-        for ingredients in test_cases:
-            start = time.time()
-            recommender.recommend(ingredients, k=5)
-            query_times.append(time.time() - start)
-
-        avg_query_time = np.mean(query_times)
-        results.append({
-            'type': 'individual',
-            'size': size,
-            'recipe_count': recipe_count,
-            'build_time': build_time,
-            'avg_query_time': avg_query_time
-        })
-
-    # Now test cumulative chunks
-    for i in range(len(chunk_sizes)):
-        used_sizes = chunk_sizes[:i + 1]
-        total_size = sum(used_sizes)
-        print(f"\n{'=' * 20} Testing cumulative {total_size}% ({'+'.join(str(s) for s in used_sizes)}) {'=' * 20}")
-
-        # Collect file paths
-        file_paths = [f"{base_path}/recipies_dataset_tagged_chunk_{size}%" for size in used_sizes]
-        file_paths = [f for f in file_paths if os.path.exists(f)]
-
-        if not file_paths:
-            print("No valid files found, skipping")
-            continue
-
-        # Build index
-        start_time = time.time()
-        df = recommender.prepare_dataset(file_paths)
-        embeddings = recommender.create_embeddings()
-        recommender.build_index(embeddings)
-        build_time = time.time() - start_time
-
-        # Get number of recipes
-        recipe_count = len(df)
-
-        # Test with sample queries
-        query_times = []
-        for ingredients in test_cases:
-            start = time.time()
-            recommender.recommend(ingredients, k=5)
-            query_times.append(time.time() - start)
-
-        avg_query_time = np.mean(query_times)
-        results.append({
-            'type': 'cumulative',
-            'size': total_size,
-            'recipe_count': recipe_count,
-            'build_time': build_time,
-            'avg_query_time': avg_query_time
-        })
-
-    # Save results
-    results_df = pd.DataFrame(results)
-    results_path = f"{out_dir}/dataset_size_evaluation.csv"
-    results_df.to_csv(results_path, index=False)
-    print(f"Evaluation results saved to {results_path}")
-
-    return results_df
+    print("=== TESTING COMPLETE ===")
 
 
 def main():
-    # Create directories
+    print("\n====== RECIPE RECOMMENDER SYSTEM ======\n")
+
     os.makedirs("models", exist_ok=True)
     os.makedirs("evaluation_results", exist_ok=True)
 
-    # Define paths
     dataset_path = "dataset"
     index_path = "models/recipes_faiss.index"
     df_path = "models/recipes_dataframe.csv"
+    test_cases_file = "validation/test_ingredients.json"
 
-    # Initialize recommender
+    chunks_to_use = [2]  # All desired chunks
+    file_paths = [f"{dataset_path}/recipies_dataset_tagged_chunk_{size}%.csv" for size in chunks_to_use]
+    file_paths = [f for f in file_paths if os.path.exists(f)]
+
     recommender = RecipeRecommender()
 
-    # Choose operation mode
-    print("FAISS Recipe Recommendation System")
-    print("1. Build index from new dataset")
-    print("2. Load existing model and test")
-    print("3. Evaluate different dataset sizes")
-    choice = input("Select an option (1-3): ").strip()
-
-    if choice == '1':
-        # Get dataset chunks to use
-        available_chunks = sorted([int(f.split('_')[-1].rstrip('%'))
-                                   for f in os.listdir(dataset_path)
-                                   if 'chunk' in f and f.endswith('%')])
-
-        print(f"Available chunks: {available_chunks}")
-        chunks_input = input("Enter chunks to use (comma separated, e.g. '2,4,6' or 'all'): ").strip()
-
-        if chunks_input.lower() == 'all':
-            chunks_to_use = available_chunks
-        else:
-            chunks_to_use = [int(c.strip()) for c in chunks_input.split(',') if c.strip()]
-
-        # Get file paths
-        file_paths = [f"{dataset_path}/recipies_dataset_tagged_chunk_{size}%" for size in chunks_to_use]
-        file_paths = [f for f in file_paths if os.path.exists(f)]
-
-        if not file_paths:
-            print("No valid files found")
-            return
-
-        # Prepare, create embeddings, and build index
-        recommender.prepare_dataset(file_paths)
-        embeddings = recommender.create_embeddings()
-        recommender.build_index(embeddings, index_path, df_path)
-
-        # Test with some ingredients
-        test_with_ingredients(recommender, [
-            ["milk", "sugar", "butter"],
-            ["chicken", "garlic", "onion"],
-            ["chocolate", "flour", "eggs"]
-        ])
-
-    elif choice == '2':
-        # Load existing model
-        if not os.path.exists(index_path) or not os.path.exists(df_path):
-            print(f"Model files not found at {index_path} or {df_path}")
-            return
-
+    if os.path.exists(index_path) and os.path.exists(df_path):
+        print("Loading existing model...")
         if recommender.load_model(index_path, df_path):
-            # Interactive testing
-            print("\nEnter ingredients (comma separated, or 'q' to quit):")
-            while True:
-                ingredients_input = input("> ").strip()
-                if ingredients_input.lower() == 'q':
-                    break
+            print("✓ Model loaded.")
 
-                ingredients = [i.strip() for i in ingredients_input.split(',') if i.strip()]
-                if not ingredients:
-                    continue
+            # Load new chunks only (filter out already loaded recipes by title+NER)
+            loaded_titles = set(zip(recommender.df['title'], recommender.df['NER']))
+            new_dfs = []
 
-                results = recommender.recommend(ingredients)
-                print(f"\nFound {len(results)} recipes with {', '.join(ingredients)}:")
-                for i, recipe in enumerate(results[:5]):
-                    print(f"{i + 1}. {recipe['title']}")
-                    print(f"   Similarity score: {recipe['score']:.4f}")
-                    print(f"   Ingredients: {recipe['ingredients']}")
-                    print(f"   Link: {recipe['link']}")
-                    print()
+            for path in file_paths:
+                df_new = pd.read_csv(path)
+                df_new = df_new[["title", "NER", "link"]].dropna(subset=["NER"])
+                df_new["ner_text"] = df_new["NER"].apply(recommender._parse_ingredients)
+                df_new = df_new[df_new["ner_text"].str.strip() != '']
+                df_new = df_new[~df_new.apply(lambda row: (row['title'], row['NER']) in loaded_titles, axis=1)]
 
-    elif choice == '3':
-        # Evaluate different dataset sizes
-        available_chunks = sorted([int(f.split('_')[-1].rstrip('%'))
-                                   for f in os.listdir(dataset_path)
-                                   if 'chunk' in f and f.endswith('%')])
+                if not df_new.empty:
+                    print(f"✓ Adding {len(df_new)} new recipes from {path}")
+                    new_embeddings = recommender.model.encode(df_new["ner_text"].tolist(), convert_to_numpy=True)
+                    recommender.index.add(new_embeddings)
+                    recommender.df = pd.concat([recommender.df, df_new], ignore_index=True)
 
-        if not available_chunks:
-            print("No dataset chunks found")
-            return
+            # Save updated model
+            faiss.write_index(recommender.index, index_path)
+            recommender.df.to_csv(df_path, index=False)
 
-        print(f"Available chunks: {available_chunks}")
-        chunks_input = input("Enter chunks to evaluate (comma separated, e.g. '2,4,6' or 'all'): ").strip()
-
-        if chunks_input.lower() == 'all':
-            chunks_to_evaluate = available_chunks
+            test_recommender(recommender, test_cases_file=test_cases_file)
         else:
-            chunks_to_evaluate = [int(c.strip()) for c in chunks_input.split(',') if c.strip()]
-
-        results = evaluate_dataset_sizes(dataset_path, chunks_to_evaluate)
-
-        # Display summary
-        print("\nEvaluation Summary:")
-        print(results)
-
+            print("✗ Failed to load model.")
     else:
-        print("Invalid choice")
+        print("No existing model. Building from scratch...")
+        df = recommender.load_dataset(file_paths)
+        recommender.build_index(index_path=index_path, df_path=df_path)
+        test_recommender(recommender, test_cases_file=test_cases_file)
+
+    print("\n====== RECIPE RECOMMENDER COMPLETE ======")
 
 
 if __name__ == "__main__":
