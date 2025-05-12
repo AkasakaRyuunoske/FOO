@@ -38,6 +38,9 @@ venv/
 
 ### Ignore dataset ###
 dataset
+IngredientManager/dataset
+IngredientManager/validation_results
+
 
 *.csv
 *.sqlite3
