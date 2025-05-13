@@ -1,8 +1,4 @@
 Ingredient,Cost
-sauce,8.0
-Great Garlic,6.0
-powder,10.0
-Lil Smokies,15.0
 s Cajun,12.0
 s Chili,14.0
 s Chili Beans,14.0
@@ -1815,6 +1811,7 @@ Fusilli,8.0
 Fusilli pasta,8.0
 GRANOLA,8.0
 GRATED CHEESE,9.0
+Great Garlic,6.0
 GW seasoning,8.0
 Gala apples,8.0
 Galatians,8.0
@@ -2794,6 +2791,7 @@ Light Cream,4.5
 Light Cream Cheese,9.0
 Light Molasses,8.0
 Light Philadelphia cream cheese,9.0
+Lil Smokies,15.0
 Limburger cheese,9.0
 Lime Juice,8.0
 Lime Sauce,8.0
@@ -19866,6 +19864,7 @@ pour Kahlua,8.0
 pour of oil,8.0
 pour over sauce,8.0
 pourtry seasoning,8.0
+powder,10.0
 powder alum,10.0
 powdered,10.0
 powdered Borax,10.0
@@ -21532,6 +21531,7 @@ sargento,8.0
 sassafras root bark,8.0
 sat,8.0
 satsumas,8.0
+sauce,8.0
 saucepan,8.0
 sauerkraut,8.0
 sauerkraut broth,8.0
