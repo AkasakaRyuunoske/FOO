@@ -1,10 +1,24 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}Discover{% endblock %}
+
+
+{% block content %}
+
+    <h1> This is page where you discover stuff</h1>
+
+    <div class="grid grid-cols-2 gap-4">
+      <!-- First Column with 3 rows -->
+      <div class="grid grid-rows-3 gap-2">
+        <div class="bg-red-200 p-4">Row 1</div>
+        <div class="bg-red-300 p-4">Row 2</div>
+        <div class="bg-red-400 p-4">Row 3</div>
+      </div>
+
+      <!-- Second Column -->
+      <div class="bg-blue-200 p-4">
+        Second Column
+      </div>
+    </div>
+
+{% endblock %}
