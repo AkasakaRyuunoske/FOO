@@ -1,0 +1,87 @@
+{
+  "breakfast": [
+    "eggs",
+    "bacon",
+    "toast",
+    "milk"
+  ],
+  "italian": [
+    "pasta",
+    "tomato",
+    "garlic",
+    "basil"
+  ],
+  "mexican": [
+    "tortilla",
+    "beans",
+    "avocado",
+    "salsa"
+  ],
+  "dessert": [
+    "sugar",
+    "flour",
+    "butter",
+    "chocolate"
+  ],
+  "vegetarian": [
+    "tofu",
+    "spinach",
+    "chickpeas",
+    "quinoa"
+  ],
+  "quick_meal": [
+    "chicken",
+    "rice",
+    "onion",
+    "carrots"
+  ],
+  "healthy": [
+    "salmon",
+    "kale",
+    "lemon",
+    "olive oil"
+  ],
+  "comfort_food": [
+    "potato",
+    "cheese",
+    "ground beef",
+    "cream"
+  ],
+  "indian": [
+    "curry",
+    "rice",
+    "chicken",
+    "garam masala"
+  ],
+  "asian": [
+    "soy sauce",
+    "rice",
+    "ginger",
+    "sesame oil"
+  ],
+  "unusual_combo": [
+    "chocolate",
+    "fish",
+    "mint",
+    "garlic"
+  ],
+  "minimal": [
+    "salt",
+    "pepper"
+  ],
+  "single": [
+    "banana"
+  ],
+  "seasonal_winter": [
+    "turkey",
+    "cranberry",
+    "potato",
+    "gravy"
+  ],
+  "seasonal_summer": [
+    "watermelon",
+    "lime",
+    "mint",
+    "rum"
+  ]
+}
