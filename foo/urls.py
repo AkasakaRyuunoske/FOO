@@ -17,19 +17,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
-<<<<<<< HEAD
 urlpatterns = [
     path('admin/', admin.site.urls),
     # path('user/', include('UserManager.urls')),
-=======
-from common import views
-
-urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('users/', include('django.contrib.auth.urls')),
-    path('users/', include('UserManager.urls')),
-    path('home/', views.home, name='home')
->>>>>>> c92f59ea4140f6d8e62c1f15a396aff2b77a1a4c
     # path('recipe/', include('RecipeManager.urls')),
     # path('tag/', include('TagManager.urls')),
     # path('ingredient/', include('IngredientManager.urls')),

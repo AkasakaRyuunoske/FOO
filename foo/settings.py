@@ -72,11 +72,7 @@ TEMPLATES = [
     },
 ]
 
-<<<<<<< HEAD
-=======
 STATIC_URL = '/static/'
-
->>>>>>> c92f59ea4140f6d8e62c1f15a396aff2b77a1a4c
 WSGI_APPLICATION = 'foo.wsgi.application'
 
 
@@ -109,13 +105,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-<<<<<<< HEAD
-=======
 AUTH_USER_MODEL = "UserManager.CustomUser"
 LOGIN_REDIRECT_URL = '/home'         # Where to go after login
 LOGOUT_REDIRECT_URL = '/users/login/'  # Where to go after logout
 LOGIN_URL = '/users/login/'  # Default login URL if @login_required fails
->>>>>>> c92f59ea4140f6d8e62c1f15a396aff2b77a1a4c
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/

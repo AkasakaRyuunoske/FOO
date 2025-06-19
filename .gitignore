@@ -38,9 +38,8 @@ venv/
 
 ### Ignore dataset ###
 IngredientManager/dataset
-IngredientManager/validation_results
-
-IngredientManager/models/word2vec_model.bin
+IngredientManager/validation_results/*
+IngredientManager/models/*
 
 *.csv
 *.index
