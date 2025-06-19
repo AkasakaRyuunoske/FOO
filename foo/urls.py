@@ -24,9 +24,9 @@ urlpatterns = [
     path('users/', include('django.contrib.auth.urls')),
     path('users/', include('UserManager.urls')),
     path('home/', views.home, name='home'),
-    path('discover/', views.discover, name='discover')
+    path('discover/', views.discover, name='discover'),
     # path('recipe/', include('RecipeManager.urls')),
-    # path('tag/', include('TagManager.urls')),
+    path('tag/', include('TagManager.urls')),
     # path('ingredient/', include('IngredientManager.urls')),
     # path('activity/', include('UserActivityManager.urls')),
 ]
