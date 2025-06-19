@@ -7,51 +7,64 @@
 
     <h1> This is page where you discover stuff</h1>
 
-    <div class="grid grid-cols-2 gap-4">
-      <!-- First Column with 3 rows -->
-      <div class="grid grid-rows-4 gap-2">
-        <div class="bg-red-200 p-4 grid grid-cols-2">
-            <div class="relative">
-                <span>Ingredients</span>
+    <!-- Toggle Button -->
+    <button
+      onclick="
+        const fc = document.getElementById('first-column');
+        const grid = document.getElementById('main-grid');
+        fc.classList.toggle('hidden');
+        grid.classList.toggle('grid-cols-2');
+        grid.classList.toggle('grid-cols-1');
+      "
+      class="mb-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+      <<
+    </button>
+
+    <!-- Grid with 2 columns and 4 rows in the first column -->
+    <div id="main-grid" class="grid grid-cols-2 gap-4">
+          <div id="first-column" class="grid grid-rows-4 gap-2">
+            <div class="bg-red-200 p-4 grid grid-cols-2">
+                <div class="relative">
+                    <span>Ingredients</span>
+                </div>
+
+                <div class="relative">
+                        {% include "components/searchbar.html" with input_name="search_term" placeholder="Search ingredient..." action="/search/" %}
+                </div>
+            </div>
+            <div class="bg-red-300 p-4 grid grid-cols-2">
+                <div class="relative">
+                    <span>Tags</span>
+                </div>
+
+                <div class="relative">
+                    <form method="get" class="w-full max-w-md mx-auto">
+                        {% include "components/searchbar.html" with input_name="search_term" placeholder="Search tag..." action="/search/" %}
+                    </form>
+                </div>
             </div>
 
-            <div class="relative">
-                    {% include "components/searchbar.html" with input_name="search_term" placeholder="Search ingredient..." action="/search/" %}
+            <div class="bg-red-400 p-4 grid grid-cols-2">
+                <div class="relative">
+                    <span>Bookmarked Recipes</span>
+                </div>
+
+                <div class="relative">
+                    {% include "components/searchbar.html" with input_name="search_term" placeholder="Search recipes..." action="/search/" %}
+                </div>
             </div>
+
+            <div class="bg-red-500 p-4">
+                <div class="relative">
+                    <span>Free Selection</span>
+                </div>
+            </div>
+          </div>
+
+          <!-- Second Column -->
+          <div class="bg-blue-200 p-4">
+            Second Column
         </div>
-        <div class="bg-red-300 p-4 grid grid-cols-2">
-            <div class="relative">
-                <span>Tags</span>
-            </div>
-
-            <div class="relative">
-                <form method="get" class="w-full max-w-md mx-auto">
-                    {% include "components/searchbar.html" with input_name="search_term" placeholder="Search tag..." action="/search/" %}
-                </form>
-            </div>
-        </div>
-
-        <div class="bg-red-400 p-4 grid grid-cols-2">
-            <div class="relative">
-                <span>Bookmarked Recipes</span>
-            </div>
-
-            <div class="relative">
-                {% include "components/searchbar.html" with input_name="search_term" placeholder="Search recipes..." action="/search/" %}
-            </div>
-        </div>
-
-        <div class="bg-red-500 p-4">
-            <div class="relative">
-                <span>Free Selection</span>
-            </div>
-        </div>
-      </div>
-
-      <!-- Second Column -->
-      <div class="bg-blue-200 p-4">
-        Second Column
-      </div>
     </div>
 
 {% endblock %}
