@@ -23,7 +23,9 @@
     <!-- Grid with 2 columns and 4 rows in the first column -->
     <div id="main-grid" class="grid grid-cols-2 gap-4">
           <div id="first-column" class="grid grid-rows-4 gap-2">
-            <div class="bg-red-200 p-4 grid grid-cols-2">
+
+              <!-- ingredients -->
+            <div class="bg-red-200 p-4 grid grid-cols-2 grid-rows-1">
                 <div class="relative">
                     <span>Ingredients</span>
                 </div>
@@ -31,7 +33,30 @@
                 <div class="relative">
                         {% include "components/searchbar.html" with input_name="search_term" placeholder="Search ingredient..." action="/search/" %}
                 </div>
+
+                <!-- Spinner element (initially hidden) -->
+                <div id="spinner" class="hidden text-center my-4" aria-hidden="true">
+                  <svg class="animate-spin h-6 w-6 text-blue-600 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none"
+                       viewBox="0 0 24 24" stroke="currentColor">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor"
+                          d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 11-8 8z"></path>
+                  </svg>
+                </div>
+
+                <!-- Content placeholder (updates itself with hx-get) -->
+                <div
+                  hx-get="{% url 'get_tags' %}"
+                  hx-trigger="load"
+                  hx-target="this"
+                  hx-swap="innerHTML"
+                  hx-indicator="#spinner"
+                >
+                  Loading content...
+                </div>
             </div>
+
+              <!-- Tags -->
             <div class="bg-red-300 p-4 grid grid-cols-2">
                 <div class="relative">
                     <span>Tags</span>
@@ -44,6 +69,7 @@
                 </div>
             </div>
 
+              <!-- Bookmarks -->
             <div class="bg-red-400 p-4 grid grid-cols-2">
                 <div class="relative">
                     <span>Bookmarked Recipes</span>
@@ -54,6 +80,7 @@
                 </div>
             </div>
 
+              <!-- Gamble -->
             <div class="bg-red-500 p-4">
                 <div class="relative">
                     <span>Free Selection</span>

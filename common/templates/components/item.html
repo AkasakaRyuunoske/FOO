@@ -1,0 +1,7 @@
+<div class="pl-6 grid grid-cols-3 grid-rows-4">
+  {% for item in tags %}
+    <div class="text-gray-800 relative">{{ item }}</div>
+  {% empty %}
+    <div class="text-gray-500 relative">No items found.</div>
+  {% endfor %}
+</div>
