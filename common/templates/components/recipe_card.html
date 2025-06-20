@@ -1,7 +1,7 @@
 {% load static %}
 {% comment %} components/recipe_card.html {% endcomment %}
 
-<div class="aspect-[4/3] sm:aspect-square bg-white p-2 rounded-md"> <!-- External Padding -->
+<div class="aspect-[4/3] sm:aspect-square bg-white p-2 rounded-md transition duration-200 hover:shadow-xl hover:scale-105"> <!-- External Padding -->
   <div class="border-2 border-black p-3 bg-white w-full h-full flex flex-col justify-between group relative rounded" style="font-family:'Inclusive Sans',sans-serif;"> <!-- Black line inside square -->
 
     <!-- Bookmark on the right with a transition on hover -->
@@ -69,11 +69,11 @@
 
     <!-- Stars -->
     <div class="flex justify-center space-x-1 text-base sm:text-lg">
-      <span class="text-yellow-500">★</span>
-      <span class="text-yellow-500">★</span>
-      <span class="text-yellow-500">★</span>
-      <span class="text-yellow-500">★</span>
-      <span class="text-black">★</span>
+      <button class="text-yellow-500 hover:scale-125 hover:shadow-sm transition-transform duration-150">★</button>
+      <button class="text-yellow-500 hover:scale-125 hover:shadow-sm transition-transform duration-150">★</button>
+      <button class="text-yellow-500 hover:scale-125 hover:shadow-sm transition-transform duration-150">★</button>
+      <button class="text-yellow-500 hover:scale-125 hover:shadow-sm transition-transform duration-150">★</button>
+      <button class="text-black hover:scale-125 hover:shadow-sm transition-transform duration-150">★</button>
     </div>
   </div>
 </div>
@@ -113,6 +113,60 @@
           icon.src = "{% static 'icons/bookmark-white.png' %}";
         }
       });
+    });
+  });
+</script>
+
+<!-- Script for the Ratings -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const cards = document.querySelectorAll('div.border-2');
+
+    cards.forEach(card => {
+      const starButtons = card.querySelectorAll('div.flex.justify-center.space-x-1.text-base.sm\\:text-lg > button');
+      let currentRating = 2.5; // 2.5 starting rating
+
+      function updateStars(rating) {
+        starButtons.forEach((btn, i) => {
+          const starIndex = i + 1;
+          btn.innerHTML = '★'; // reset star
+
+          btn.classList.remove('text-yellow-500', 'text-black');
+
+          if (starIndex <= Math.floor(rating)) {
+            // full stars
+            btn.classList.add('text-yellow-500');
+          } else if (starIndex === Math.ceil(rating) && rating % 1 !== 0) {
+            // create partial overlay for hal stars
+            btn.classList.add('text-yellow-500', 'relative');
+            btn.innerHTML = `
+              <span class="absolute overflow-hidden top-0 left-0 h-full" style="width: 50%;">★</span>
+              <span class="text-black">★</span>
+            `;
+          } else {
+            // empty stars
+            btn.classList.add('text-black');
+          }
+        });
+      }
+
+      starButtons.forEach((btn, i) => {
+        btn.addEventListener('click', () => {
+          currentRating = i + 1;
+          updateStars(currentRating);
+          console.log('Valutazione selezionata:', currentRating);
+        });
+
+        btn.addEventListener('mouseenter', () => {
+          updateStars(i + 1);
+        });
+
+        btn.addEventListener('mouseleave', () => {
+          updateStars(currentRating);
+        });
+      });
+
+      updateStars(currentRating);
     });
   });
 </script>
