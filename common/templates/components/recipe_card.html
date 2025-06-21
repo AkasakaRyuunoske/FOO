@@ -1,8 +1,8 @@
 {% load static %}
 {% comment %} components/recipe_card.html {% endcomment %}
 
-<div class="aspect-[4/3] sm:aspect-square bg-white p-2 rounded-md transition duration-200 hover:shadow-xl hover:scale-105"> <!-- External Padding -->
-  <div class="border-2 border-black p-3 bg-white w-full h-full flex flex-col justify-between group relative rounded" style="font-family:'Inclusive Sans',sans-serif;"> <!-- Black line inside square -->
+<div class="bg-white p-2 rounded-md transition duration-200 hover:shadow-xl hover:scale-105 max-w-[380px] mx-auto w-full"> <!-- External Padding -->
+  <div class="border-2 border-black p-3 bg-white w-full flex flex-col justify-between group relative rounded min-w-0 min-h-0" style="font-family:'Inclusive Sans',sans-serif;"> <!-- Black line inside square -->
 
     <!-- Bookmark on the right with a transition on hover -->
     <button class="bookmark-btn absolute top-1 right-1 aspect-square w-8 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10" aria-label="Toggle bookmark" type="button">
@@ -10,18 +10,18 @@
     </button>
 
     <!-- Recipe Name -->
-    <div class="flex-1 flex flex-col">
-      <h2 class="text-center font-bold mb-2 text-sm sm:text-base md:text-lg">Melanzane alla Parmigiana</h2>
+    <div class="flex-1 flex flex-col min-w-0">
+      <h2 class="text-center font-bold mb-2 text-sm sm:text-base md:text-lg break-words">Melanzane alla Parmigiana</h2>
 
       <!-- Recipe Image -->
       <div class="w-4/5 mx-auto mb-2">
-        <img src="https://d2sj0xby2hzqoy.cloudfront.net/kenwood_italy/attachments/data/000/008/122/medium/parmigiana-di-melanzane.jpg" alt="Melanzane alla Parmigiana" class="w-full h-auto object-contain border border-gray-300 rounded">
+        <img src="https://d2sj0xby2hzqoy.cloudfront.net/kenwood_italy/attachments/data/000/008/122/medium/parmigiana-di-melanzane.jpg" alt="Melanzane alla Parmigiana" class="w-full h-auto max-h-[160px] object-contain border border-gray-300 rounded">
       </div> <!-- image is 1055*608, consider it when putting other images -->
 
       <!-- Info & Tags -->
-      <div class="flex gap-2 flex-1 items-stretch overflow-hidden text-[8px] md:text-[10px]">
+      <div class="flex gap-2 flex-1 items-stretch overflow-hidden text-[8px] md:text-[10px] min-w-0">
         <!-- Left Section -->
-        <div class="flex flex-col justify-between w-1/2 overflow-hidden h-full space-y-2">
+        <div class="flex flex-col justify-between w-1/2 overflow-hidden h-full space-y-2 min-w-0">
           <!-- Tags with text -->
           <div class="space-y-1">
             <!-- Difficulty, Time and Cost Tags -->
@@ -59,8 +59,8 @@
         <div class="w-px bg-black"></div>
 
         <!-- Right Section: Description -->
-        <div class="w-1/2  overflow-auto h-full">
-          <p class="leading-tight text-[8px] md:text-[9px]">
+        <div class="w-1/2 overflow-auto h-full min-w-0">
+          <p class="leading-tight text-[8px] md:text-[9px] break-words">
             Melanzane alla Parmigiana is a classic Italian baked dish made with layers of thinly sliced eggplant, tomato sauce, and cheese—typically mozzarella and Parmesan—baked until bubbly and golden. It’s rich, hearty, and full of traditional Southern Italian flavor.
           </p>
         </div>
@@ -68,12 +68,12 @@
     </div>
 
     <!-- Stars -->
-    <div class="flex justify-center space-x-1 text-base sm:text-lg">
-      <button class="text-yellow-500 hover:scale-125 hover:shadow-sm transition-transform duration-150">★</button>
-      <button class="text-yellow-500 hover:scale-125 hover:shadow-sm transition-transform duration-150">★</button>
-      <button class="text-yellow-500 hover:scale-125 hover:shadow-sm transition-transform duration-150">★</button>
-      <button class="text-yellow-500 hover:scale-125 hover:shadow-sm transition-transform duration-150">★</button>
-      <button class="text-black hover:scale-125 hover:shadow-sm transition-transform duration-150">★</button>
+    <div class="flex justify-center space-x-1 text-base sm:text-lg mt-auto min-h-[1.5rem] shrink-0">
+      <button class="text-yellow-500 hover:scale-125 hover:shadow-sm transition-transform duration-150 p-0.5">★</button>
+      <button class="text-yellow-500 hover:scale-125 hover:shadow-sm transition-transform duration-150 p-0.5">★</button>
+      <button class="text-yellow-500 hover:scale-125 hover:shadow-sm transition-transform duration-150 p-0.5">★</button>
+      <button class="text-yellow-500 hover:scale-125 hover:shadow-sm transition-transform duration-150 p-0.5">★</button>
+      <button class="text-black hover:scale-125 hover:shadow-sm transition-transform duration-150 p-0.5">★</button>
     </div>
   </div>
 </div>
@@ -123,29 +123,33 @@
     const cards = document.querySelectorAll('div.border-2');
 
     cards.forEach(card => {
-      const starButtons = card.querySelectorAll('div.flex.justify-center.space-x-1.text-base.sm\\:text-lg > button');
+      const starButtons = card.querySelectorAll('div.flex.justify-center > button');
       let currentRating = 2.5; // 2.5 starting rating
 
       function updateStars(rating) {
         starButtons.forEach((btn, i) => {
           const starIndex = i + 1;
-          btn.innerHTML = '★'; // reset star
-
-          btn.classList.remove('text-yellow-500', 'text-black');
+          btn.innerHTML = ''; // reset star
 
           if (starIndex <= Math.floor(rating)) {
             // full stars
+            btn.classList.remove('text-black');
             btn.classList.add('text-yellow-500');
+            btn.textContent = '★';
           } else if (starIndex === Math.ceil(rating) && rating % 1 !== 0) {
-            // create partial overlay for hal stars
-            btn.classList.add('text-yellow-500', 'relative');
+            // create partial overlay for half stars
+            btn.classList.remove('text-yellow-500', 'text-black');
             btn.innerHTML = `
-              <span class="absolute overflow-hidden top-0 left-0 h-full" style="width: 50%;">★</span>
-              <span class="text-black">★</span>
+              <div class="relative inline-block text-black">
+                <span class="absolute top-0 left-0 w-1/2 overflow-hidden text-yellow-500">★</span>
+                <span>★</span>
+              </div>
             `;
           } else {
             // empty stars
+            btn.classList.remove('text-yellow-500');
             btn.classList.add('text-black');
+            btn.textContent = '★';
           }
         });
       }
