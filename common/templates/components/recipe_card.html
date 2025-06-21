@@ -1,0 +1,176 @@
+{% load static %}
+{% comment %} components/recipe_card.html {% endcomment %}
+
+<div class="bg-white p-2 rounded-md transition duration-200 hover:shadow-xl hover:scale-105 max-w-[380px] mx-auto w-full"> <!-- External Padding -->
+  <div class="border-2 border-black p-3 bg-white w-full flex flex-col justify-between group relative rounded min-w-0 min-h-0" style="font-family:'Inclusive Sans',sans-serif;"> <!-- Black line inside square -->
+
+    <!-- Bookmark on the right with a transition on hover -->
+    <button class="bookmark-btn absolute top-1 right-1 aspect-square w-8 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10" aria-label="Toggle bookmark" type="button">
+      <img class="bookmark-icon w-full h-full transition-opacity duration-200" src="{% static 'icons/bookmark-white.png' %}" alt="Bookmark">
+    </button>
+
+    <!-- Recipe Name -->
+    <div class="flex-1 flex flex-col min-w-0">
+      <h2 class="text-center font-bold mb-2 text-sm sm:text-base md:text-lg break-words">Melanzane alla Parmigiana</h2>
+
+      <!-- Recipe Image -->
+      <div class="w-4/5 mx-auto mb-2">
+        <img src="https://d2sj0xby2hzqoy.cloudfront.net/kenwood_italy/attachments/data/000/008/122/medium/parmigiana-di-melanzane.jpg" alt="Melanzane alla Parmigiana" class="w-full h-auto max-h-[160px] object-contain border border-gray-300 rounded">
+      </div> <!-- image is 1055*608, consider it when putting other images -->
+
+      <!-- Info & Tags -->
+      <div class="flex gap-2 flex-1 items-stretch overflow-hidden text-[8px] md:text-[10px] min-w-0">
+        <!-- Left Section -->
+        <div class="flex flex-col justify-between w-1/2 overflow-hidden h-full space-y-2 min-w-0">
+          <!-- Tags with text -->
+          <div class="space-y-1">
+            <!-- Difficulty, Time and Cost Tags -->
+            <div class="flex flex-wrap gap-x-2 gap-y-1">
+              <div class="flex items-center gap-1"><img src="{% static 'icons/difficulty.png' %}" class="w-4 h-4"><span>Easy</span></div>
+              <div class="flex items-center gap-1"><img src="{% static 'icons/time.png' %}" class="w-4 h-4"><span>Medium</span></div>
+              <div class="flex items-center gap-1"><img src="{% static 'icons/cost.png' %}" class="w-4 h-4"><span>Average</span></div>
+            </div>
+
+            <!-- General Tags -->
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="font-semibold">Tags:</span>
+              <div class="flex flex-wrap gap-1">
+                <img src="{% static 'icons/boil.png' %}" class="w-4 h-4">
+                <img src="{% static 'icons/lactose-free.png' %}" class="w-4 h-4">
+                <img src="{% static 'icons/gluten-free.png' %}" class="w-4 h-4">
+                <img src="{% static 'icons/vegetarian.png' %}" class="w-4 h-4">
+                <img src="{% static 'icons/vegan.png' %}" class="w-4 h-4">
+              </div>
+            </div>
+
+            <!-- Ingredients -->
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="font-semibold">Ingredients:</span>
+              <div class="flex flex-wrap gap-1">
+                <img src="{% static 'icons/meat.png' %}" class="w-4 h-4">
+                <img src="{% static 'icons/cheese.png' %}" class="w-4 h-4">
+                <img src="{% static 'icons/vegetables.png' %}" class="w-4 h-4">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Central Divider -->
+        <div class="w-px bg-black"></div>
+
+        <!-- Right Section: Description -->
+        <div class="w-1/2 overflow-auto h-full min-w-0">
+          <p class="leading-tight text-[8px] md:text-[9px] break-words">
+            Melanzane alla Parmigiana is a classic Italian baked dish made with layers of thinly sliced eggplant, tomato sauce, and cheese—typically mozzarella and Parmesan—baked until bubbly and golden. It’s rich, hearty, and full of traditional Southern Italian flavor.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stars -->
+    <div class="flex justify-center space-x-1 text-base sm:text-lg mt-auto min-h-[1.5rem] shrink-0">
+      <button class="text-yellow-500 hover:scale-125 hover:shadow-sm transition-transform duration-150 p-0.5">★</button>
+      <button class="text-yellow-500 hover:scale-125 hover:shadow-sm transition-transform duration-150 p-0.5">★</button>
+      <button class="text-yellow-500 hover:scale-125 hover:shadow-sm transition-transform duration-150 p-0.5">★</button>
+      <button class="text-yellow-500 hover:scale-125 hover:shadow-sm transition-transform duration-150 p-0.5">★</button>
+      <button class="text-black hover:scale-125 hover:shadow-sm transition-transform duration-150 p-0.5">★</button>
+    </div>
+  </div>
+</div>
+
+<!-- Script for the Bookmark button -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const buttons = document.querySelectorAll('.bookmark-btn');
+
+    buttons.forEach(btn => {
+      const icon = btn.querySelector('.bookmark-icon');
+      let bookmarked = false;
+
+      btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        bookmarked = !bookmarked;
+
+        if (bookmarked) {
+          icon.src = "{% static 'icons/bookmark-black.png' %}";
+          btn.classList.remove("opacity-0", "group-hover:opacity-100");
+          btn.classList.add("opacity-100");
+        } else {
+          icon.src = "{% static 'icons/bookmark-white.png' %}";
+          btn.classList.remove("opacity-100");
+          btn.classList.add("opacity-0", "group-hover:opacity-100");
+        }
+      });
+
+      btn.addEventListener('mouseenter', function () {
+        if (!bookmarked) {
+          icon.src = "{% static 'icons/bookmark-black.png' %}";
+        }
+      });
+
+      btn.addEventListener('mouseleave', function () {
+        if (!bookmarked) {
+          icon.src = "{% static 'icons/bookmark-white.png' %}";
+        }
+      });
+    });
+  });
+</script>
+
+<!-- Script for the Ratings -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const cards = document.querySelectorAll('div.border-2');
+
+    cards.forEach(card => {
+      const starButtons = card.querySelectorAll('div.flex.justify-center > button');
+      let currentRating = 2.5; // 2.5 starting rating
+
+      function updateStars(rating) {
+        starButtons.forEach((btn, i) => {
+          const starIndex = i + 1;
+          btn.innerHTML = ''; // reset star
+
+          if (starIndex <= Math.floor(rating)) {
+            // full stars
+            btn.classList.remove('text-black');
+            btn.classList.add('text-yellow-500');
+            btn.textContent = '★';
+          } else if (starIndex === Math.ceil(rating) && rating % 1 !== 0) {
+            // create partial overlay for half stars
+            btn.classList.remove('text-yellow-500', 'text-black');
+            btn.innerHTML = `
+              <div class="relative inline-block text-black">
+                <span class="absolute top-0 left-0 w-1/2 overflow-hidden text-yellow-500">★</span>
+                <span>★</span>
+              </div>
+            `;
+          } else {
+            // empty stars
+            btn.classList.remove('text-yellow-500');
+            btn.classList.add('text-black');
+            btn.textContent = '★';
+          }
+        });
+      }
+
+      starButtons.forEach((btn, i) => {
+        btn.addEventListener('click', () => {
+          currentRating = i + 1;
+          updateStars(currentRating);
+          console.log('Valutazione selezionata:', currentRating);
+        });
+
+        btn.addEventListener('mouseenter', () => {
+          updateStars(i + 1);
+        });
+
+        btn.addEventListener('mouseleave', () => {
+          updateStars(currentRating);
+        });
+      });
+
+      updateStars(currentRating);
+    });
+  });
+</script>
