@@ -2,7 +2,7 @@
 {% comment %} components/recipe_card.html {% endcomment %}
 
 <div class="aspect-square bg-white p-1.5 rounded-md transition duration-200 hover:shadow-xl hover:scale-105 max-w-[380px] mx-auto w-full"> <!-- External Padding -->
-  <div class="scroll-container border-2 border-black p-2 bg-white w-full flex flex-col justify-between group relative rounded min-w-0 min-h-0 max-h-[300px] overflow-y-auto" style="font-family:'Inclusive Sans',sans-serif;"> <!-- Black line inside square -->
+  <div class="border-2 border-black p-2 bg-white w-full flex flex-col justify-between group relative rounded min-w-0 min-h-0 overflow-y-auto" style="font-family:'Inclusive Sans',sans-serif;"> <!-- Black line inside square -->
 
     <!-- Bookmark on the right with a transition on hover -->
     <button class="bookmark-btn absolute top-1 right-1 aspect-square w-8 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10" aria-label="Toggle bookmark" type="button">
@@ -19,7 +19,7 @@
       </div> <!-- image is 1055*608, consider it when putting other images -->
 
       <!-- Info & Tags -->
-      <div class="flex flex-col gap-2 flex-1 text-[8px] md:text-[10px] min-w-0">
+      <div class="flex flex-col gap-2 flex-1 text-[8px] md:text-[10px] min-w-0 max-h-[100px] overflow-hidden transition-[max-height] duration-500 ease-in-out group-hover:max-h-[300px]">
         <!-- TAGS WRAPPER -->
         <div class="flex flex-col gap-2" data-tags>
           <!-- Difficulty, Time and Cost Tags -->
@@ -53,8 +53,8 @@
         </div>
 
         <!-- DESCRIPTION WRAPPER -->
-        <div class="hidden" data-description>
-          <p class="text-[9px]">
+        <div class="hidden group-hover:block text-[10px]" data-description>
+          <p class="text-[10px]">
             Melanzane alla Parmigiana is a classic Italian baked dish made with layers of thinly sliced eggplant, tomato sauce, and cheese—typically mozzarella and Parmesan—baked until bubbly and golden. It’s rich, hearty, and full of traditional Southern Italian flavor.
           </p>
         </div>
@@ -176,8 +176,8 @@
 
 <script>
 function toggleDescription(button) {
-  const container = button.closest('div.flex-1'); // div con tag e description
-  const scrollContainer = button.closest('.scroll-container'); // div con overflow-y-auto
+  const container = button.closest('div.flex-1'); // div with tag and description
+  const scrollContainer = button.closest('.scroll-container'); // div with overflow-y-auto
 
   const tags = container.querySelector('[data-tags]');
   const description = container.querySelector('[data-description]');
@@ -185,13 +185,13 @@ function toggleDescription(button) {
   const showingDescription = !description.classList.contains('hidden');
 
   if (showingDescription) {
-    // Nascondi descrizione, mostra tag
+    // hide description, show tag
     description.classList.add('hidden');
     tags.classList.remove('hidden');
     button.textContent = 'Show Description';
     scrollContainer.classList.remove('hide-scrollbar');
   } else {
-    // Mostra descrizione, nascondi tag
+    // show description, hide tag
     description.classList.remove('hidden');
     tags.classList.add('hidden');
     button.textContent = 'Hide Description';
@@ -199,13 +199,3 @@ function toggleDescription(button) {
   }
 }
 </script>
-
-<style>
-    .hide-scrollbar {
-      scrollbar-width: none; /* Firefox */
-      -ms-overflow-style: none; /* IE 10+ */
-    }
-    .hide-scrollbar::-webkit-scrollbar {
-      display: none; /* Chrome, Safari, Opera */
-    }
-  </style>
