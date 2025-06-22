@@ -1,8 +1,8 @@
 {% load static %}
 {% comment %} components/recipe_card.html {% endcomment %}
 
-<div class="bg-white p-2 rounded-md transition duration-200 hover:shadow-xl hover:scale-105 max-w-[380px] mx-auto w-full"> <!-- External Padding -->
-  <div class="border-2 border-black p-3 bg-white w-full flex flex-col justify-between group relative rounded min-w-0 min-h-0" style="font-family:'Inclusive Sans',sans-serif;"> <!-- Black line inside square -->
+<div class="aspect-square bg-white p-1.5 rounded-md transition duration-200 hover:shadow-xl hover:scale-105 max-w-[380px] mx-auto w-full"> <!-- External Padding -->
+  <div class="border-2 border-black p-2 bg-white w-full flex flex-col justify-between group relative rounded min-w-0 min-h-0 max-h-[300px] overflow-y-auto" style="font-family:'Inclusive Sans',sans-serif;"> <!-- Black line inside square -->
 
     <!-- Bookmark on the right with a transition on hover -->
     <button class="bookmark-btn absolute top-1 right-1 aspect-square w-8 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10" aria-label="Toggle bookmark" type="button">
@@ -11,7 +11,7 @@
 
     <!-- Recipe Name -->
     <div class="flex-1 flex flex-col min-w-0">
-      <h2 class="text-center font-bold mb-2 text-sm sm:text-base md:text-lg break-words">Melanzane alla Parmigiana</h2>
+      <h2 class="text-center font-bold mb-2 text-sm sm:text-base break-words">Melanzane alla Parmigiana</h2>
 
       <!-- Recipe Image -->
       <div class="w-4/5 mx-auto mb-2">
@@ -19,61 +19,59 @@
       </div> <!-- image is 1055*608, consider it when putting other images -->
 
       <!-- Info & Tags -->
-      <div class="flex gap-2 flex-1 items-stretch overflow-hidden text-[8px] md:text-[10px] min-w-0">
-        <!-- Left Section -->
-        <div class="flex flex-col justify-between w-1/2 overflow-hidden h-full space-y-2 min-w-0">
-          <!-- Tags with text -->
-          <div class="space-y-1">
-            <!-- Difficulty, Time and Cost Tags -->
-            <div class="flex flex-wrap gap-x-2 gap-y-1">
-              <div class="flex items-center gap-1"><img src="{% static 'icons/difficulty.png' %}" class="w-4 h-4"><span>Easy</span></div>
-              <div class="flex items-center gap-1"><img src="{% static 'icons/time.png' %}" class="w-4 h-4"><span>Medium</span></div>
-              <div class="flex items-center gap-1"><img src="{% static 'icons/cost.png' %}" class="w-4 h-4"><span>Average</span></div>
-            </div>
+      <div class="flex flex-col gap-2 flex-1 text-[8px] md:text-[10px] min-w-0">
+        <!-- TAGS WRAPPER -->
+        <div class="flex flex-col gap-2" data-tags>
+          <!-- Difficulty, Time and Cost Tags -->
+          <div class="flex flex-wrap gap-x-2 gap-y-1">
+            <div class="flex items-center gap-1"><img src="{% static 'icons/difficulty.png' %}" class="w-4 h-4"><span>Easy</span></div>
+            <div class="flex items-center gap-1"><img src="{% static 'icons/time.png' %}" class="w-4 h-4"><span>Medium</span></div>
+            <div class="flex items-center gap-1"><img src="{% static 'icons/cost.png' %}" class="w-4 h-4"><span>Average</span></div>
+          </div>
 
-            <!-- General Tags -->
-            <div class="flex items-center gap-2 flex-wrap">
-              <span class="font-semibold">Tags:</span>
-              <div class="flex flex-wrap gap-1">
-                <img src="{% static 'icons/boil.png' %}" class="w-4 h-4">
-                <img src="{% static 'icons/lactose-free.png' %}" class="w-4 h-4">
-                <img src="{% static 'icons/gluten-free.png' %}" class="w-4 h-4">
-                <img src="{% static 'icons/vegetarian.png' %}" class="w-4 h-4">
-                <img src="{% static 'icons/vegan.png' %}" class="w-4 h-4">
-              </div>
+          <!-- General Tags -->
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="font-semibold">Tags:</span>
+            <div class="flex flex-wrap gap-1">
+              <img src="{% static 'icons/boil.png' %}" class="w-4 h-4">
+              <img src="{% static 'icons/lactose-free.png' %}" class="w-4 h-4">
+              <img src="{% static 'icons/gluten-free.png' %}" class="w-4 h-4">
+              <img src="{% static 'icons/vegetarian.png' %}" class="w-4 h-4">
+              <img src="{% static 'icons/vegan.png' %}" class="w-4 h-4">
             </div>
+          </div>
 
-            <!-- Ingredients -->
-            <div class="flex items-center gap-2 flex-wrap">
-              <span class="font-semibold">Ingredients:</span>
-              <div class="flex flex-wrap gap-1">
-                <img src="{% static 'icons/meat.png' %}" class="w-4 h-4">
-                <img src="{% static 'icons/cheese.png' %}" class="w-4 h-4">
-                <img src="{% static 'icons/vegetables.png' %}" class="w-4 h-4">
-              </div>
+          <!-- Ingredients -->
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="font-semibold">Ingredients:</span>
+            <div class="flex flex-wrap gap-1">
+              <img src="{% static 'icons/meat.png' %}" class="w-4 h-4">
+              <img src="{% static 'icons/cheese.png' %}" class="w-4 h-4">
+              <img src="{% static 'icons/vegetables.png' %}" class="w-4 h-4">
             </div>
           </div>
         </div>
 
-        <!-- Central Divider -->
-        <div class="w-px bg-black"></div>
-
-        <!-- Right Section: Description -->
-        <div class="w-1/2 overflow-auto h-full min-w-0">
-          <p class="leading-tight text-[8px] md:text-[9px] break-words">
+        <!-- DESCRIPTION WRAPPER -->
+        <div class="hidden" data-description>
+          <p class="text-[9px]">
             Melanzane alla Parmigiana is a classic Italian baked dish made with layers of thinly sliced eggplant, tomato sauce, and cheese—typically mozzarella and Parmesan—baked until bubbly and golden. It’s rich, hearty, and full of traditional Southern Italian flavor.
           </p>
         </div>
-      </div>
-    </div>
 
-    <!-- Stars -->
-    <div class="flex justify-center space-x-1 text-base sm:text-lg mt-auto min-h-[1.5rem] shrink-0">
-      <button class="text-yellow-500 hover:scale-125 hover:shadow-sm transition-transform duration-150 p-0.5">★</button>
-      <button class="text-yellow-500 hover:scale-125 hover:shadow-sm transition-transform duration-150 p-0.5">★</button>
-      <button class="text-yellow-500 hover:scale-125 hover:shadow-sm transition-transform duration-150 p-0.5">★</button>
-      <button class="text-yellow-500 hover:scale-125 hover:shadow-sm transition-transform duration-150 p-0.5">★</button>
-      <button class="text-black hover:scale-125 hover:shadow-sm transition-transform duration-150 p-0.5">★</button>
+        <!-- Expand Button -->
+        <button class="text-[10px] text-blue-600 underline hover:text-blue-800 mt-1 self-start z-10" onclick="toggleDescription(this)">Show Description</button>
+      </div>
+
+
+      <!-- Stars -->
+      <div class="flex justify-center space-x-1 text-base sm:text-lg mt-auto min-h-[1.5rem] shrink-0">
+        <button class="text-yellow-500 hover:scale-125 hover:shadow-sm transition-transform duration-150 p-0.5">★</button>
+        <button class="text-yellow-500 hover:scale-125 hover:shadow-sm transition-transform duration-150 p-0.5">★</button>
+        <button class="text-yellow-500 hover:scale-125 hover:shadow-sm transition-transform duration-150 p-0.5">★</button>
+        <button class="text-yellow-500 hover:scale-125 hover:shadow-sm transition-transform duration-150 p-0.5">★</button>
+        <button class="text-black hover:scale-125 hover:shadow-sm transition-transform duration-150 p-0.5">★</button>
+      </div>
     </div>
   </div>
 </div>
@@ -174,3 +172,28 @@
     });
   });
 </script>
+
+
+<script>
+function toggleDescription(button) {
+  const container = button.closest('div.flex-1'); // container principale dei tags e descrizione
+  const tags = container.querySelector('[data-tags]');
+  const description = container.querySelector('[data-description]');
+
+  const showingDescription = !description.classList.contains('hidden');
+
+  if (showingDescription) {
+    // Nascondi descrizione, mostra tag
+    description.classList.add('hidden');
+    tags.classList.remove('hidden');
+    button.textContent = 'Show Description';
+  } else {
+    // Mostra descrizione, nascondi tag
+    description.classList.remove('hidden');
+    tags.classList.add('hidden');
+    button.textContent = 'Hide Description';
+  }
+}
+</script>
+
+
