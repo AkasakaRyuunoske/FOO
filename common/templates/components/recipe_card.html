@@ -2,7 +2,7 @@
 {% comment %} components/recipe_card.html {% endcomment %}
 
 <div class="aspect-square bg-white p-1.5 rounded-md transition duration-200 hover:shadow-xl hover:scale-105 max-w-[380px] mx-auto w-full"> <!-- External Padding -->
-  <div class="border-2 border-black p-2 bg-white w-full flex flex-col justify-between group relative rounded min-w-0 min-h-0 max-h-[300px] overflow-y-auto" style="font-family:'Inclusive Sans',sans-serif;"> <!-- Black line inside square -->
+  <div class="scroll-container border-2 border-black p-2 bg-white w-full flex flex-col justify-between group relative rounded min-w-0 min-h-0 max-h-[300px] overflow-y-auto" style="font-family:'Inclusive Sans',sans-serif;"> <!-- Black line inside square -->
 
     <!-- Bookmark on the right with a transition on hover -->
     <button class="bookmark-btn absolute top-1 right-1 aspect-square w-8 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10" aria-label="Toggle bookmark" type="button">
@@ -176,7 +176,9 @@
 
 <script>
 function toggleDescription(button) {
-  const container = button.closest('div.flex-1'); // container principale dei tags e descrizione
+  const container = button.closest('div.flex-1'); // div con tag e description
+  const scrollContainer = button.closest('.scroll-container'); // div con overflow-y-auto
+
   const tags = container.querySelector('[data-tags]');
   const description = container.querySelector('[data-description]');
 
@@ -187,13 +189,23 @@ function toggleDescription(button) {
     description.classList.add('hidden');
     tags.classList.remove('hidden');
     button.textContent = 'Show Description';
+    scrollContainer.classList.remove('hide-scrollbar');
   } else {
     // Mostra descrizione, nascondi tag
     description.classList.remove('hidden');
     tags.classList.add('hidden');
     button.textContent = 'Hide Description';
+    scrollContainer.classList.add('hide-scrollbar');
   }
 }
 </script>
 
-
+<style>
+    .hide-scrollbar {
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none; /* IE 10+ */
+    }
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none; /* Chrome, Safari, Opera */
+    }
+  </style>
