@@ -1,10 +1,25 @@
+<!-- home.html -->
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Home page</title>
+  <meta charset="UTF-8">
+  <title>Homepage</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inclusive+Sans&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-<h1>YOu are at home here</h1>
+<body class="bg-gray-100 p-8">
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-4 gap-6">
+    {% include "components/recipe_card.html" %}
+    {% include "components/recipe_card.html" %}
+    {% include "components/recipe_card.html" %}
+    {% include "components/recipe_card.html" %}
+    {% include "components/recipe_card.html" %}
+    {% include "components/recipe_card.html" %}
+    {% include "components/recipe_card.html" %}
+    {% include "components/recipe_card.html" %}
+  </div>
+
 </body>
 </html>
