@@ -48,6 +48,9 @@ __pycache__/
 **/__pycache__/
 *.py[cod]
 *$py.class
+*.h5
+*.pkl
+
 ### VS Code ###
 .vscode/
 /TagManager/mvp_tagging/cache/
