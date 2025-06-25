@@ -636,7 +636,7 @@ def main():
 
     # Specifica chunk dataset da utilizzare (2% in questo caso)
     chunks_to_use = [2]
-    file_paths = [f"{dataset_path}/recipies_dataset_tagged_chunk_{size}%.csv" for size in chunks_to_use]
+    file_paths = [f"{dataset_path}/recipies_dataset_tagged_chunk_{size}%" for size in chunks_to_use]
     # Filtra solo file esistenti
     file_paths = [f for f in file_paths if os.path.exists(f)]
 
