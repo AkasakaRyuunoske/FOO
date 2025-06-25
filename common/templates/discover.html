@@ -12,9 +12,23 @@
       onclick="
         const fc = document.getElementById('first-column');
         const grid = document.getElementById('main-grid');
+        const cards = document.getElementById('recipe-card-grid');
+
         fc.classList.toggle('hidden');
         grid.classList.toggle('grid-cols-2');
         grid.classList.toggle('grid-cols-1');
+
+        // change card layout
+        //non funziona il cambio della descrizione visibile/non visibile
+        if (fc.classList.contains('hidden')) {
+          cards.classList.remove('grid-cols-3');
+          cards.classList.add('grid-cols-4');
+          cards.dataset.showInline = 'true';
+        } else {
+          cards.classList.remove('grid-cols-4');
+          cards.classList.add('grid-cols-3');
+          cards.dataset.showInline = 'false';
+        }
       "
       class="mb-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
       <<
@@ -199,7 +213,7 @@
           </div>
 
           <!-- Second Column -->
-          <div class="bg-blue-200 p-4 grid grid-cols-3 auto-rows-min gap-2">
+          <div id="recipe-card-grid" class="bg-blue-200 p-4 grid grid-cols-3 auto-rows-min gap-2" data-show-inline="false">
                 {% include "components/recipe_card.html" with show_description_inline=False %}
                 {% include "components/recipe_card.html" with show_description_inline=False %}
                 {% include "components/recipe_card.html" with show_description_inline=False %}
