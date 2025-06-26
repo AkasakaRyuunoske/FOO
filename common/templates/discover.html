@@ -13,25 +13,29 @@
         const fc = document.getElementById('first-column');
         const grid = document.getElementById('main-grid');
         const cards = document.getElementById('recipe-card-grid');
+        const icon = document.getElementById('toggle-icon');
 
-        fc.classList.toggle('hidden');
+        const isHidden = fc.classList.toggle('hidden');
         grid.classList.toggle('grid-cols-2');
         grid.classList.toggle('grid-cols-1');
 
         // change card layout
         //non funziona il cambio della descrizione visibile/non visibile
-        if (fc.classList.contains('hidden')) {
+        if (isHidden) {
           cards.classList.remove('grid-cols-3');
           cards.classList.add('grid-cols-4');
           cards.dataset.showInline = 'true';
+          icon.textContent = '>';
         } else {
           cards.classList.remove('grid-cols-4');
           cards.classList.add('grid-cols-3');
           cards.dataset.showInline = 'false';
+          icon.textContent = '<';
         }
       "
-      class="mb-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-      <<
+      class="fixed top-4 left-4 z-50 w-8 h-8 bg-gray-700 text-white rounded-full hover:bg-gray-800 flex items-center justify-center"
+      aria-label="Toggle first column">
+      <span id="toggle-icon">&lt;</span>
     </button>
 
     <!-- Grid with 2 columns and 4 rows in the first column -->
@@ -213,7 +217,40 @@
           </div>
 
           <!-- Second Column -->
-          <div id="recipe-card-grid" class="bg-blue-200 p-4 grid grid-cols-3 auto-rows-min gap-2" data-show-inline="false">
+          <div id="recipe-card-grid" class="relative bg-blue-200 p-4 grid grid-cols-3 auto-rows-min gap-2" data-show-inline="false">
+
+              <!-- Toggle button -->
+              <button
+                onclick="
+                const fc = document.getElementById('first-column');
+                const grid = document.getElementById('main-grid');
+                const cards = document.getElementById('recipe-card-grid');
+                const icon = document.getElementById('toggle-icon');
+
+                const isHidden = fc.classList.toggle('hidden');
+                grid.classList.toggle('grid-cols-2');
+                grid.classList.toggle('grid-cols-1');
+
+                if (isHidden) {
+                  cards.classList.remove('grid-cols-3');
+                  cards.classList.add('grid-cols-4');
+                  cards.dataset.showInline = 'true';
+                  icon.textContent = '>';
+                } else {
+                  cards.classList.remove('grid-cols-4');
+                  cards.classList.add('grid-cols-3');
+                  cards.dataset.showInline = 'false';
+                  icon.textContent = '<';
+                }
+                "
+                class="fixed w-8 h-12 bg-gray-700 text-white rounded-l-full shadow hover:bg-gray-800 z-50"
+                style="transform: translateX(-100%)"
+                aria-label="Toggle first column"
+                >
+                <span id="toggle-icon" class="text-lg font-bold">&lt;</span>
+              </button>
+
+
                 {% include "components/recipe_card.html" with show_description_inline=False %}
                 {% include "components/recipe_card.html" with show_description_inline=False %}
                 {% include "components/recipe_card.html" with show_description_inline=False %}
