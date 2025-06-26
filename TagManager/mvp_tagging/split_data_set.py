@@ -17,7 +17,7 @@ def split(chunks=10):
         split_df = split_df.drop(split_df.columns[0], axis=1)
         split_df[['difficulty', 'time', 'cost', 'method']] = split_df.apply(heuristic_tags, axis=1)
 
-        split_df.to_csv(f"dataset/recipies_dataset_tagged_chunk_{2 + i * 2}%", index=True)
+        split_df.to_csv(f"dataset/recipies_dataset_tagged_chunk_{2 + i * 2}%.csv", index=True)
         print(f"saved {i}% of data set")
 
     print(df)

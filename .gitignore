@@ -37,12 +37,17 @@ venv/
 .venv
 
 ### Ignore dataset ###
-dataset
+IngredientManager/dataset
+IngredientManager/validation_results/*
+IngredientManager/models/*
 
 *.csv
+*.index
 *.sqlite3
-
-
+*.bin
+*.jinja
+*.safetensors
+*.model
 # Byte-compiled / optimized / DLL files
 __pycache__/
 **/__pycache__/
