@@ -1,0 +1,10 @@
+0,Dairy
+1,Fat/Oil
+2,Grain
+3,Meat
+4,Other
+5,Seafood
+6,Spice
+7,Sweetener
+8,Vegetable
+9.Fruit
