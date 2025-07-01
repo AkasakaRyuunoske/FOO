@@ -1,42 +1,8 @@
 {% extends "base.html" %}
-
 {% block title %}Discover{% endblock %}
-
-
 {% block content %}
 
     <h1> This is page where you discover stuff</h1>
-
-    <!-- Toggle Button -->
-    <button
-      onclick="
-        const fc = document.getElementById('first-column');
-        const grid = document.getElementById('main-grid');
-        const cards = document.getElementById('recipe-card-grid');
-        const icon = document.getElementById('toggle-icon');
-
-        const isHidden = fc.classList.toggle('hidden');
-        grid.classList.toggle('grid-cols-2');
-        grid.classList.toggle('grid-cols-1');
-
-        // change card layout
-        //non funziona il cambio della descrizione visibile/non visibile
-        if (isHidden) {
-          cards.classList.remove('grid-cols-3');
-          cards.classList.add('grid-cols-4');
-          cards.dataset.showInline = 'true';
-          icon.textContent = '>';
-        } else {
-          cards.classList.remove('grid-cols-4');
-          cards.classList.add('grid-cols-3');
-          cards.dataset.showInline = 'false';
-          icon.textContent = '<';
-        }
-      "
-      class="fixed top-4 left-4 z-50 w-8 h-8 bg-gray-700 text-white rounded-full hover:bg-gray-800 flex items-center justify-center"
-      aria-label="Toggle first column">
-      <span id="toggle-icon">&lt;</span>
-    </button>
 
     <!-- Grid with 2 columns and 4 rows in the first column -->
     <div id="main-grid" class="grid grid-cols-2 gap-4">
@@ -217,14 +183,15 @@
           </div>
 
           <!-- Second Column -->
-          <div id="recipe-card-grid" class="relative bg-blue-200 p-4 grid grid-cols-3 auto-rows-min gap-2" data-show-inline="false">
+          <div id="recipe-card-grid" class="relative bg-blue-200 p-4 w-full grid gap-2" data-show-inline="false">
 
               <!-- Toggle button -->
               <button
                 onclick="
                 const fc = document.getElementById('first-column');
                 const grid = document.getElementById('main-grid');
-                const cards = document.getElementById('recipe-card-grid');
+                const inlineCards = document.getElementById('cards-inline');
+                const compactCards = document.getElementById('cards-compact');
                 const icon = document.getElementById('toggle-icon');
 
                 const isHidden = fc.classList.toggle('hidden');
@@ -232,15 +199,13 @@
                 grid.classList.toggle('grid-cols-1');
 
                 if (isHidden) {
-                  cards.classList.remove('grid-cols-3');
-                  cards.classList.add('grid-cols-4');
-                  cards.dataset.showInline = 'true';
-                  icon.textContent = '>';
+                    inlineCards.classList.remove('hidden');
+                    compactCards.classList.add('hidden');
+                    icon.textContent = '>';
                 } else {
-                  cards.classList.remove('grid-cols-4');
-                  cards.classList.add('grid-cols-3');
-                  cards.dataset.showInline = 'false';
-                  icon.textContent = '<';
+                    inlineCards.classList.add('hidden');
+                    compactCards.classList.remove('hidden');
+                    icon.textContent = '<';
                 }
                 "
                 class="fixed w-8 h-12 bg-gray-700 text-white rounded-l-full shadow hover:bg-gray-800 z-50"
@@ -250,16 +215,25 @@
                 <span id="toggle-icon" class="text-lg font-bold">&lt;</span>
               </button>
 
+              <!-- Cards without description -->
+              <div id="cards-compact" class="grid grid-cols-3 auto-rows-min gap-2">
+                {% include "components/recipe_card.html" with show_description_inline=False %}
+                {% include "components/recipe_card.html" with show_description_inline=False %}
+                {% include "components/recipe_card.html" with show_description_inline=False %}
+                {% include "components/recipe_card.html" with show_description_inline=False %}
+                {% include "components/recipe_card.html" with show_description_inline=False %}
+                {% include "components/recipe_card.html" with show_description_inline=False %}
+              </div>
 
-                {% include "components/recipe_card.html" with show_description_inline=False %}
-                {% include "components/recipe_card.html" with show_description_inline=False %}
-                {% include "components/recipe_card.html" with show_description_inline=False %}
-                {% include "components/recipe_card.html" with show_description_inline=False %}
-                {% include "components/recipe_card.html" with show_description_inline=False %}
-                {% include "components/recipe_card.html" with show_description_inline=False %}
-                {% include "components/recipe_card.html" with show_description_inline=False %}
-                {% include "components/recipe_card.html" with show_description_inline=False %}
-                {% include "components/recipe_card.html" with show_description_inline=False %}
+              <!-- Cards with description -->
+              <div id="cards-inline" class="grid grid-cols-4 auto-rows-min gap-2 hidden">
+                {% include "components/recipe_card.html" with show_description_inline=True %}
+                {% include "components/recipe_card.html" with show_description_inline=True %}
+                {% include "components/recipe_card.html" with show_description_inline=True %}
+                {% include "components/recipe_card.html" with show_description_inline=True %}
+                {% include "components/recipe_card.html" with show_description_inline=True %}
+                {% include "components/recipe_card.html" with show_description_inline=True %}
+              </div>
 
         </div>
     </div>
