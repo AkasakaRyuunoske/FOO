@@ -88,6 +88,7 @@ ml_dtypes==0.5.1
 mpmath==1.3.0
 multidict==6.4.3
 multiprocess==0.70.16
+mysqlclient==2.2.7
 namex==0.0.9
 nbclient==0.10.2
 nbconvert==7.16.6
@@ -120,6 +121,7 @@ pycparser==2.22
 Pygments==2.19.1
 pyreadline3==3.5.4
 python-dateutil==2.9.0.post0
+python-dotenv==1.1.1
 python-json-logger==3.3.0
 pytz==2025.1
 pywin32==310
