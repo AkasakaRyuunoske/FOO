@@ -10,6 +10,11 @@
 </head>
 <body class="bg-gray-100 p-8">
 
+  <form method="post" action="{% url 'logout' %}">
+    {% csrf_token %}
+    <button type="submit">Logout</button>
+  </form>
+
   <div class="grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-4 gap-6">
     {% include "components/recipe_card.html" %}
     {% include "components/recipe_card.html" %}
