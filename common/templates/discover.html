@@ -32,7 +32,7 @@
         <h1 class="text-center">Selected Ingredients</h1>
 
             <!-- Tag Container -->
-        <div class="w-full  border border-black rounded px-2 py-2 flex flex-wrap gap-2">
+        <div id="selected-ingredients" class="w-full  border border-black rounded px-2 py-2 flex flex-wrap gap-2">
 
           <!-- One Tag -->
           <div class="flex items-center border border-black rounded-full px-3 py-1 text-sm">
@@ -102,7 +102,7 @@
         <h1 class="text-center">Selected Tags</h1>
 
         <!-- Tag Container -->
-        <div class="w-full  border border-black rounded px-2 py-2 flex flex-wrap gap-2">
+        <div id="selected-tags"  class="w-full  border border-black rounded px-2 py-2 flex flex-wrap gap-2">
           <!-- One Tag -->
           <div class="flex items-center border border-black rounded-full px-3 py-1 text-sm">
             <span class="mr-2">Vegan</span>
@@ -222,7 +222,7 @@
   <div id="recipe-card-grid" class="relative bg-blue-200 p-4 w-full grid gap-2" data-show-inline="false">
 
   <!-- Cards without description -->
-    <div id="cards-compact" class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 auto-rows-min gap-2">
+    <div id="cards-compact" class="grid sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 auto-rows-min gap-2">
       {% include "components/recipe_card.html" with show_description_inline=False %}
       {% include "components/recipe_card.html" with show_description_inline=False %}
       {% include "components/recipe_card.html" with show_description_inline=False %}
@@ -243,5 +243,46 @@
 
   </div>
 </div>
+
+<script>
+  function bindClickableTags() {
+    const selectedContainer = document.getElementById("selected-tags");
+    if (!selectedContainer) return;
+
+    document.querySelectorAll(".clickable-tag").forEach(tagEl => {
+      tagEl.onclick = () => {
+        const tagName = tagEl.dataset.tag;
+
+        // Verify if tag is already selected
+        const exists = [...selectedContainer.children].some(tag =>
+          tag.querySelector("span")?.textContent === tagName
+        );
+        if (exists) return;
+
+        // Create selected tag
+        const tag = document.createElement("div");
+        tag.className = "flex items-center border border-black rounded-full px-3 py-1 text-sm";
+
+        tag.innerHTML = `
+          <span class="mr-2">${tagName}</span>
+          <button type="button" class="text-black hover:text-red-500">&times;</button>
+        `;
+
+        // Adding remove behavior
+        tag.querySelector("button").onclick = () => tag.remove();
+
+        selectedContainer.appendChild(tag);
+      };
+    });
+  }
+
+  // Execute at initial loading
+  document.addEventListener("DOMContentLoaded", bindClickableTags);
+
+  // Reconnect click after every update HTMX
+  document.body.addEventListener("htmx:afterSwap", (e) => {
+    bindClickableTags();
+  });
+</script>
 
 {% endblock %}
