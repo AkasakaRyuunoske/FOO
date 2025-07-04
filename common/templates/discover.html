@@ -19,225 +19,229 @@
       </div>
 
       <!-- Spinner element (initially hidden) -->
-        <div id="spinner" class="hidden text-center my-4" aria-hidden="true">
-          <svg class="animate-spin h-6 w-6 text-blue-600 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none"
-            viewBox="0 0 24 24" stroke="currentColor">
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor"
-              d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 11-8 8z"></path>
-          </svg>
-        </div>
+      <div id="spinner" class="hidden text-center my-4" aria-hidden="true">
+        <svg class="animate-spin h-6 w-6 text-blue-600 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none"
+          viewBox="0 0 24 24" stroke="currentColor">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor"
+          d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 11-8 8z"></path>
+        </svg>
+      </div>
 
-        <div class="relative col-span-2">
-          <h1 class="text-center">Selected Ingredients</h1>
+      <div class="relative col-span-2">
+        <h1 class="text-center">Selected Ingredients</h1>
 
             <!-- Tag Container -->
-            <div class="w-full  border border-black rounded px-2 py-2 flex flex-wrap gap-2">
+        <div class="w-full  border border-black rounded px-2 py-2 flex flex-wrap gap-2">
 
-              <!-- One Tag -->
-              <div class="flex items-center border border-black rounded-full px-3 py-1 text-sm">
-                <span class="mr-2">Carots</span>
+          <!-- One Tag -->
+          <div class="flex items-center border border-black rounded-full px-3 py-1 text-sm">
+            <span class="mr-2">Carots</span>
 
-                <!-- Close Button -->
-                <button type="button" class="text-black hover:text-red-500">
-                  &times;
-                </button>
-              </div>
-
-              <div class="flex items-center border border-black rounded-full px-3 py-1 text-sm">
-                <span class="mr-2">Garlic</span>
-
-                <!-- Close Button -->
-                <button type="button" class="text-black hover:text-red-500">
-                  &times;
-                </button>
-              </div>
-
-              <div class="flex items-center border border-black rounded-full px-3 py-1 text-sm">
-                <span class="mr-2">Potatoes</span>
-
-                <!-- Close Button -->
-                <button type="button" class="text-black hover:text-red-500">
-                  &times;
-                </button>
-              </div>
-
-              <div class="flex items-center border border-black rounded-full px-3 py-1 text-sm">
-                <span class="mr-2">Meat</span>
-
-                <!-- Close Button -->
-                <button type="button" class="text-black hover:text-red-500">
-                  &times;
-                </button>
-              </div>
-            </div>
+            <!-- Close Button -->
+            <button type="button" class="text-black hover:text-red-500">
+              &times;
+            </button>
           </div>
 
-          <!-- Content placeholder (updates itself with hx-get) -->
-          <div
-            hx-get="{% url 'get_tags' %}"
-            hx-trigger="load"
-            hx-target="this"
-            hx-swap="innerHTML"
-            hx-indicator="#spinner"
-            class="relative col-span-2"
-          >
-            Loading content...
+          <div class="flex items-center border border-black rounded-full px-3 py-1 text-sm">
+            <span class="mr-2">Garlic</span>
+
+            <!-- Close Button -->
+            <button type="button" class="text-black hover:text-red-500">
+            &times;
+            </button>
+          </div>
+
+          <div class="flex items-center border border-black rounded-full px-3 py-1 text-sm">
+            <span class="mr-2">Potatoes</span>
+
+            <!-- Close Button -->
+            <button type="button" class="text-black hover:text-red-500">
+              &times;
+            </button>
+          </div>
+
+          <div class="flex items-center border border-black rounded-full px-3 py-1 text-sm">
+            <span class="mr-2">Meat</span>
+
+            <!-- Close Button -->
+            <button type="button" class="text-black hover:text-red-500">
+              &times;
+            </button>
           </div>
         </div>
+      </div>
 
-              <!-- Tags -->
-            <div class="bg-red-300 p-4 grid grid-cols-2 grid-rows-2">
-                <div class="relative">
-                    <span>Tags</span>
-                </div>
-
-                <div class="relative">
-                    <form method="get" class="w-full max-w-md mx-auto">
-                        {% include "components/searchbar.html" with input_name="search_term" placeholder="Search tag..." action="/search/" %}
-                    </form>
-                </div>
-
-                <div class="relative col-span-2">
-                    <h1 class="text-center">Selected Tags</h1>
-
-                    <!-- Tag Container -->
-                    <div class="w-full  border border-black rounded px-2 py-2 flex flex-wrap gap-2">
-
-                        <!-- One Tag -->
-                        <div class="flex items-center border border-black rounded-full px-3 py-1 text-sm">
-                            <span class="mr-2">Vegan</span>
-
-                            <!-- Close Button -->
-                            <button type="button" class="text-black hover:text-red-500">
-                            &times;
-                            </button>
-                        </div>
-
-                        <div class="flex items-center border border-black rounded-full px-3 py-1 text-sm">
-                            <span class="mr-2">Vegetarian</span>
-
-                            <!-- Close Button -->
-                            <button type="button" class="text-black hover:text-red-500">
-                            &times;
-                            </button>
-                        </div>
-
-                        <div class="flex items-center border border-black rounded-full px-3 py-1 text-sm">
-                            <span class="mr-2">Vegetarian</span>
-
-                            <!-- Close Button -->
-                            <button type="button" class="text-black hover:text-red-500">
-                            &times;
-                            </button>
-                        </div>
-
-                        <div class="flex items-center border border-black rounded-full px-3 py-1 text-sm">
-                            <span class="mr-2">Vegetarian</span>
-
-                            <!-- Close Button -->
-                            <button type="button" class="text-black hover:text-red-500">
-                            &times;
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Content placeholder (updates itself with hx-get) -->
-                <div
-                  hx-get="{% url 'get_tags' %}"
-                  hx-trigger="load"
-                  hx-target="this"
-                  hx-swap="innerHTML"
-                  hx-indicator="#spinner"
-                  class="relative col-span-2"
-                >
-                  Loading content...
-                </div>
-            </div>
-
-              <!-- Bookmarks -->
-            <div class="bg-red-400 p-4 grid grid-cols-2">
-                <div class="relative">
-                    <span>Bookmarked Recipes</span>
-                </div>
-
-                <div class="relative">
-                    {% include "components/searchbar.html" with input_name="search_term" placeholder="Search recipes..." action="/search/" %}
-                </div>
-            </div>
-
-              <!-- Gamble -->
-            <div class="bg-red-500 p-4">
-                <div class="relative">
-                    <span>Free Selection</span>
-                </div>
-
-                <div>
-                    <button class="flex items-center gap-2 border border-black px-4 py-2 rounded hover:bg-gray-100">
-                        <img width="64" height="64" src="https://img.icons8.com/sf-black-filled/64/dice.png" alt="dice"/>
-                        <span>Gamble</span>
-                    </button>
-                </div>
-            </div>
-          </div>
-
-
-        <div class="flex flex-col items-center pt-4">
-              <!-- Toggle button -->
-              <button
-                onclick="
-                const fc = document.getElementById('first-column');
-                const grid = document.getElementById('main-grid');
-                const inlineCards = document.getElementById('cards-inline');
-                const compactCards = document.getElementById('cards-compact');
-                const icon = document.getElementById('toggle-icon');
-
-                const isHidden = fc.classList.toggle('hidden');
-                grid.classList.toggle('grid-cols-2');
-                grid.classList.toggle('grid-cols-1');
-
-                if (isHidden) {
-                    inlineCards.classList.remove('hidden');
-                    compactCards.classList.add('hidden');
-                    icon.textContent = '>';
-                } else {
-                    inlineCards.classList.add('hidden');
-                    compactCards.classList.remove('hidden');
-                    icon.textContent = '<';
-                }
-                "
-                class="fixed w-6 h-6 rounded-sm text-black hover:bg-gray-200 bg-transparent border-none shadow-none"
-                aria-label="Toggle first column"
-                >
-                <span id="toggle-icon">&lt;</span>
-              </button>
-            </div>
-
-        <!-- Second Column -->
-          <div id="recipe-card-grid" class="relative bg-blue-200 p-4 w-full grid gap-2" data-show-inline="false">
-
-              <!-- Cards without description -->
-              <div id="cards-compact" class="grid grid-cols-3 auto-rows-min gap-2">
-                {% include "components/recipe_card.html" with show_description_inline=False %}
-                {% include "components/recipe_card.html" with show_description_inline=False %}
-                {% include "components/recipe_card.html" with show_description_inline=False %}
-                {% include "components/recipe_card.html" with show_description_inline=False %}
-                {% include "components/recipe_card.html" with show_description_inline=False %}
-                {% include "components/recipe_card.html" with show_description_inline=False %}
-              </div>
-
-              <!-- Cards with description -->
-              <div id="cards-inline" class="grid grid-cols-4 auto-rows-min gap-2 hidden">
-                {% include "components/recipe_card.html" with show_description_inline=True %}
-                {% include "components/recipe_card.html" with show_description_inline=True %}
-                {% include "components/recipe_card.html" with show_description_inline=True %}
-                {% include "components/recipe_card.html" with show_description_inline=True %}
-                {% include "components/recipe_card.html" with show_description_inline=True %}
-                {% include "components/recipe_card.html" with show_description_inline=True %}
-              </div>
-
-        </div>
+      <!-- Content placeholder (updates itself with hx-get) -->
+      <div
+        hx-get="{% url 'get_tags' %}"
+        hx-trigger="load"
+        hx-target="this"
+        hx-swap="innerHTML"
+        hx-indicator="#spinner"
+        class="relative col-span-2"
+      >
+        Loading content...
+      </div>
     </div>
+
+    <!-- Tags -->
+    <div class="bg-red-300 p-4 grid grid-cols-2 grid-rows-2">
+      <div class="relative">
+        <span>Tags</span>
+      </div>
+
+      <div class="relative">
+        <form method="get" class="w-full max-w-md mx-auto">
+          {% include "components/searchbar.html" with input_name="search_term" placeholder="Search tag..." action="/search/" %}
+        </form>
+      </div>
+
+      <div class="relative col-span-2">
+        <h1 class="text-center">Selected Tags</h1>
+
+        <!-- Tag Container -->
+        <div class="w-full  border border-black rounded px-2 py-2 flex flex-wrap gap-2">
+          <!-- One Tag -->
+          <div class="flex items-center border border-black rounded-full px-3 py-1 text-sm">
+            <span class="mr-2">Vegan</span>
+
+            <!-- Close Button -->
+            <button type="button" class="text-black hover:text-red-500">
+              &times;
+            </button>
+          </div>
+
+          <div class="flex items-center border border-black rounded-full px-3 py-1 text-sm">
+            <span class="mr-2">Vegetarian</span>
+
+            <!-- Close Button -->
+            <button type="button" class="text-black hover:text-red-500">
+              &times;
+            </button>
+          </div>
+
+          <div class="flex items-center border border-black rounded-full px-3 py-1 text-sm">
+            <span class="mr-2">Vegetarian</span>
+
+            <!-- Close Button -->
+            <button type="button" class="text-black hover:text-red-500">
+              &times;
+            </button>
+          </div>
+
+          <div class="flex items-center border border-black rounded-full px-3 py-1 text-sm">
+            <span class="mr-2">Vegetarian</span>
+
+            <!-- Close Button -->
+            <button type="button" class="text-black hover:text-red-500">
+              &times;
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Content placeholder (updates itself with hx-get) -->
+      <div
+        hx-get="{% url 'get_tags' %}"
+        hx-trigger="load"
+        hx-target="this"
+        hx-swap="innerHTML"
+        hx-indicator="#spinner"
+        class="relative col-span-2"
+      >
+        Loading content...
+      </div>
+    </div>
+
+    <!-- Bookmarks -->
+    <div class="bg-red-400 p-4 grid grid-cols-2">
+      <div class="relative">
+        <span>Bookmarked Recipes</span>
+      </div>
+
+      <div class="relative">
+        {% include "components/searchbar.html" with input_name="search_term" placeholder="Search recipes..." action="/search/" %}
+      </div>
+    </div>
+
+    <!-- Gamble -->
+    <div class="bg-red-500 p-4">
+      <div class="relative">
+        <span>Free Selection</span>
+      </div>
+
+      <div>
+        <button class="flex items-center gap-2 border border-black px-4 py-2 rounded hover:bg-gray-100">
+          <img width="64" height="64" src="https://img.icons8.com/sf-black-filled/64/dice.png" alt="dice"/>
+          <span>Gamble</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <div id="toggle-button-container" class="flex flex-col items-center pt-4">
+    <!-- Toggle button -->
+    <button
+      onclick="
+        const fc = document.getElementById('first-column');
+        const grid = document.getElementById('main-grid');
+        const inlineCards = document.getElementById('cards-inline');
+        const compactCards = document.getElementById('cards-compact');
+        const icon = document.getElementById('toggle-icon');
+        const container = document.getElementById('toggle-button-container');
+
+        const isHidden = fc.classList.toggle('hidden');
+
+        if (isHidden) {
+          inlineCards.classList.remove('hidden');
+          compactCards.classList.add('hidden');
+          icon.textContent = '>>';
+          container.classList.remove('items-center');
+          container.classList.add('items-start');
+          container.classList.add('pr-3');
+        } else {
+          inlineCards.classList.add('hidden');
+          compactCards.classList.remove('hidden');
+          icon.textContent = '<<';
+          container.classList.remove('items-start');
+          container.classList.add('items-center');
+          container.classList.remove('pr-3');
+        }
+      "
+      class="fixed w-6 h-6 rounded-sm text-black hover:bg-gray-200 bg-transparent border-none shadow-none"
+      aria-label="Toggle first column"
+    >
+      <span id="toggle-icon">&lt;<</span>
+    </button>
+  </div>
+
+  <!-- Second Column -->
+  <div id="recipe-card-grid" class="relative bg-blue-200 p-4 w-full grid gap-2" data-show-inline="false">
+
+  <!-- Cards without description -->
+    <div id="cards-compact" class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 auto-rows-min gap-2">
+      {% include "components/recipe_card.html" with show_description_inline=False %}
+      {% include "components/recipe_card.html" with show_description_inline=False %}
+      {% include "components/recipe_card.html" with show_description_inline=False %}
+      {% include "components/recipe_card.html" with show_description_inline=False %}
+      {% include "components/recipe_card.html" with show_description_inline=False %}
+      {% include "components/recipe_card.html" with show_description_inline=False %}
+    </div>
+
+    <!-- Cards with description -->
+    <div id="cards-inline" class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 auto-rows-min gap-2 hidden">
+      {% include "components/recipe_card.html" with show_description_inline=True %}
+      {% include "components/recipe_card.html" with show_description_inline=True %}
+      {% include "components/recipe_card.html" with show_description_inline=True %}
+      {% include "components/recipe_card.html" with show_description_inline=True %}
+      {% include "components/recipe_card.html" with show_description_inline=True %}
+      {% include "components/recipe_card.html" with show_description_inline=True %}
+    </div>
+
+  </div>
+</div>
 
 {% endblock %}
