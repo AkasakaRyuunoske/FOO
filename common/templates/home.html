@@ -15,6 +15,16 @@
     <button type="submit">Logout</button>
   </form>
 
+  <!-- Featured Recipes -->
+  <h1 class="text-xl md:text-2xl font-bold mb-2" style="font-family:'Inclusive Sans',sans-serif;">Featured Recipes</h1>
+  <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 w-full mb-6">
+    {% include "components/featured_recipe_card.html" %}
+    {% include "components/featured_recipe_card.html" %}
+  </div>
+
+
+  <!-- Recipes -->
+  <h1 class="text-xl md:text-2xl font-bold mb-2" style="font-family:'Inclusive Sans',sans-serif;">Recipes</h1>
   <div class="grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-4 gap-6">
     {% include "components/recipe_card.html" with show_description_inline=True %}
     {% include "components/recipe_card.html" with show_description_inline=True %}
