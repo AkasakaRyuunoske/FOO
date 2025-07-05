@@ -44,6 +44,7 @@ IngredientManager/models/*
 *.csv
 *.index
 *.sqlite3
+*.json
 *.bin
 *.jinja
 *.safetensors
