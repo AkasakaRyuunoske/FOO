@@ -4,7 +4,7 @@
 
 <!-- Grid with 2 columns and 4 rows in the first column -->
 <div id="main-grid" class="grid grid-cols-[3fr_auto_3fr] gap-1" style="font-family:'Inclusive Sans',sans-serif;">
-  <div id="first-column" class="border-2 border-black rounded grid grid-rows-4 gap-2">
+  <div id="first-column" class="border-2 border-black rounded-md grid grid-rows-4 gap-2">
 
     <!-- ingredients -->
     <div class="p-4 grid grid-cols-2 grid-rows-2">
@@ -180,7 +180,7 @@
   </div>
 
 
-  <div id="toggle-button-container" class="sticky rounded top-0 h-screen flex flex-col items-center justify-center bg-gray-200">
+  <div id="toggle-button-container" class="sticky rounded top-0 h-screen flex flex-col items-center justify-center bg-gray-100">
     <!-- Toggle button -->
     <button
       onclick="
@@ -203,7 +203,7 @@
           icon.textContent = '<<';
         }
       "
-      class="w-6 h-full rounded-sm text-black hover:bg-gray-300 bg-transparent border-none shadow-none"
+      class="w-6 h-full rounded-sm text-black hover:bg-gray-200 bg-transparent border-none shadow-none"
       aria-label="Toggle first column"
     >
       <span id="toggle-icon">&lt;&lt;</span>
@@ -211,7 +211,7 @@
   </div>
 
   <!-- Second Column -->
-  <div id="recipe-card-grid" class="relative bg-blue-200 p-4 w-full grid gap-2" data-show-inline="false">
+  <div id="recipe-card-grid" class="relative p-4 w-full grid gap-2" data-show-inline="false">
 
   <!-- Cards without description -->
     <div id="cards-compact" class="grid sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 auto-rows-min gap-2">
