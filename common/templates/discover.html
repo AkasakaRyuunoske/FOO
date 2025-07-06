@@ -3,7 +3,7 @@
 {% block content %}
 
 <!-- Grid with 2 columns and 4 rows in the first column -->
-<div id="main-grid" class="grid grid-cols-[3fr_auto_3fr] gap-4">
+<div id="main-grid" class="grid grid-cols-[3fr_auto_3fr] gap-2">
   <div id="first-column" class="grid grid-rows-4 gap-2">
 
     <!-- ingredients -->
@@ -180,7 +180,7 @@
   </div>
 
 
-  <div id="toggle-button-container" class="flex flex-col items-center pt-4">
+  <div id="toggle-button-container" class="sticky top-0 h-screen flex flex-col items-center justify-center bg-blue-100 hover:bg-blue-200 cursor-pointer transition-colors duration-200">
     <!-- Toggle button -->
     <button
       onclick="
@@ -197,22 +197,16 @@
           inlineCards.classList.remove('hidden');
           compactCards.classList.add('hidden');
           icon.textContent = '>>';
-          container.classList.remove('items-center');
-          container.classList.add('items-start');
-          container.classList.add('pr-3');
         } else {
           inlineCards.classList.add('hidden');
           compactCards.classList.remove('hidden');
           icon.textContent = '<<';
-          container.classList.remove('items-start');
-          container.classList.add('items-center');
-          container.classList.remove('pr-3');
         }
       "
-      class="fixed w-6 h-6 rounded-sm text-black hover:bg-gray-200 bg-transparent border-none shadow-none"
+      class="w-6 h-full rounded-sm text-black hover:bg-gray-200 bg-transparent border-none shadow-none"
       aria-label="Toggle first column"
     >
-      <span id="toggle-icon">&lt;<</span>
+      <span id="toggle-icon">&lt;&lt;</span>
     </button>
   </div>
 
