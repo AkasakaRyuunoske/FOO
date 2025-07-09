@@ -6,3 +6,6 @@ def home(request):
 
 def discover(request):
     return render(request, "discover.html", None)
+
+def recipe_details(request):
+    return render(request, "recipe_details.html", None)
