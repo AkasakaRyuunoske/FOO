@@ -16,6 +16,11 @@ def get_tags(request):
 
     return render(request, "components/tags_list.html", {"tags": result})
 
+def get_recipes_by_tags(request):
+    tag_string = request.GET.get("tags", "")
+
+    return HttpResponse(tag_string, 200)
+
 def get_ingredients(request):
     sleep(3)
 
