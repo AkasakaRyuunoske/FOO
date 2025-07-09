@@ -1,0 +1,12 @@
+<div class="pl-6 grid grid-cols-3 grid-rows-4" id="available_tags">
+  {% for item in tags %}
+    <div
+      class="clickable-tag text-gray-800 relative cursor-pointer hover:bg-gray-200 rounded px-2 py-1"
+      data-tag="{{ item }}"
+    >
+      {{ item }}
+    </div>
+  {% empty %}
+    <div class="text-gray-500 relative">No items found.</div>
+  {% endfor %}
+</div>
