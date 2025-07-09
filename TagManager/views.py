@@ -6,8 +6,6 @@ from django.shortcuts import render
 
 
 def get_tags(request):
-    sleep(3)
-
     result = ["Fast", "Slow", "Average", "Overnight",
               "Cheap", "Average", "Expensive", "Rich",
               "Vegan", "Vegetarian",
@@ -27,8 +25,6 @@ def get_recipes_by_tags(request):
     return render(request, "components/recipe_cards.html", {"tags": tags})
 
 def get_ingredients(request):
-    sleep(3)
-
     result = ["Fast", "Slow", "Average", "Overnight",
               "Cheap", "Average", "Expensive", "Rich",
               "Vegan", "Vegetarian",
