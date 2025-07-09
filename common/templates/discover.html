@@ -3,13 +3,13 @@
 {% block content %}
 
 <!-- Grid with 2 columns and 4 rows in the first column -->
-<div id="main-grid" class="grid grid-cols-[3fr_auto_3fr] gap-4">
-  <div id="first-column" class="grid grid-rows-4 gap-2">
+<div id="main-grid" class="grid grid-cols-[3fr_auto_3fr] gap-1" style="font-family:'Inclusive Sans',sans-serif;">
+  <div id="first-column" class="border-2 border-black rounded-md grid grid-rows-4 gap-2">
 
     <!-- ingredients -->
-    <div class="bg-red-200 p-4 grid grid-cols-2 grid-rows-2">
+    <div class="p-4 grid grid-cols-2 grid-rows-2">
       <div class="relative">
-        <span>Ingredients</span>
+        <span class="text-xl md:text-2xl font-bold mb-2">Ingredients</span>
       </div>
 
       <div class="relative">
@@ -32,48 +32,12 @@
             <!-- Tag Container -->
         <div id="selected-ingredients" class="w-full  border border-black rounded px-2 py-2 flex flex-wrap gap-2">
 
-          <!-- One Tag -->
-          <div class="flex items-center border border-black rounded-full px-3 py-1 text-sm">
-            <span class="mr-2">Carots</span>
-
-            <!-- Close Button -->
-            <button type="button" class="text-black hover:text-red-500">
-              &times;
-            </button>
-          </div>
-
-          <div class="flex items-center border border-black rounded-full px-3 py-1 text-sm">
-            <span class="mr-2">Garlic</span>
-
-            <!-- Close Button -->
-            <button type="button" class="text-black hover:text-red-500">
-            &times;
-            </button>
-          </div>
-
-          <div class="flex items-center border border-black rounded-full px-3 py-1 text-sm">
-            <span class="mr-2">Potatoes</span>
-
-            <!-- Close Button -->
-            <button type="button" class="text-black hover:text-red-500">
-              &times;
-            </button>
-          </div>
-
-          <div class="flex items-center border border-black rounded-full px-3 py-1 text-sm">
-            <span class="mr-2">Meat</span>
-
-            <!-- Close Button -->
-            <button type="button" class="text-black hover:text-red-500">
-              &times;
-            </button>
-          </div>
         </div>
       </div>
 
       <!-- Content placeholder (updates itself with hx-get) -->
       <div
-        hx-get="{% url 'get_tags' %}"
+        hx-get="{% url 'get_ingredients' %}"
         hx-trigger="load"
         hx-target="this"
         hx-swap="innerHTML"
@@ -85,9 +49,9 @@
     </div>
 
     <!-- Tags -->
-    <div class="bg-red-300 p-4 grid grid-cols-2 grid-rows-2">
+    <div class="p-4 grid grid-cols-2 grid-rows-2">
       <div class="relative">
-        <span>Tags</span>
+        <span class="text-xl md:text-2xl font-bold mb-2">Tags</span>
       </div>
 
       <div class="relative">
@@ -102,41 +66,9 @@
         <!-- Tag Container -->
         <div id="selected-tags"  class="w-full  border border-black rounded px-2 py-2 flex flex-wrap gap-2">
           <!-- One Tag -->
-          <div class="flex items-center border border-black rounded-full px-3 py-1 text-sm">
-            <span class="mr-2">Vegan</span>
 
-            <!-- Close Button -->
-            <button type="button" class="text-black hover:text-red-500">
-              &times;
-            </button>
-          </div>
 
-          <div class="flex items-center border border-black rounded-full px-3 py-1 text-sm">
-            <span class="mr-2">Vegetarian</span>
 
-            <!-- Close Button -->
-            <button type="button" class="text-black hover:text-red-500">
-              &times;
-            </button>
-          </div>
-
-          <div class="flex items-center border border-black rounded-full px-3 py-1 text-sm">
-            <span class="mr-2">Vegetarian</span>
-
-            <!-- Close Button -->
-            <button type="button" class="text-black hover:text-red-500">
-              &times;
-            </button>
-          </div>
-
-          <div class="flex items-center border border-black rounded-full px-3 py-1 text-sm">
-            <span class="mr-2">Vegetarian</span>
-
-            <!-- Close Button -->
-            <button type="button" class="text-black hover:text-red-500">
-              &times;
-            </button>
-          </div>
         </div>
       </div>
 
@@ -154,9 +86,9 @@
     </div>
 
     <!-- Bookmarks -->
-    <div class="bg-red-400 p-4 grid grid-cols-2">
+    <div class="p-4 grid grid-cols-2">
       <div class="relative">
-        <span>Bookmarked Recipes</span>
+        <span class="text-xl md:text-2xl font-bold mb-2">Bookmarked Recipes</span>
       </div>
 
       <div class="relative">
@@ -165,9 +97,9 @@
     </div>
 
     <!-- Gamble -->
-    <div class="bg-red-500 p-4">
+    <div class="p-4">
       <div class="relative">
-        <span>Free Selection</span>
+        <span class="text-xl md:text-2xl font-bold mb-2">Free Selection</span>
       </div>
 
       <div>
@@ -180,7 +112,7 @@
   </div>
 
 
-  <div id="toggle-button-container" class="flex flex-col items-center pt-4">
+  <div id="toggle-button-container" class="sticky rounded top-0 h-screen flex flex-col items-center justify-center bg-gray-100">
     <!-- Toggle button -->
     <button
       onclick="
@@ -197,27 +129,21 @@
           inlineCards.classList.remove('hidden');
           compactCards.classList.add('hidden');
           icon.textContent = '>>';
-          container.classList.remove('items-center');
-          container.classList.add('items-start');
-          container.classList.add('pr-3');
         } else {
           inlineCards.classList.add('hidden');
           compactCards.classList.remove('hidden');
           icon.textContent = '<<';
-          container.classList.remove('items-start');
-          container.classList.add('items-center');
-          container.classList.remove('pr-3');
         }
       "
-      class="fixed w-6 h-6 rounded-sm text-black hover:bg-gray-200 bg-transparent border-none shadow-none"
+      class="w-6 h-full rounded-sm text-black hover:bg-gray-200 bg-transparent border-none shadow-none"
       aria-label="Toggle first column"
     >
-      <span id="toggle-icon">&lt;<</span>
+      <span id="toggle-icon">&lt;&lt;</span>
     </button>
   </div>
 
   <!-- Second Column -->
-  <div id="recipe-card-grid" class="relative bg-blue-200 p-4 w-full grid gap-2" data-show-inline="false">
+  <div id="recipe-card-grid" class="relative p-4 w-full grid gap-2" data-show-inline="false">
 
   <!-- Cards without description -->
     <div id="cards-compact" class="grid sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 auto-rows-min gap-2">
@@ -274,12 +200,45 @@
     });
   }
 
+  function bindClickableIngredients() {
+  const selectedContainer = document.getElementById("selected-ingredients");
+  if (!selectedContainer) return;
+
+  document.querySelectorAll(".clickable-ingredient").forEach(ingredientEl => {
+    ingredientEl.onclick = () => {
+      const ingredientName = ingredientEl.dataset.ingredient;
+
+      const exists = [...selectedContainer.children].some(ing =>
+        ing.querySelector("span")?.textContent === ingredientName
+      );
+      if (exists) return;
+
+      const ing = document.createElement("div");
+      ing.className = "flex items-center border border-black rounded-full px-3 py-1 text-sm";
+
+      ing.innerHTML = `
+        <span class="mr-2">${ingredientName}</span>
+        <button type="button" class="text-black hover:text-red-500">&times;</button>
+      `;
+
+      ing.querySelector("button").onclick = () => ing.remove();
+
+      selectedContainer.appendChild(ing);
+    };
+  });
+}
+
+
   // Execute at initial loading
-  document.addEventListener("DOMContentLoaded", bindClickableTags);
+  document.addEventListener("DOMContentLoaded", () => {
+  bindClickableTags();
+  bindClickableIngredients();
+});
 
   // Reconnect click after every update HTMX
   document.body.addEventListener("htmx:afterSwap", (e) => {
     bindClickableTags();
+    bindClickableIngredients();
   });
 </script>
 

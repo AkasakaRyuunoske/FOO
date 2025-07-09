@@ -57,6 +57,7 @@ __pycache__/
 *.pyc
 *.h5
 *.pkl
+*.cpython-311.pyc
 
 ### VS Code ###
 .vscode/
