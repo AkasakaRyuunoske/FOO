@@ -37,7 +37,7 @@
 
       <!-- Content placeholder (updates itself with hx-get) -->
       <div
-        hx-get="{% url 'get_tags' %}"
+        hx-get="{% url 'get_ingredients' %}"
         hx-trigger="load"
         hx-target="this"
         hx-swap="innerHTML"
@@ -200,12 +200,45 @@
     });
   }
 
+  function bindClickableIngredients() {
+  const selectedContainer = document.getElementById("selected-ingredients");
+  if (!selectedContainer) return;
+
+  document.querySelectorAll(".clickable-ingredient").forEach(ingredientEl => {
+    ingredientEl.onclick = () => {
+      const ingredientName = ingredientEl.dataset.ingredient;
+
+      const exists = [...selectedContainer.children].some(ing =>
+        ing.querySelector("span")?.textContent === ingredientName
+      );
+      if (exists) return;
+
+      const ing = document.createElement("div");
+      ing.className = "flex items-center border border-black rounded-full px-3 py-1 text-sm";
+
+      ing.innerHTML = `
+        <span class="mr-2">${ingredientName}</span>
+        <button type="button" class="text-black hover:text-red-500">&times;</button>
+      `;
+
+      ing.querySelector("button").onclick = () => ing.remove();
+
+      selectedContainer.appendChild(ing);
+    };
+  });
+}
+
+
   // Execute at initial loading
-  document.addEventListener("DOMContentLoaded", bindClickableTags);
+  document.addEventListener("DOMContentLoaded", () => {
+  bindClickableTags();
+  bindClickableIngredients();
+});
 
   // Reconnect click after every update HTMX
   document.body.addEventListener("htmx:afterSwap", (e) => {
     bindClickableTags();
+    bindClickableIngredients();
   });
 </script>
 
