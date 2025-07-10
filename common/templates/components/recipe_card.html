@@ -206,9 +206,9 @@
 
     <!-- Tabs -->
     <div id="tab-buttons" class="flex gap-6 border-b mb-4 text-sm font-medium">
-      <button class="pb-1 border-b-2 border-black text-black" onclick="showTab('description', this)">Description</button>
-      <button class="pb-1 text-gray-500" onclick="showTab('ingredients', this)">Ingredients</button>
-      <button class="pb-1 text-gray-500" onclick="showTab('instructions', this)">Instructions</button>
+      <button class="pb-1 text-gray-500 border-b-2 border-transparent" onclick="showTab('description', this)">Description</button>
+      <button class="pb-1 text-gray-500 border-b-2 border-transparent" onclick="showTab('ingredients', this)">Ingredients</button>
+      <button class="pb-1 text-gray-500 border-b-2 border-transparent" onclick="showTab('instructions', this)">Instructions</button>
     </div>
 
   </div>
@@ -338,28 +338,31 @@
 
 <script>
   function showTab(tabName, btnElement) {
-    // Nascondi tutti i contenuti
+    // Hide all sections
     document.querySelectorAll('.tab-content').forEach(tab => {
       tab.classList.add('hidden');
     });
 
-    // Mostra quello attivo
+    // Show selected section
     document.getElementById(`tab-${tabName}`).classList.remove('hidden');
 
-    // Resetta stile bottoni
+    // Reset button style
     const buttons = document.querySelectorAll('#tab-buttons > button');
     buttons.forEach(btn => {
       btn.classList.remove('border-black', 'text-black');
-      btn.classList.add('text-gray-500');
+      btn.classList.add('text-gray-500', 'border-transparent');
     });
 
-    // Attiva il bottone cliccato
-    btnElement.classList.remove('text-gray-500');
+    // Activates clicked button
+    btnElement.classList.remove('text-gray-500', 'border-transparent');
     btnElement.classList.add('border-black', 'text-black');
   }
 
-  // Default tab on load
+  // Activates Description at the start
   document.addEventListener("DOMContentLoaded", () => {
-    showTab('description', document.querySelector('#tab-buttons > button'));
+    const defaultBtn = document.querySelector('#tab-buttons > button');
+    if (defaultBtn) {
+      showTab('description', defaultBtn);
+    }
   });
 </script>
