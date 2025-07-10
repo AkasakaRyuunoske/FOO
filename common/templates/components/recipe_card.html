@@ -117,7 +117,7 @@
 <!-- MODAL BACKDROP -->
 <div id="recipe-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
   <!-- MODAL CONTENT -->
-  <div class="bg-white max-w-2xl w-full overflow-y-auto rounded-lg shadow-xl p-6" style="font-family: 'Inclusive Sans', sans-serif;">
+  <div class="border-2 border-black bg-white max-w-2xl w-full overflow-y-auto rounded-lg shadow-xl p-6" style="font-family: 'Inclusive Sans', sans-serif;">
 
     <!-- HEADER: Title and Close Button -->
     <div class="flex justify-between items-center mb-4">
@@ -186,7 +186,8 @@
     </div>
 
     <!-- Ingredients -->
-    <div id="tab-ingredients" class="tab-content hidden text-sm leading-relaxed">
+    <div id="tab-ingredients" class="tab-content hidden text-md leading-relaxed pb-4  text-gray-700">
+      <h2 class="text-xl font-semibold pb-2 text-black">Ingredients</h2>
       <p>4 cups Rice</p>
       <p>10 cloves Garlic</p>
       <p>2 piece Onion</p>
@@ -194,14 +195,13 @@
       <p>6 tablespoon Olive Oil</p>
     </div>
 
-    <div id="tab-instructions" class="tab-content hidden text-sm leading-relaxed">
-      <ol class="list-decimal list-inside space-y-2">
-        <li>Wash and slice the vegetables.</li>
-        <li>Preheat the oven to 180°C.</li>
-        <li>Layer the ingredients in a baking dish.</li>
-        <li>Bake for 30 minutes or until golden brown.</li>
-        <li>Let it rest and serve warm.</li>
-      </ol>
+    <div id="tab-instructions" class="tab-content hidden text-md leading-relaxed pb-4 text-gray-700">
+      <h2 class="text-xl font-semibold pb-2 text-black">Instructions</h2>
+      <p>1. Wash and slice the vegetables.</p>
+      <p>2. Preheat the oven to 180°C.</p>
+      <p>3. Layer the ingredients in a baking dish.</p>
+      <p>4. Bake for 30 minutes or until golden brown.</p>
+      <p>5. Let it rest and serve warm.</p>
     </div>
 
     <!-- Tabs -->
