@@ -1,7 +1,7 @@
 {% load static %}
 {% comment %} components/recipe_card.html {% endcomment %}
 
-<div class="bg-white p-1.5 rounded-md transition duration-200 hover:shadow-xl hover:scale-105 max-w-[380px] mx-auto w-full {% if show_description_inline %}p-2{% else %}aspect-square{% endif %}"> <!-- External Padding -->
+<div class="bg-white p-1.5 rounded-md transition duration-200 shadow-xl hover:shadow-2xl hover:scale-105 max-w-[380px] mx-auto w-full {% if show_description_inline %}p-2{% else %}aspect-square{% endif %}"> <!-- External Padding -->
   <div class="border-2 border-black {% if show_description_inline %}p-3{% else %}p-2{% endif %} bg-white w-full flex flex-col justify-between group relative rounded min-w-0 min-h-0 {% if not show_description_inline %}overflow-y-auto{% endif %}" style="font-family:'Inclusive Sans',sans-serif;"> <!-- Black line inside square -->
 
     <!-- Bookmark on the right with a transition on hover -->
