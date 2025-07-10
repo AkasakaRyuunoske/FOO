@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_extensions',
     'UserManager',
     'RecipeManager',
     'TagManager',
@@ -45,6 +46,7 @@ INSTALLED_APPS = [
     'common',
     "crispy_forms",
     "crispy_tailwind",
+    'shell_plus',
 ]
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "tailwind"
