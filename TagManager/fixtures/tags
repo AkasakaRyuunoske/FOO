@@ -1,0 +1,74 @@
+[
+{
+  "model": "TagManager.tag",
+  "pk": 1,
+  "fields": {
+    "name": "Preparation-Time",
+    "description": null,
+    "icon": null
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 2,
+  "fields": {
+    "name": "Vegan",
+    "description": null,
+    "icon": null
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 3,
+  "fields": {
+    "name": "Vegetarian",
+    "description": null,
+    "icon": null
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 4,
+  "fields": {
+    "name": "Cooking-Method",
+    "description": null,
+    "icon": null
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 5,
+  "fields": {
+    "name": "Difficulty",
+    "description": null,
+    "icon": null
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 6,
+  "fields": {
+    "name": "Lactose-Free",
+    "description": null,
+    "icon": null
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 7,
+  "fields": {
+    "name": "Gluten-Free",
+    "description": null,
+    "icon": null
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 8,
+  "fields": {
+    "name": "Cost",
+    "description": null,
+    "icon": null
+  }
+}
+]
