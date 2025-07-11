@@ -115,9 +115,10 @@
 
 
 <!-- MODAL BACKDROP -->
-<div id="recipe-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+<div id="recipe-modal" class="fixed inset-0 bg-black bg-opacity-0 flex items-center justify-center z-50 pointer-events-none opacity-0 transition-opacity duration-300"
+  onclick="handleBackdropClick(event)">
   <!-- MODAL CONTENT -->
-  <div class="border-2 border-black bg-white max-w-2xl w-full overflow-y-auto rounded-lg shadow-xl p-6" style="font-family: 'Inclusive Sans', sans-serif;">
+  <div id="recipe-modal-content" class="border-2 border-black bg-white max-w-2xl w-full overflow-y-auto rounded-lg shadow-xl p-6 transform transition-all duration-300 scale-95 opacity-0" style="font-family: 'Inclusive Sans', sans-serif;">
 
     <!-- HEADER: Title and Close Button -->
     <div class="flex justify-between items-center mb-4">
@@ -310,25 +311,46 @@
 </script>
 
 
-
+<!-- Script for the modal -->
 <script>
-  const modal = document.getElementById('recipe-modal');
-
   function openModal() {
-    modal.classList.remove('hidden');
+    const backdrop = document.getElementById('recipe-modal');
+    const content = document.getElementById('recipe-modal-content');
+
+    backdrop.classList.remove('opacity-0', 'bg-opacity-0', 'pointer-events-none');
+    backdrop.classList.add('opacity-100', 'bg-opacity-50');
+
+    setTimeout(() => {
+      content.classList.remove('scale-95', 'opacity-0');
+      content.classList.add('scale-100', 'opacity-100');
+    }, 10);
   }
 
   function closeModal() {
-    modal.classList.add('hidden');
+    const backdrop = document.getElementById('recipe-modal');
+    const content = document.getElementById('recipe-modal-content');
+
+    content.classList.remove('scale-100', 'opacity-100');
+    content.classList.add('scale-95', 'opacity-0');
+
+    backdrop.classList.remove('opacity-100', 'bg-opacity-50');
+    backdrop.classList.add('opacity-0', 'bg-opacity-0', 'pointer-events-none');
+
+    setTimeout(() => {
+    }, 300);
   }
 
   // Closing by clicking out of the content
-  modal.addEventListener('click', function(e) {
-    if (e.target === modal) closeModal();
-  });
+  function handleBackdropClick(event) {
+    const content = document.getElementById('recipe-modal-content');
+    if (!content.contains(event.target)) {
+      closeModal();
+    }
+  }
+
 </script>
 
-
+<!-- Script for the buttons inside the modal -->
 <script>
   function showTab(tabName, btnElement) {
     // Hide all sections
