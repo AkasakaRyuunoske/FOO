@@ -1,7 +1,7 @@
 {% load static %}
 {% comment %} components/recipe_card.html {% endcomment %}
 
-<div class="bg-white p-1.5 rounded-md transition duration-200 shadow-xl hover:shadow-2xl hover:scale-105 max-w-[380px] mx-auto w-full {% if show_description_inline %}p-2{% else %}aspect-square{% endif %}"> <!-- External Padding -->
+<div onclick="openModal()" class="bg-white p-1.5 rounded-md transition duration-200 hover:shadow-xl hover:scale-105 max-w-[380px] mx-auto w-full {% if show_description_inline %}p-2{% else %}aspect-square{% endif %}"> <!-- External Padding -->
   <div class="border-2 border-black {% if show_description_inline %}p-3{% else %}p-2{% endif %} bg-white w-full flex flex-col justify-between group relative rounded min-w-0 min-h-0 {% if not show_description_inline %}overflow-y-auto{% endif %}" style="font-family:'Inclusive Sans',sans-serif;"> <!-- Black line inside square -->
 
     <!-- Bookmark on the right with a transition on hover -->
@@ -114,6 +114,78 @@
 </div>
 
 
+<!-- MODAL BACKDROP -->
+<div id="recipe-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+  <!-- MODAL CONTENT -->
+  <div class="bg-white max-w-2xl w-full max-h-[90vh] overflow-y-auto rounded-lg shadow-xl p-6" style="font-family: 'Inclusive Sans', sans-serif;">
+
+    <!-- HEADER: Title and Close Button -->
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-2xl font-semibold">Melanzane alla Parmigiana</h2>
+      <button onclick="closeModal()" class="text-gray-600 text-sm hover:text-black">✕</button>
+    </div>
+
+    <!-- Image -->
+    <div class="w-full md:w-4/5 border rounded mb-4 overflow-hidden mx-auto">
+      <img src="https://d2sj0xby2hzqoy.cloudfront.net/kenwood_italy/attachments/data/000/008/122/medium/parmigiana-di-melanzane.jpg" alt="Melanzane alla Parmigiana" class="h-auto object-contain border border-gray-300 rounded">
+    </div>
+
+    <!-- Author -->
+    <div class="flex items-center mb-2 gap-2">
+      <img src="{% static 'icons/chef-hat.png' %}" class="w-6 h-6" alt="">
+      <div>
+        <p class="text-sm">Recipe by</p>
+        <p class="font-semibold text-base">Name Person</p>
+      </div>
+    </div>
+
+    <!-- Short Description -->
+    <p class="text-sm text-gray-700 mb-4">
+      A rich and creamy dish with garlic and Parmesan cheese. This comforting dish is perfect for a cozy dinner.
+    </p>
+
+    <!-- Info Row -->
+    <div class="grid grid-cols-3 text-sm text-center mb-4">
+      <div>
+        <p class="font-medium">⏱ Cooking Time</p>
+        <p>30 minutes</p>
+      </div>
+      <div>
+        <p class="font-medium">⚠️ Difficulty</p>
+        <p>Easy</p>
+      </div>
+      <div>
+        <p class="font-medium">👥 Servings</p>
+        <p>4</p>
+      </div>
+    </div>
+
+    <!-- Tags -->
+    <div class="flex flex-wrap gap-2 mb-6">
+      <span class="px-3 py-1 border rounded-full text-sm">Vegan</span>
+      <span class="px-3 py-1 border rounded-full text-sm">Main Course</span>
+      <span class="px-3 py-1 border rounded-full text-sm">Grilled</span>
+    </div>
+
+    <!-- Tabs -->
+    <div class="flex gap-6 border-b mb-4 text-sm font-medium">
+      <button class="pb-1 border-b-2 border-black">Ingredients</button>
+      <button class="pb-1 text-gray-500">Instructions</button>
+    </div>
+
+    <!-- Ingredients -->
+    <div class="text-sm leading-relaxed">
+      <p>4 cups Rice</p>
+      <p>10 cloves Garlic</p>
+      <p>2 piece Onion</p>
+      <p>6 tablespoon Butter</p>
+      <p>6 tablespoon Olive Oil</p>
+    </div>
+  </div>
+</div>
+
+
+
 <!-- Script for the Bookmark button -->
 <script>
   document.addEventListener('DOMContentLoaded', function () {
@@ -124,6 +196,7 @@
       let bookmarked = false;
 
       btn.addEventListener('click', function (e) {
+        event.stopPropagation();
         e.preventDefault();
         bookmarked = !bookmarked;
 
@@ -152,6 +225,7 @@
     });
   });
 </script>
+
 
 <!-- Script for the Ratings -->
 <script>
@@ -192,6 +266,7 @@
 
       starButtons.forEach((btn, i) => {
         btn.addEventListener('click', () => {
+          event.stopPropagation();
           currentRating = i + 1;
           updateStars(currentRating);
           console.log('Valutazione selezionata:', currentRating);
@@ -210,3 +285,23 @@
     });
   });
 </script>
+
+
+
+<script>
+  const modal = document.getElementById('recipe-modal');
+
+  function openModal() {
+    modal.classList.remove('hidden');
+  }
+
+  function closeModal() {
+    modal.classList.add('hidden');
+  }
+
+  // Closing by clicking out of the content
+  modal.addEventListener('click', function(e) {
+    if (e.target === modal) closeModal();
+  });
+</script>
+
