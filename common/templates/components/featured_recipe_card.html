@@ -1,0 +1,46 @@
+{% load static %}
+
+<div class="bg-white p-1.5 rounded-md transition duration-200 hover:shadow-xl hover:scale-105 mx-auto w-full">
+  <div class="bg-white p-4 rounded-md border-2 border-black flex flex-col sm:flex-row items-stretch gap-4 w-full" style="font-family:'Inclusive Sans',sans-serif;">
+
+    <!-- Text on the left -->
+    <div class="flex flex-col justify-between flex-1">
+      <!-- Title -->
+      <h2 class="text-md xl:text-xl font-bold mb-2">Melanzane alla Parmigiana</h2>
+
+      <!-- Tag -->
+      <div class="space-y-2 text-xs">
+        <div class="flex gap-4">
+          <div class="flex items-center gap-1"><img src="{% static 'icons/difficulty.png' %}" class="w-4 h-4"> Easy</div>
+          <div class="flex items-center gap-1"><img src="{% static 'icons/time.png' %}" class="w-4 h-4"> Medium</div>
+          <div class="flex items-center gap-1"><img src="{% static 'icons/cost.png' %}" class="w-4 h-4"> Average</div>
+        </div>
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="font-semibold">Tags:</span>
+          <img src="{% static 'icons/boil.png' %}" class="w-4 h-4">
+          <img src="{% static 'icons/lactose-free.png' %}" class="w-4 h-4">
+          <img src="{% static 'icons/gluten-free.png' %}" class="w-4 h-4">
+          <img src="{% static 'icons/vegetarian.png' %}" class="w-4 h-4">
+        </div>
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="font-semibold">Ingredients:</span>
+          <img src="{% static 'icons/meat.png' %}" class="w-4 h-4">
+          <img src="{% static 'icons/cheese.png' %}" class="w-4 h-4">
+          <img src="{% static 'icons/vegetables.png' %}" class="w-4 h-4">
+        </div>
+      </div>
+
+      <!-- Description -->
+      <p class="mt-4 text-xs max-w-[380px]">
+        Melanzane alla Parmigiana is a classic Italian baked dish made with layers of thinly sliced eggplant, tomato sauce, and cheese...
+      </p>
+    </div>
+
+    <!-- Image on the right -->
+    <div class="w-full sm:w-48 md:w-60 xl:w-75 flex-shrink-0 self-center sm:self-start">
+      <img src="https://d2sj0xby2hzqoy.cloudfront.net/kenwood_italy/attachments/data/000/008/122/medium/parmigiana-di-melanzane.jpg"
+         alt="Melanzane alla Parmigiana"
+         class="w-full h-auto rounded border border-gray-300">
+    </div>
+  </div>
+</div>

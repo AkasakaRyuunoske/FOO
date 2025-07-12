@@ -1,0 +1,27 @@
+<div class="space-y-4">
+  <ul class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
+    {% for recipe in page_obj %}
+      <li>
+        {% include "components/recipe_card.html" with recipe=recipe %}
+      </li>
+    {% empty %}
+      <li>No recipes found.</li>
+    {% endfor %}
+  </ul>
+
+  <div class="pagination flex justify-between items-center mt-4">
+    {% if page_obj.has_previous %}
+      <a class="text-blue-600 hover:underline" href="?page={{ page_obj.previous_page_number }}">« Previous</a>
+    {% else %}
+      <span></span>
+    {% endif %}
+
+    <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+
+    {% if page_obj.has_next %}
+      <a class="text-blue-600 hover:underline" href="?page={{ page_obj.next_page_number }}">Next »</a>
+    {% else %}
+      <span></span>
+    {% endif %}
+  </div>
+</div>

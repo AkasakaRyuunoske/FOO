@@ -11,7 +11,7 @@
 
     <!-- Recipe Name -->
     <div class="flex-1 flex flex-col min-w-0">
-      <h2 class="text-center font-bold mb-2 text-sm sm:text-base break-words">Melanzane alla Parmigiana</h2>
+      <h2 class="text-center font-bold mb-2 text-sm sm:text-base break-words">{{ recipe.name }}</h2>
 
       <!-- Recipe Image -->
       <div class="w-4/5 mx-auto mb-2">
@@ -55,7 +55,7 @@
           <!-- Right Description -->
           <div class="w-1/2 overflow-auto h-full min-w-0">
             <p class="leading-tight text-[8px] md:text-[9px] break-words">
-              Melanzane alla Parmigiana is a classic Italian baked dish made with layers of thinly sliced eggplant, tomato sauce, and cheese—typically mozzarella and Parmesan—baked until bubbly and golden. It’s rich, hearty, and full of traditional Southern Italian flavor.
+              {{ recipe.Instructions|truncatechars:350 }}
             </p>
           </div>
         </div>
@@ -96,9 +96,7 @@
 
           <!-- DESCRIPTION WRAPPER -->
           <div class="max-h-0 overflow-hidden opacity-0 group-hover:max-h-[250px] group-hover:opacity-100 transition-all duration-500 ease-in-out" data-description>
-            <p>
-              Melanzane alla Parmigiana is a classic Italian baked dish made with layers of thinly sliced eggplant, tomato sauce, and cheese—typically mozzarella and Parmesan—baked until bubbly and golden. It’s rich, hearty, and full of traditional Southern Italian flavor.
-            </p>
+            <p>{{ recipe.Instructions|truncatechars:350 }}</p>
           </div>
         </div>
       {% endif %}
