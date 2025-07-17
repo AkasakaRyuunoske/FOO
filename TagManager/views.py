@@ -14,15 +14,13 @@ def get_tags(request):
 
     return render(request, "components/tags_list.html", {"tags": result})
 
+
 def get_recipes_by_tags(request):
     # prendo gli tag selezionati dal utente dalla query string
     tag_string = request.GET.get("tags", "")
 
-    # pulizia degli tag
-    tags = [t.strip() for t in tag_string.split(",") if t.strip()]
+    return HttpResponse(tag_string, 200)
 
-    # ritorno il componente che itera sugli tag e per ogni tag crea una card
-    return render(request, "components/recipe_cards.html", {"tags": tags})
 
 def search_tags(request):
     all_tags = [
@@ -43,6 +41,7 @@ def search_tags(request):
 
     print(f"Filtered ==> {filtered}")
     return render(request, "components/tag_results.html", {"tags": filtered})
+
 
 def get_ingredients(request):
     result = ["Fast", "Slow", "Average", "Overnight",
