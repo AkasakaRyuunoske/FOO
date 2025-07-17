@@ -25,7 +25,6 @@ def get_recipes_by_tags(request):
     # ritorno il componente che itera sugli tag e per ogni tag crea una card
     return render(request, "components/recipe_cards.html", {"tags": tags})
 
-
 def search_tags(request):
     all_tags = [
         "Fast", "Slow", "Average", "Overnight",
@@ -45,7 +44,6 @@ def search_tags(request):
 
     print(f"Filtered ==> {filtered}")
     return render(request, "components/tag_results.html", {"tags": filtered})
-
 
 def get_ingredients(request):
     result = ["Fast", "Slow", "Average", "Overnight",
