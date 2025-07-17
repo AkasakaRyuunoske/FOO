@@ -1,7 +1,7 @@
 {% load static %}
 {% comment %} components/recipe_card.html {% endcomment %}
 
-<div class="bg-white p-1.5 rounded-md transition duration-200 shadow-xl hover:shadow-2xl hover:scale-105 max-w-[380px] mx-auto w-full {% if show_description_inline %}p-2{% else %}aspect-square{% endif %}"> <!-- External Padding -->
+<div onclick="openModal()" class="bg-white p-1.5 rounded-md transition duration-200 hover:shadow-xl hover:scale-105 max-w-[380px] mx-auto w-full {% if show_description_inline %}p-2{% else %}aspect-square{% endif %}"> <!-- External Padding -->
   <div class="border-2 border-black {% if show_description_inline %}p-3{% else %}p-2{% endif %} bg-white w-full flex flex-col justify-between group relative rounded min-w-0 min-h-0 {% if not show_description_inline %}overflow-y-auto{% endif %}" style="font-family:'Inclusive Sans',sans-serif;"> <!-- Black line inside square -->
 
     <!-- Bookmark on the right with a transition on hover -->
@@ -114,6 +114,102 @@
 </div>
 
 
+<!-- MODAL BACKDROP -->
+<div id="recipe-modal" class="fixed inset-0 bg-black bg-opacity-0 flex items-center justify-center z-50 pointer-events-none opacity-0 transition-opacity duration-300"
+  onclick="handleBackdropClick(event)">
+  <!-- MODAL CONTENT -->
+  <div id="recipe-modal-content" class="border-2 border-black bg-white max-w-2xl w-full overflow-y-auto rounded-lg shadow-xl p-6 transform transition-all duration-300 scale-95 opacity-0" style="font-family: 'Inclusive Sans', sans-serif;">
+
+    <!-- HEADER: Title and Close Button -->
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-2xl font-semibold">Melanzane alla Parmigiana</h2>
+      <button onclick="closeModal()" class="text-gray-600 text-sm hover:text-black">✕</button>
+    </div>
+
+    <!-- Image -->
+    <div class="w-full md:w-4/5 border rounded mb-4 overflow-hidden mx-auto">
+      <img src="https://d2sj0xby2hzqoy.cloudfront.net/kenwood_italy/attachments/data/000/008/122/medium/parmigiana-di-melanzane.jpg" alt="Melanzane alla Parmigiana" class="h-auto object-contain border border-gray-300 rounded">
+    </div>
+
+    <div id="tab-description" class="tab-content text-sm leading-relaxed">
+      <!-- Author -->
+      <div class="flex items-center mb-2 gap-2">
+        <img src="{% static 'icons/hat.png' %}" class="w-6 h-6" alt="">
+        <div>
+          <p class="text-sm">Recipe by</p>
+          <p class="font-semibold text-base">Name Person</p>
+        </div>
+      </div>
+
+      <!-- Short Description -->
+      <p class="text-sm text-gray-700 mb-4">
+        A rich and creamy dish with garlic and Parmesan cheese. This comforting dish is perfect for a cozy dinner.
+      </p>
+
+      <!-- Info Row -->
+      <div class="flex text-sm mb-4">
+        <div class="flex-1 flex flex-col items-start gap-1">
+          <div class="flex items-center gap-1">
+            <img src="{% static 'icons/difficulty.png' %}" class="w-6 h-6">
+            <span>Difficulty</span>
+          </div>
+          <p class="text-gray-700 font-medium">Easy</p>
+        </div>
+        <div class="flex-1 flex flex-col items-start gap-1">
+          <div class="flex items-center gap-1">
+            <img src="{% static 'icons/time.png' %}" class="w-6 h-6">
+            <span>Cooking Time</span>
+          </div>
+          <p class="text-gray-700 font-medium">30 minutes</p>
+        </div>
+        <div class="flex-1 flex flex-col items-start gap-1">
+          <div class="flex items-center gap-1">
+            <img src="{% static 'icons/cost.png' %}" class="w-6 h-6">
+            <span>Cost</span>
+          </div>
+          <p class="text-gray-700 font-medium">Low</p>
+        </div>
+      </div>
+
+      <!-- Tags -->
+      <div class="flex flex-wrap gap-2 mb-6">
+        <span class="px-3 py-1 border rounded-full text-sm">Vegan</span>
+        <span class="px-3 py-1 border rounded-full text-sm">Main Course</span>
+        <span class="px-3 py-1 border rounded-full text-sm">Grilled</span>
+      </div>
+    </div>
+
+    <!-- Ingredients -->
+    <div id="tab-ingredients" class="tab-content hidden text-md leading-relaxed pb-4  text-gray-700">
+      <h2 class="text-xl font-semibold pb-2 text-black">Ingredients</h2>
+      <p>4 cups Rice</p>
+      <p>10 cloves Garlic</p>
+      <p>2 piece Onion</p>
+      <p>6 tablespoon Butter</p>
+      <p>6 tablespoon Olive Oil</p>
+    </div>
+
+    <div id="tab-instructions" class="tab-content hidden text-md leading-relaxed pb-4 text-gray-700">
+      <h2 class="text-xl font-semibold pb-2 text-black">Instructions</h2>
+      <p>1. Wash and slice the vegetables.</p>
+      <p>2. Preheat the oven to 180°C.</p>
+      <p>3. Layer the ingredients in a baking dish.</p>
+      <p>4. Bake for 30 minutes or until golden brown.</p>
+      <p>5. Let it rest and serve warm.</p>
+    </div>
+
+    <!-- Tabs -->
+    <div id="tab-buttons" class="flex gap-6 border-b mb-4 text-sm font-medium">
+      <button class="pb-1 text-gray-500 border-b-2 border-transparent" onclick="showTab('description', this)">Description</button>
+      <button class="pb-1 text-gray-500 border-b-2 border-transparent" onclick="showTab('ingredients', this)">Ingredients</button>
+      <button class="pb-1 text-gray-500 border-b-2 border-transparent" onclick="showTab('instructions', this)">Instructions</button>
+    </div>
+
+  </div>
+</div>
+
+
+
 <!-- Script for the Bookmark button -->
 <script>
   document.addEventListener('DOMContentLoaded', function () {
@@ -124,6 +220,7 @@
       let bookmarked = false;
 
       btn.addEventListener('click', function (e) {
+        event.stopPropagation();
         e.preventDefault();
         bookmarked = !bookmarked;
 
@@ -152,6 +249,7 @@
     });
   });
 </script>
+
 
 <!-- Script for the Ratings -->
 <script>
@@ -192,6 +290,7 @@
 
       starButtons.forEach((btn, i) => {
         btn.addEventListener('click', () => {
+          event.stopPropagation();
           currentRating = i + 1;
           updateStars(currentRating);
           console.log('Valutazione selezionata:', currentRating);
@@ -208,5 +307,77 @@
 
       updateStars(currentRating);
     });
+  });
+</script>
+
+
+<!-- Script for the modal -->
+<script>
+  function openModal() {
+    const backdrop = document.getElementById('recipe-modal');
+    const content = document.getElementById('recipe-modal-content');
+
+    backdrop.classList.remove('opacity-0', 'bg-opacity-0', 'pointer-events-none');
+    backdrop.classList.add('opacity-100', 'bg-opacity-50');
+
+    setTimeout(() => {
+      content.classList.remove('scale-95', 'opacity-0');
+      content.classList.add('scale-100', 'opacity-100');
+    }, 10);
+  }
+
+  function closeModal() {
+    const backdrop = document.getElementById('recipe-modal');
+    const content = document.getElementById('recipe-modal-content');
+
+    content.classList.remove('scale-100', 'opacity-100');
+    content.classList.add('scale-95', 'opacity-0');
+
+    backdrop.classList.remove('opacity-100', 'bg-opacity-50');
+    backdrop.classList.add('opacity-0', 'bg-opacity-0', 'pointer-events-none');
+
+    setTimeout(() => {
+    }, 300);
+  }
+
+  // Closing by clicking out of the content
+  function handleBackdropClick(event) {
+    const content = document.getElementById('recipe-modal-content');
+    if (!content.contains(event.target)) {
+      closeModal();
+    }
+  }
+
+</script>
+
+<!-- Script for the buttons inside the modal -->
+<script>
+  function showTab(tabName, btnElement) {
+    // Hide all sections
+    document.querySelectorAll('.tab-content').forEach(tab => {
+      tab.classList.add('hidden');
+    });
+
+    // Show selected section
+    document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+
+    // Reset button style
+    const buttons = document.querySelectorAll('#tab-buttons > button');
+    buttons.forEach(btn => {
+      btn.classList.remove('border-black', 'text-black');
+      btn.classList.add('text-gray-500', 'border-transparent');
+    });
+
+    // Activates clicked button
+    btnElement.classList.remove('text-gray-500', 'border-transparent');
+    btnElement.classList.add('border-black', 'text-black');
+  }
+
+  // Activates Description at the start
+  document.addEventListener("DOMContentLoaded", () => {
+    const defaultBtn = document.querySelector('#tab-buttons > button');
+    if (defaultBtn) {
+      showTab('description', defaultBtn);
+    }
   });
 </script>

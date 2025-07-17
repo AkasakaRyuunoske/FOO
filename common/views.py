@@ -5,6 +5,7 @@ from django.shortcuts import render
 
 from RecipeManager.models import Recipe
 
+
 def home(request):
     # Step 1: Generate and persist random IDs
     if "random_recipe_ids" not in request.session:
@@ -23,6 +24,7 @@ def home(request):
 
     return render(request, "home.html", {"page_obj": page_obj})
 
+
 def recipe_list(request):
     recipes_list = Recipe.objects.all()
     paginator = Paginator(recipes_list, 10)
@@ -32,10 +34,16 @@ def recipe_list(request):
 
     return render(request, "recipes/recipe_list.html", {"page_obj": page_obj})
 
+
 def get_random_n_recipes(n=60):
     ids = list(Recipe.objects.values_list('id', flat=True))
     random_ids = random.sample(ids, min(len(ids), n))  # In case there are <60 recipes
     return Recipe.objects.filter(id__in=random_ids)
 
+
 def discover(request):
     return render(request, "discover.html", None)
+
+
+def recipe_details(request):
+    return render(request, "recipe_details.html", None)
