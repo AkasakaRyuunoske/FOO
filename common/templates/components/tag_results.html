@@ -1,0 +1,13 @@
+<!-- components/tag_results.html -->
+<div id="available_tags" class="pl-6 grid grid-cols-3 grid-rows-4">
+  {% for tag in tags %}
+    <div
+      class="clickable-tag text-gray-800 relative cursor-pointer hover:bg-gray-200 rounded px-2 py-1"
+      data-tag="{{ tag }}"
+    >
+      {{ tag }}
+    </div>
+  {% empty %}
+    <div class="text-gray-500">No tags found.</div>
+  {% endfor %}
+</div>

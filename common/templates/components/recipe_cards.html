@@ -1,0 +1,35 @@
+
+<div class="grid sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 auto-rows-min gap-2">
+  {% for recipe in page_obj %}
+    {% include "components/recipe_card.html" with recipe=recipe show_description_inline=show_description_inline%}
+  {% empty %}
+    <p>Nessuna ricetta trovata.</p>
+  {% endfor %}
+</div>
+
+<div>
+  <!-- Navigazione Paginazione -->
+  <div class="mt-4 flex justify-center space-x-2">
+    {% if page_obj.has_previous %}
+      <a
+        hx-get="{% url 'get_recipes_by_tags' %}?tags={{ request.GET.tags }}&page={{ page_obj.previous_page_number }}"
+        hx-target="#cards-compact"
+        hx-swap="innerHTML"
+        class="px-3 py-1 border rounded"
+      >«</a>
+    {% endif %}
+
+    <span class="px-3 py-1 border rounded bg-gray-200">
+      Pagina {{ page_obj.number }} di {{ page_obj.paginator.num_pages }}
+    </span>
+
+  {% if page_obj.has_next %}
+    <a
+      hx-get="{% url 'get_recipes_by_tags' %}?tags={{ request.GET.tags }}&page={{ page_obj.next_page_number }}"
+      hx-target="#cards-compact"
+      hx-swap="innerHTML"
+      class="px-3 py-1 border rounded"
+    >»</a>
+  {% endif %}
+  </div>
+</div>
