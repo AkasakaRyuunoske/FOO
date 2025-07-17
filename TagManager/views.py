@@ -1,7 +1,5 @@
-import json
-from time import sleep
-
-from django.http import HttpResponse
+from RecipeManager.models import Recipe
+from django.core.paginator import Paginator
 from django.shortcuts import render
 
 
@@ -22,8 +20,20 @@ def get_recipes_by_tags(request):
     # pulizia degli tag
     tags = [t.strip() for t in tag_string.split(",") if t.strip()]
 
-    # ritorno il componente che itera sugli tag e per ogni tag crea una card
-    return render(request, "components/recipe_cards.html", {"tags": tags})
+    # TODO: Qui va il modello
+    recipes = Recipe.objects.all()
+
+    # Paginazione
+    page_number = request.GET.get("page", 1)
+    paginator = Paginator(recipes, 12)
+    page_obj = paginator.get_page(page_number)
+
+    # Ritorna il componente che itera sulle ricette
+    return render(request, "components/recipe_cards.html", {
+        "tags": tags,
+        "page_obj": page_obj,
+    })
+
 
 def search_tags(request):
     all_tags = [
@@ -44,6 +54,7 @@ def search_tags(request):
 
     print(f"Filtered ==> {filtered}")
     return render(request, "components/tag_results.html", {"tags": filtered})
+
 
 def get_ingredients(request):
     result = ["Fast", "Slow", "Average", "Overnight",
