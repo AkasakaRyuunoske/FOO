@@ -1,74 +1,338 @@
 [
 {
-  "model": "TagManager.tag",
-  "pk": 1,
+  "model": "TagManager.tagtype",
+  "pk": 22,
   "fields": {
-    "name": "Preparation-Time",
-    "description": null,
-    "icon": null
+    "name": "Preparation-Time"
+  }
+},
+{
+  "model": "TagManager.tagtype",
+  "pk": 23,
+  "fields": {
+    "name": "Vegan"
+  }
+},
+{
+  "model": "TagManager.tagtype",
+  "pk": 24,
+  "fields": {
+    "name": "Vegetarian"
+  }
+},
+{
+  "model": "TagManager.tagtype",
+  "pk": 25,
+  "fields": {
+    "name": "Cooking-Method"
+  }
+},
+{
+  "model": "TagManager.tagtype",
+  "pk": 26,
+  "fields": {
+    "name": "Difficulty"
+  }
+},
+{
+  "model": "TagManager.tagtype",
+  "pk": 27,
+  "fields": {
+    "name": "Lactose-Free"
+  }
+},
+{
+  "model": "TagManager.tagtype",
+  "pk": 28,
+  "fields": {
+    "name": "Gluten-Free"
+  }
+},
+{
+  "model": "TagManager.tagtype",
+  "pk": 29,
+  "fields": {
+    "name": "Cost"
   }
 },
 {
   "model": "TagManager.tag",
-  "pk": 2,
+  "pk": 50,
   "fields": {
-    "name": "Vegan",
-    "description": null,
-    "icon": null
+    "name": "Very Fast",
+    "tag_type": 22
   }
 },
 {
   "model": "TagManager.tag",
-  "pk": 3,
+  "pk": 51,
   "fields": {
-    "name": "Vegetarian",
-    "description": null,
-    "icon": null
+    "name": "Fast",
+    "tag_type": 22
   }
 },
 {
   "model": "TagManager.tag",
-  "pk": 4,
+  "pk": 52,
   "fields": {
-    "name": "Cooking-Method",
-    "description": null,
-    "icon": null
+    "name": "Medium",
+    "tag_type": 22
   }
 },
 {
   "model": "TagManager.tag",
-  "pk": 5,
+  "pk": 53,
   "fields": {
-    "name": "Difficulty",
-    "description": null,
-    "icon": null
+    "name": "Slow",
+    "tag_type": 22
   }
 },
 {
   "model": "TagManager.tag",
-  "pk": 6,
+  "pk": 54,
   "fields": {
-    "name": "Lactose-Free",
-    "description": null,
-    "icon": null
+    "name": "Very Slow",
+    "tag_type": 22
   }
 },
 {
   "model": "TagManager.tag",
-  "pk": 7,
+  "pk": 55,
   "fields": {
-    "name": "Gluten-Free",
-    "description": null,
-    "icon": null
+    "name": "Yes",
+    "tag_type": 23
   }
 },
 {
   "model": "TagManager.tag",
-  "pk": 8,
+  "pk": 56,
   "fields": {
-    "name": "Cost",
-    "description": null,
-    "icon": null
+    "name": "No",
+    "tag_type": 23
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 59,
+  "fields": {
+    "name": "Veg",
+    "tag_type": 24
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 60,
+  "fields": {
+    "name": "Not Veg",
+    "tag_type": 24
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 61,
+  "fields": {
+    "name": "Baked",
+    "tag_type": 25
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 62,
+  "fields": {
+    "name": "Boiled",
+    "tag_type": 25
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 63,
+  "fields": {
+    "name": "Broil",
+    "tag_type": 25
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 64,
+  "fields": {
+    "name": "Fried",
+    "tag_type": 25
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 65,
+  "fields": {
+    "name": "Grilled",
+    "tag_type": 25
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 66,
+  "fields": {
+    "name": "Roasted",
+    "tag_type": 25
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 67,
+  "fields": {
+    "name": "Slow Cooking",
+    "tag_type": 25
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 68,
+  "fields": {
+    "name": "Steamed",
+    "tag_type": 25
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 69,
+  "fields": {
+    "name": "Pressure Cooked",
+    "tag_type": 25
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 70,
+  "fields": {
+    "name": "Microwaved",
+    "tag_type": 25
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 71,
+  "fields": {
+    "name": "Sous Vide",
+    "tag_type": 25
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 72,
+  "fields": {
+    "name": "Toasted",
+    "tag_type": 25
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 73,
+  "fields": {
+    "name": "Blended",
+    "tag_type": 25
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 74,
+  "fields": {
+    "name": "Raw",
+    "tag_type": 25
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 75,
+  "fields": {
+    "name": "Easy",
+    "tag_type": 26
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 77,
+  "fields": {
+    "name": "Med",
+    "tag_type": 26
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 78,
+  "fields": {
+    "name": "Hard",
+    "tag_type": 26
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 79,
+  "fields": {
+    "name": "Y",
+    "tag_type": 27
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 80,
+  "fields": {
+    "name": "N",
+    "tag_type": 27
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 81,
+  "fields": {
+    "name": "Glut",
+    "tag_type": 28
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 82,
+  "fields": {
+    "name": "No Glut",
+    "tag_type": 28
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 83,
+  "fields": {
+    "name": "Very Cheap",
+    "tag_type": 29
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 84,
+  "fields": {
+    "name": "Cheap",
+    "tag_type": 29
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 85,
+  "fields": {
+    "name": "Med Cost",
+    "tag_type": 29
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 86,
+  "fields": {
+    "name": "Expensive",
+    "tag_type": 29
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 87,
+  "fields": {
+    "name": "Rich",
+    "tag_type": 29
   }
 }
 ]
