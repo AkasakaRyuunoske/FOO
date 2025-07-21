@@ -4,7 +4,7 @@
   "pk": 1,
   "fields": {
     "name": "Preparation Time",
-    "description": "Time required to prepare the recipe."
+    "description": "Estimated time required to prepare the recipe."
   }
 },
 {
@@ -12,7 +12,7 @@
   "pk": 2,
   "fields": {
     "name": "Vegan",
-    "description": "Contains no animal-derived ingredients."
+    "description": "Indicates whether the recipe contains animal-derived ingredients."
   }
 },
 {
@@ -20,7 +20,7 @@
   "pk": 3,
   "fields": {
     "name": "Vegetarian",
-    "description": "Contains no meat or fish, but may include animal by-products."
+    "description": "Indicates whether the recipe contains meat or fish, but may include animal by-products."
   }
 },
 {
@@ -68,7 +68,7 @@
   "pk": 50,
   "fields": {
     "name": "Very Fast",
-    "description": "Preparation time estimated below 10 minutes",
+    "description": "Preparation time estimated below 10 minutes.",
     "tag_type": 1
   }
 },
@@ -77,7 +77,7 @@
   "pk": 51,
   "fields": {
     "name": "Fast",
-    "description": "Preparation time estimated between 10 and 20 minutes",
+    "description": "Preparation time estimated between 10 and 20 minutes.",
     "tag_type": 1
   }
 },
@@ -86,7 +86,7 @@
   "pk": 52,
   "fields": {
     "name": "Medium",
-    "description": "Preparation time estimated between 20 and 40 minutes",
+    "description": "Preparation time estimated between 20 and 40 minutes.",
     "tag_type": 1
   }
 },
@@ -95,7 +95,7 @@
   "pk": 53,
   "fields": {
     "name": "Slow",
-    "description": "Preparation time estimated between 40 and 90 minutes",
+    "description": "Preparation time estimated between 40 and 90 minutes.",
     "tag_type": 1
   }
 },
@@ -104,7 +104,7 @@
   "pk": 54,
   "fields": {
     "name": "Very Slow",
-    "description": "Preparation time estimated over 90 minutes",
+    "description": "Preparation time estimated over 90 minutes.",
     "tag_type": 1
   }
 },
@@ -113,7 +113,8 @@
   "pk": 55,
   "fields": {
     "name": "Yes",
-    "tag_type": 23
+    "description": "The recipe does not contain animal-derived ingredients.",
+    "tag_type": 2
   }
 },
 {
@@ -121,23 +122,26 @@
   "pk": 56,
   "fields": {
     "name": "No",
-    "tag_type": 23
+    "description": "The recipe contains animal-derived ingredients.",
+    "tag_type": 2
   }
 },
 {
   "model": "TagManager.tag",
   "pk": 59,
   "fields": {
-    "name": "Veg",
-    "tag_type": 24
+    "name": "Yes",
+    "description": "The recipe does not contain meat or fish, but may include animal by-products.",
+    "tag_type": 3
   }
 },
 {
   "model": "TagManager.tag",
   "pk": 60,
   "fields": {
-    "name": "Not Veg",
-    "tag_type": 24
+    "name": "No",
+    "description": "The recipe contains meat or fish.",
+    "tag_type": 3
   }
 },
 {
