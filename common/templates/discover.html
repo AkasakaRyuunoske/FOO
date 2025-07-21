@@ -117,7 +117,7 @@
         const fc = document.getElementById('first-column');
         const grid = document.getElementById('main-grid');
         const inlineCards = document.getElementById('cards-inline');
-        const compactCards = document.getElementById('cards-compact');
+        const compactCards = document.getElementById('cards-wrapper');
         const icon = document.getElementById('toggle-icon');
         const container = document.getElementById('toggle-button-container');
 
@@ -143,19 +143,8 @@
   <!-- Second Column -->
   <div id="recipe-card-grid" class="relative p-4 w-full grid gap-2" data-show-inline="false">
 
-  <!-- Cards without description -->
-    <div id="cards-compact">
-      {% include "components/recipe_cards.html" with show_description_inline=False %}
-    </div>
-
-    <!-- Cards with description -->
-    <div id="cards-inline" class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 auto-rows-min gap-2 hidden">
-      {% include "components/recipe_card.html" with show_description_inline=True %}
-      {% include "components/recipe_card.html" with show_description_inline=True %}
-      {% include "components/recipe_card.html" with show_description_inline=True %}
-      {% include "components/recipe_card.html" with show_description_inline=True %}
-      {% include "components/recipe_card.html" with show_description_inline=True %}
-      {% include "components/recipe_card.html" with show_description_inline=True %}
+    <div id="cards-wrapper" hx-get="/tag/get_recipes_by_tags" hx-trigger="load" hx-swap="innerHTML">
+      {% include "components/discover_recipe_list_wrapper.html" %}
     </div>
 
   </div>
@@ -164,7 +153,7 @@
 <script>
   function bindClickableTags() {
     const selectedContainer = document.getElementById("selected-tags");
-    const resultsContainer = document.getElementById("cards-compact");
+    const resultsContainer = document.getElementById("cards-wrapper");
 
     if (!selectedContainer || !resultsContainer) return;
 
