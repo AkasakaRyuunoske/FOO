@@ -13,7 +13,7 @@
     {% if page_obj.has_previous %}
       <a
         hx-get="{% url 'get_recipes_by_tags' %}?tags={{ request.GET.tags }}&page={{ page_obj.previous_page_number }}"
-        hx-target="#cards-compact"
+        hx-target="#cards-wrapper"
         hx-swap="innerHTML"
         class="px-3 py-1 border rounded"
       >«</a>
@@ -26,7 +26,7 @@
   {% if page_obj.has_next %}
     <a
       hx-get="{% url 'get_recipes_by_tags' %}?tags={{ request.GET.tags }}&page={{ page_obj.next_page_number }}"
-      hx-target="#cards-compact"
+      hx-target="#cards-wrapper"
       hx-swap="innerHTML"
       class="px-3 py-1 border rounded"
     >»</a>
