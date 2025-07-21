@@ -284,15 +284,17 @@
   "pk": 75,
   "fields": {
     "name": "Easy",
-    "tag_type": 26
+    "description": "Simple steps, minimal ingredients, quick to prepare.",
+    "tag_type": 5
   }
 },
 {
   "model": "TagManager.tag",
   "pk": 77,
   "fields": {
-    "name": "Med",
-    "tag_type": 26
+    "name": "Medium",
+    "description": "Moderate preparation time and skill required.",
+    "tag_type": 5
   }
 },
 {
@@ -300,7 +302,8 @@
   "pk": 78,
   "fields": {
     "name": "Hard",
-    "tag_type": 26
+    "description": "Advanced skills or techniques needed for preparation.",
+    "tag_type": 5
   }
 },
 {
