@@ -54,3 +54,6 @@ def discover(request):
     return render(request, "discover.html", {
         "page_obj": page_obj,
     })
+
+def recipe_details(request):
+    return render(request, "recipe_details.html", None)
