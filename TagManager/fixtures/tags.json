@@ -1,0 +1,390 @@
+[
+{
+  "model": "TagManager.tagtype",
+  "pk": 1,
+  "fields": {
+    "name": "Preparation Time",
+    "description": "Estimated time required to prepare the recipe."
+  }
+},
+{
+  "model": "TagManager.tagtype",
+  "pk": 2,
+  "fields": {
+    "name": "Vegan",
+    "description": "Indicates whether the recipe contains animal-derived ingredients."
+  }
+},
+{
+  "model": "TagManager.tagtype",
+  "pk": 3,
+  "fields": {
+    "name": "Vegetarian",
+    "description": "Indicates whether the recipe contains meat or fish, but may include animal by-products."
+  }
+},
+{
+  "model": "TagManager.tagtype",
+  "pk": 4,
+  "fields": {
+    "name": "Cooking Method",
+    "description": "Technique used to cook the recipe (e.g., baking, frying)."
+  }
+},
+{
+  "model": "TagManager.tagtype",
+  "pk": 5,
+  "fields": {
+    "name": "Difficulty",
+    "description": "Indicates how easy or challenging the recipe is to make."
+  }
+},
+{
+  "model": "TagManager.tagtype",
+  "pk": 6,
+  "fields": {
+    "name": "Lactose Free",
+    "description": "Does not contain lactose or dairy-based ingredients."
+  }
+},
+{
+  "model": "TagManager.tagtype",
+  "pk": 7,
+  "fields": {
+    "name": "Gluten Free",
+    "description": "Made without gluten-containing ingredients."
+  }
+},
+{
+  "model": "TagManager.tagtype",
+  "pk": 8,
+  "fields": {
+    "name": "Cost",
+    "description": "Estimated expense to prepare the recipe."
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 50,
+  "fields": {
+    "name": "Very Fast",
+    "description": "Preparation time estimated below 10 minutes.",
+    "tag_type": 1
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 51,
+  "fields": {
+    "name": "Fast",
+    "description": "Preparation time estimated between 10 and 20 minutes.",
+    "tag_type": 1
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 52,
+  "fields": {
+    "name": "Medium",
+    "description": "Preparation time estimated between 20 and 40 minutes.",
+    "tag_type": 1
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 53,
+  "fields": {
+    "name": "Slow",
+    "description": "Preparation time estimated between 40 and 90 minutes.",
+    "tag_type": 1
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 54,
+  "fields": {
+    "name": "Very Slow",
+    "description": "Preparation time estimated over 90 minutes.",
+    "tag_type": 1
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 55,
+  "fields": {
+    "name": "Yes",
+    "description": "Does not contain animal-derived ingredients.",
+    "tag_type": 2
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 56,
+  "fields": {
+    "name": "No",
+    "description": "Contains animal-derived ingredients.",
+    "tag_type": 2
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 59,
+  "fields": {
+    "name": "Yes",
+    "description": "Does not contain meat or fish, but may include animal by-products.",
+    "tag_type": 3
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 60,
+  "fields": {
+    "name": "No",
+    "description": "Contains meat or fish.",
+    "tag_type": 3
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 61,
+  "fields": {
+    "name": "Baked",
+    "description": "Cooked in an oven, typically resulting in a dry heat preparation.",
+    "tag_type": 4
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 62,
+  "fields": {
+    "name": "Boiled",
+    "description": "Cooked in boiling water or another hot liquid.",
+    "tag_type": 4
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 63,
+  "fields": {
+    "name": "Broil",
+    "description": "Exposed to direct heat, usually from above, in an oven broiler.",
+    "tag_type": 4
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 64,
+  "fields": {
+    "name": "Fried",
+    "description": "Cooked in hot oil or fat, resulting in a crispy texture.",
+    "tag_type": 4
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 65,
+  "fields": {
+    "name": "Grilled",
+    "description": "Cooked over an open flame or hot surface, often with grill marks.",
+    "tag_type": 4
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 66,
+  "fields": {
+    "name": "Roasted",
+    "description": "Cooked in an oven at high temperatures, usually until browned or caramelized.",
+    "tag_type": 4
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 67,
+  "fields": {
+    "name": "Slow Cooking",
+    "description": "Cooked at low temperatures over a long period, often in a slow cooker.",
+    "tag_type": 4
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 68,
+  "fields": {
+    "name": "Steamed",
+    "description": "Cooked with steam, preserving moisture and nutrients.",
+    "tag_type": 4
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 69,
+  "fields": {
+    "name": "Pressure Cooked",
+    "description": "Cooked using a pressure cooker to reduce time while retaining flavor.",
+    "tag_type": 4
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 70,
+  "fields": {
+    "name": "Microwaved",
+    "description": "Cooked in a microwave oven using electromagnetic radiation.",
+    "tag_type": 4
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 71,
+  "fields": {
+    "name": "Sous Vide",
+    "description": "Cooked slowly in a water bath at a precise low temperature in vacuum-sealed bags.",
+    "tag_type": 4
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 72,
+  "fields": {
+    "name": "Toasted",
+    "description": "Cooked using dry heat to make the surface crisp or brown, often in a toaster.",
+    "tag_type": 4
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 73,
+  "fields": {
+    "name": "Blended",
+    "description": "Processed into a smooth mixture using a blender or food processor.",
+    "tag_type": 4
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 74,
+  "fields": {
+    "name": "Raw",
+    "description": "Not cooked; ingredients are used in their natural, uncooked state.",
+    "tag_type": 4
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 74,
+  "fields": {
+    "name": "Other",
+    "description": "Prepared using a method that does not fall into any of the main cooking techniques listed.",
+    "tag_type": 4
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 75,
+  "fields": {
+    "name": "Easy",
+    "description": "Simple steps, minimal ingredients, quick to prepare.",
+    "tag_type": 5
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 77,
+  "fields": {
+    "name": "Medium",
+    "description": "Moderate preparation time and skill required.",
+    "tag_type": 5
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 78,
+  "fields": {
+    "name": "Hard",
+    "description": "Advanced skills or techniques needed for preparation.",
+    "tag_type": 5
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 79,
+  "fields": {
+    "name": "Yes",
+    "description": "Does not contain lactose or dairy-derived ingredients.",
+    "tag_type": 6
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 80,
+  "fields": {
+    "name": "No",
+    "description": "Contains lactose or dairy-derived ingredients.",
+    "tag_type": 6
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 81,
+  "fields": {
+    "name": "Yes",
+    "description": "Does not contain gluten or gluten-containing ingredients.",
+    "tag_type": 7
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 82,
+  "fields": {
+    "name": "No",
+    "description": "Contains gluten or ingredients derived from wheat, barley, or rye.",
+    "tag_type": 7
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 83,
+  "fields": {
+    "name": "Very Cheap",
+    "description": "Extremely low cost per serving; ideal for tight budgets.",
+    "tag_type": 8
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 84,
+  "fields": {
+    "name": "Cheap",
+    "description": "Low cost per serving; affordable ingredients.",
+    "tag_type": 8
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 85,
+  "fields": {
+    "name": "Medium",
+    "description": "Moderate cost per serving; balanced between affordability and quality.",
+    "tag_type": 8
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 86,
+  "fields": {
+    "name": "Expensive",
+    "description": "High cost per serving; includes premium or imported ingredients.",
+    "tag_type": 8
+  }
+},
+{
+  "model": "TagManager.tag",
+  "pk": 87,
+  "fields": {
+    "name": "Rich",
+    "description": "Very high-end ingredients or luxury recipe; suited for special occasions.",
+    "tag_type": 8
+  }
+}
+]
