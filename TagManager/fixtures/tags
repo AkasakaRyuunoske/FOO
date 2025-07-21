@@ -44,7 +44,7 @@
   "pk": 6,
   "fields": {
     "name": "Lactose Free",
-    "description":
+    "description": "Does not contain lactose or dairy-based ingredients."
   }
 },
 {
@@ -52,7 +52,7 @@
   "pk": 7,
   "fields": {
     "name": "Gluten Free",
-    "description":
+    "description": "Made without gluten-containing ingredients."
   }
 },
 {
@@ -60,7 +60,7 @@
   "pk": 8,
   "fields": {
     "name": "Cost",
-    "description":
+    "description": "Estimated expense to prepare the recipe."
   }
 },
 {
