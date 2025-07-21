@@ -20,7 +20,7 @@
   "pk": 3,
   "fields": {
     "name": "Vegetarian",
-    "description":
+    "description": "Contains no meat or fish, but may include animal by-products."
   }
 },
 {
@@ -28,7 +28,7 @@
   "pk": 4,
   "fields": {
     "name": "Cooking Method",
-    "description":
+    "description": "Technique used to cook the recipe (e.g., baking, frying)."
   }
 },
 {
@@ -36,7 +36,7 @@
   "pk": 5,
   "fields": {
     "name": "Difficulty",
-    "description":
+    "description": "Indicates how easy or challenging the recipe is to make."
   }
 },
 {
