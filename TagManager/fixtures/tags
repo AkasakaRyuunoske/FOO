@@ -113,7 +113,7 @@
   "pk": 55,
   "fields": {
     "name": "Yes",
-    "description": "The recipe does not contain animal-derived ingredients.",
+    "description": "Does not contain animal-derived ingredients.",
     "tag_type": 2
   }
 },
@@ -122,7 +122,7 @@
   "pk": 56,
   "fields": {
     "name": "No",
-    "description": "The recipe contains animal-derived ingredients.",
+    "description": "Contains animal-derived ingredients.",
     "tag_type": 2
   }
 },
@@ -131,7 +131,7 @@
   "pk": 59,
   "fields": {
     "name": "Yes",
-    "description": "The recipe does not contain meat or fish, but may include animal by-products.",
+    "description": "Does not contain meat or fish, but may include animal by-products.",
     "tag_type": 3
   }
 },
@@ -140,7 +140,7 @@
   "pk": 60,
   "fields": {
     "name": "No",
-    "description": "The recipe contains meat or fish.",
+    "description": "Contains meat or fish.",
     "tag_type": 3
   }
 },
