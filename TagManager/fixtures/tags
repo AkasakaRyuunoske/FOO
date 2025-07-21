@@ -68,7 +68,8 @@
   "pk": 50,
   "fields": {
     "name": "Very Fast",
-    "tag_type": 22
+    "description": "Preparation time estimated below 10 minutes",
+    "tag_type": 1
   }
 },
 {
@@ -76,7 +77,8 @@
   "pk": 51,
   "fields": {
     "name": "Fast",
-    "tag_type": 22
+    "description": "Preparation time estimated between 10 and 20 minutes",
+    "tag_type": 1
   }
 },
 {
@@ -84,7 +86,8 @@
   "pk": 52,
   "fields": {
     "name": "Medium",
-    "tag_type": 22
+    "description": "Preparation time estimated between 20 and 40 minutes",
+    "tag_type": 1
   }
 },
 {
@@ -92,7 +95,8 @@
   "pk": 53,
   "fields": {
     "name": "Slow",
-    "tag_type": 22
+    "description": "Preparation time estimated between 40 and 90 minutes",
+    "tag_type": 1
   }
 },
 {
@@ -100,7 +104,8 @@
   "pk": 54,
   "fields": {
     "name": "Very Slow",
-    "tag_type": 22
+    "description": "Preparation time estimated over 90 minutes",
+    "tag_type": 1
   }
 },
 {
