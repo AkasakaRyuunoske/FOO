@@ -2,7 +2,7 @@
 {% comment %} components/recipe_card.html {% endcomment %}
 
 <div onclick="openModal()" class="bg-white p-1.5 rounded-md transition duration-200 hover:shadow-xl hover:scale-105 max-w-[380px] mx-auto w-full {% if show_description_inline %}p-2{% else %}aspect-square{% endif %}"> <!-- External Padding -->
-  <div class="border-2 border-black {% if show_description_inline %}p-3{% else %}p-2{% endif %} bg-white w-full flex flex-col justify-between group relative rounded min-w-0 min-h-0 {% if not show_description_inline %}overflow-y-auto{% endif %}" style="font-family:'Inclusive Sans',sans-serif;"> <!-- Black line inside square -->
+  <div class="border-2 border-black p-2 bg-white w-full flex flex-col justify-between group relative rounded min-w-0 min-h-0 min-h-[280px] transition-all duration-300 ease-in-out overflow-visible">    <!-- Black line inside square -->
 
     <!-- Bookmark on the right with a transition on hover -->
     <button class="bookmark-btn absolute top-3 right-1 aspect-square w-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10" aria-label="Toggle bookmark" type="button">
@@ -11,7 +11,9 @@
 
     <!-- Recipe Name -->
     <div class="flex-1 flex flex-col min-w-0">
-      <h2 class="text-center font-bold mb-2 text-sm sm:text-base break-words">{{ recipe.name }}</h2>
+      <h2 class="text-center font-bold mb-2 text-sm sm:text-base break-words line-clamp-2 leading-tight">
+          {{ recipe.name|truncatechars:40 }}
+      </h2>
 
       <!-- Recipe Image -->
       <div class="w-4/5 mx-auto mb-2">
