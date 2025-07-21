@@ -1,56 +1,56 @@
 [
 {
   "model": "TagManager.tagtype",
-  "pk": 22,
+  "pk": 1,
   "fields": {
-    "name": "Preparation-Time"
+    "name": "Preparation Time"
   }
 },
 {
   "model": "TagManager.tagtype",
-  "pk": 23,
+  "pk": 2,
   "fields": {
     "name": "Vegan"
   }
 },
 {
   "model": "TagManager.tagtype",
-  "pk": 24,
+  "pk": 3,
   "fields": {
     "name": "Vegetarian"
   }
 },
 {
   "model": "TagManager.tagtype",
-  "pk": 25,
+  "pk": 4,
   "fields": {
-    "name": "Cooking-Method"
+    "name": "Cooking Method"
   }
 },
 {
   "model": "TagManager.tagtype",
-  "pk": 26,
+  "pk": 5,
   "fields": {
     "name": "Difficulty"
   }
 },
 {
   "model": "TagManager.tagtype",
-  "pk": 27,
+  "pk": 6,
   "fields": {
-    "name": "Lactose-Free"
+    "name": "Lactose Free"
   }
 },
 {
   "model": "TagManager.tagtype",
-  "pk": 28,
+  "pk": 7,
   "fields": {
-    "name": "Gluten-Free"
+    "name": "Gluten Free"
   }
 },
 {
   "model": "TagManager.tagtype",
-  "pk": 29,
+  "pk": 8,
   "fields": {
     "name": "Cost"
   }
