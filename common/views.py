@@ -47,3 +47,15 @@ def discover(request):
 
 def recipe_details(request):
     return render(request, "recipe_details.html", None)
+    # TODO: Qui va il modello
+    recipes = Recipe.objects.all()
+
+    # Paginazione
+    page_number = request.GET.get("page", 1)
+    paginator = Paginator(recipes, 12)
+    page_obj = paginator.get_page(page_number)
+
+    # Ritorna il componente che itera sulle ricette
+    return render(request, "discover.html", {
+        "page_obj": page_obj,
+    })

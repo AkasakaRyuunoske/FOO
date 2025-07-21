@@ -1,0 +1,9 @@
+<div>
+  <div id="cards-compact">
+    {% include "components/recipe_cards.html" with show_description_inline=False %}
+  </div>
+
+  <div id="cards-inline" class="hidden">
+    {% include "components/recipe_cards.html" with show_description_inline=True %}
+  </div>
+</div>
