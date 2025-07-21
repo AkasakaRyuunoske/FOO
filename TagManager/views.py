@@ -1,6 +1,9 @@
 from RecipeManager.models import Recipe
 from django.core.paginator import Paginator
+from django.db.models import Count, Q
 from django.shortcuts import render
+
+from TagManager.models import Tag
 
 
 def get_tags(request):
@@ -14,21 +17,28 @@ def get_tags(request):
 
 
 def get_recipes_by_tags(request):
-    # prendo gli tag selezionati dal utente dalla query string
     tag_string = request.GET.get("tags", "")
-
-    # pulizia degli tag
     tags = [t.strip() for t in tag_string.split(",") if t.strip()]
 
-    # TODO: Qui va il modello
-    recipes = Recipe.objects.all()
+    # Filtro solo se ci sono tag selezionati
+    if tags:
+        # Trova gli ID dei Tag corrispondenti ai nomi
+        tag_ids = Tag.objects.filter(name__in=tags).values_list("id", flat=True)
+
+        # Filtro le ricette che hanno almeno *tutti* i tag selezionati
+        recipes = Recipe.objects.annotate(
+            matched_tags=Count(
+                "recipetag", filter=Q(recipetag__tag_id__in=tag_ids), distinct=True
+            )
+        ).filter(matched_tags=len(tags))
+    else:
+        recipes = Recipe.objects.all()
 
     # Paginazione
     page_number = request.GET.get("page", 1)
     paginator = Paginator(recipes, 12)
     page_obj = paginator.get_page(page_number)
 
-    # Ritorna il componente che itera sulle ricette
     return render(request, "components/recipe_cards.html", {
         "tags": tags,
         "page_obj": page_obj,
