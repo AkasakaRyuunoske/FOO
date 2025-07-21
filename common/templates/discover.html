@@ -56,7 +56,7 @@
 
       <div class="relative">
         <form method="get" class="w-full max-w-md mx-auto">
-          {% include "components/searchbar.html" with input_name="search_term" placeholder="Search tag..." action="/search/" %}
+          {% include "components/searchbar.html" with input_name="search_term" placeholder="Search tag..." action=search_tags %}
         </form>
       </div>
 
@@ -66,8 +66,6 @@
         <!-- Tag Container -->
         <div id="selected-tags"  class="w-full  border border-black rounded px-2 py-2 flex flex-wrap gap-2">
           <!-- One Tag -->
-
-
 
         </div>
       </div>
@@ -119,7 +117,7 @@
         const fc = document.getElementById('first-column');
         const grid = document.getElementById('main-grid');
         const inlineCards = document.getElementById('cards-inline');
-        const compactCards = document.getElementById('cards-compact');
+        const compactCards = document.getElementById('cards-wrapper');
         const icon = document.getElementById('toggle-icon');
         const container = document.getElementById('toggle-button-container');
 
@@ -145,24 +143,8 @@
   <!-- Second Column -->
   <div id="recipe-card-grid" class="relative p-4 w-full grid gap-2" data-show-inline="false">
 
-  <!-- Cards without description -->
-    <div id="cards-compact" class="grid sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 auto-rows-min gap-2">
-      {% include "components/recipe_card.html" with show_description_inline=False %}
-      {% include "components/recipe_card.html" with show_description_inline=False %}
-      {% include "components/recipe_card.html" with show_description_inline=False %}
-      {% include "components/recipe_card.html" with show_description_inline=False %}
-      {% include "components/recipe_card.html" with show_description_inline=False %}
-      {% include "components/recipe_card.html" with show_description_inline=False %}
-    </div>
-
-    <!-- Cards with description -->
-    <div id="cards-inline" class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 auto-rows-min gap-2 hidden">
-      {% include "components/recipe_card.html" with show_description_inline=True %}
-      {% include "components/recipe_card.html" with show_description_inline=True %}
-      {% include "components/recipe_card.html" with show_description_inline=True %}
-      {% include "components/recipe_card.html" with show_description_inline=True %}
-      {% include "components/recipe_card.html" with show_description_inline=True %}
-      {% include "components/recipe_card.html" with show_description_inline=True %}
+    <div id="cards-wrapper" hx-get="/tag/get_recipes_by_tags" hx-trigger="load" hx-swap="innerHTML">
+      {% include "components/discover_recipe_list_wrapper.html" %}
     </div>
 
   </div>
@@ -171,19 +153,33 @@
 <script>
   function bindClickableTags() {
     const selectedContainer = document.getElementById("selected-tags");
-    if (!selectedContainer) return;
+    const resultsContainer = document.getElementById("cards-wrapper");
+
+    if (!selectedContainer || !resultsContainer) return;
+
+    function updateRecipes() {
+      const tags = [...selectedContainer.querySelectorAll("span")]
+        .map(span => span.textContent.trim())
+        .join(",");
+
+      // Esegui richiesta HTMX manuale
+      htmx.ajax('GET', `/tag/get_recipes_by_tags/?tags=${encodeURIComponent(tags)}`, {
+        target: resultsContainer,
+        swap: 'innerHTML'
+      });
+    }
 
     document.querySelectorAll(".clickable-tag").forEach(tagEl => {
       tagEl.onclick = () => {
         const tagName = tagEl.dataset.tag;
 
-        // Verify if tag is already selected
+        // Check se già selezionato
         const exists = [...selectedContainer.children].some(tag =>
           tag.querySelector("span")?.textContent === tagName
         );
         if (exists) return;
 
-        // Create selected tag
+        // Crea il tag selezionato
         const tag = document.createElement("div");
         tag.className = "flex items-center border border-black rounded-full px-3 py-1 text-sm";
 
@@ -192,10 +188,14 @@
           <button type="button" class="text-black hover:text-red-500">&times;</button>
         `;
 
-        // Adding remove behavior
-        tag.querySelector("button").onclick = () => tag.remove();
+        // Comportamento di rimozione
+        tag.querySelector("button").onclick = () => {
+          tag.remove();
+          updateRecipes();  // aggiorna la lista dopo la rimozione
+        };
 
         selectedContainer.appendChild(tag);
+        updateRecipes();  // aggiorna la lista dopo l’aggiunta
       };
     });
   }
@@ -240,6 +240,16 @@
     bindClickableTags();
     bindClickableIngredients();
   });
+
+
+function updateSelectedTagsInput(form) {
+  const selectedContainer = document.getElementById("selected-tags");
+  const tags = Array.from(selectedContainer.querySelectorAll("span"))
+    .map(span => span.textContent.trim());
+  const input = form.querySelector("input[name='tags']");
+  input.value = tags.join(",");
+}
+
 </script>
 
 {% endblock %}
