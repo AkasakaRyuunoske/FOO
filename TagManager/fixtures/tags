@@ -347,7 +347,8 @@
   "pk": 83,
   "fields": {
     "name": "Very Cheap",
-    "tag_type": 29
+    "description": "Extremely low cost per serving; ideal for tight budgets.",
+    "tag_type": 8
   }
 },
 {
@@ -355,15 +356,17 @@
   "pk": 84,
   "fields": {
     "name": "Cheap",
-    "tag_type": 29
+    "description": "Low cost per serving; affordable ingredients.",
+    "tag_type": 8
   }
 },
 {
   "model": "TagManager.tag",
   "pk": 85,
   "fields": {
-    "name": "Med Cost",
-    "tag_type": 29
+    "name": "Medium",
+    "description": "Moderate cost per serving; balanced between affordability and quality.",
+    "tag_type": 8
   }
 },
 {
@@ -371,7 +374,8 @@
   "pk": 86,
   "fields": {
     "name": "Expensive",
-    "tag_type": 29
+    "description": "High cost per serving; includes premium or imported ingredients.",
+    "tag_type": 8
   }
 },
 {
@@ -379,7 +383,8 @@
   "pk": 87,
   "fields": {
     "name": "Rich",
-    "tag_type": 29
+    "description": "Very high-end ingredients or luxury recipe; suited for special occasions.",
+    "tag_type": 8
   }
 }
 ]
