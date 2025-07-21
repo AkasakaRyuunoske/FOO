@@ -310,32 +310,36 @@
   "model": "TagManager.tag",
   "pk": 79,
   "fields": {
-    "name": "Y",
-    "tag_type": 27
+    "name": "Yes",
+    "description": "Does not contain lactose or dairy-derived ingredients.",
+    "tag_type": 6
   }
 },
 {
   "model": "TagManager.tag",
   "pk": 80,
   "fields": {
-    "name": "N",
-    "tag_type": 27
+    "name": "No",
+    "description": "Contains lactose or dairy-derived ingredients.",
+    "tag_type": 6
   }
 },
 {
   "model": "TagManager.tag",
   "pk": 81,
   "fields": {
-    "name": "Glut",
-    "tag_type": 28
+    "name": "Yes",
+    "description": "Does not contain gluten or gluten-containing ingredients.",
+    "tag_type": 7
   }
 },
 {
   "model": "TagManager.tag",
   "pk": 82,
   "fields": {
-    "name": "No Glut",
-    "tag_type": 28
+    "name": "No",
+    "description": "Contains gluten or ingredients derived from wheat, barley, or rye.",
+    "tag_type": 7
   }
 },
 {
