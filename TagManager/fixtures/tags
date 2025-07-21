@@ -149,6 +149,7 @@
   "pk": 61,
   "fields": {
     "name": "Baked",
+    "description": "Cooked in an oven, typically resulting in a dry heat preparation.",
     "tag_type": 4
   }
 },
@@ -157,6 +158,7 @@
   "pk": 62,
   "fields": {
     "name": "Boiled",
+    "description": "Cooked in boiling water or another hot liquid.",
     "tag_type": 4
   }
 },
@@ -165,6 +167,7 @@
   "pk": 63,
   "fields": {
     "name": "Broil",
+    "description": "Exposed to direct heat, usually from above, in an oven broiler.",
     "tag_type": 4
   }
 },
@@ -173,6 +176,7 @@
   "pk": 64,
   "fields": {
     "name": "Fried",
+    "description": "Cooked in hot oil or fat, resulting in a crispy texture.",
     "tag_type": 4
   }
 },
@@ -181,6 +185,7 @@
   "pk": 65,
   "fields": {
     "name": "Grilled",
+    "description": "Cooked over an open flame or hot surface, often with grill marks.",
     "tag_type": 4
   }
 },
@@ -189,6 +194,7 @@
   "pk": 66,
   "fields": {
     "name": "Roasted",
+    "description": "Cooked in an oven at high temperatures, usually until browned or caramelized.",
     "tag_type": 4
   }
 },
@@ -197,6 +203,7 @@
   "pk": 67,
   "fields": {
     "name": "Slow Cooking",
+    "description": "Cooked at low temperatures over a long period, often in a slow cooker.",
     "tag_type": 4
   }
 },
@@ -205,6 +212,7 @@
   "pk": 68,
   "fields": {
     "name": "Steamed",
+    "description": "Cooked with steam, preserving moisture and nutrients.",
     "tag_type": 4
   }
 },
@@ -213,6 +221,7 @@
   "pk": 69,
   "fields": {
     "name": "Pressure Cooked",
+    "description": "Cooked using a pressure cooker to reduce time while retaining flavor.",
     "tag_type": 4
   }
 },
@@ -221,6 +230,7 @@
   "pk": 70,
   "fields": {
     "name": "Microwaved",
+    "description": "Cooked in a microwave oven using electromagnetic radiation.",
     "tag_type": 4
   }
 },
@@ -229,6 +239,7 @@
   "pk": 71,
   "fields": {
     "name": "Sous Vide",
+    "description": "Cooked slowly in a water bath at a precise low temperature in vacuum-sealed bags.",
     "tag_type": 4
   }
 },
@@ -237,6 +248,7 @@
   "pk": 72,
   "fields": {
     "name": "Toasted",
+    "description": "Cooked using dry heat to make the surface crisp or brown, often in a toaster.",
     "tag_type": 4
   }
 },
@@ -245,6 +257,7 @@
   "pk": 73,
   "fields": {
     "name": "Blended",
+    "description": "Processed into a smooth mixture using a blender or food processor.",
     "tag_type": 4
   }
 },
@@ -253,6 +266,7 @@
   "pk": 74,
   "fields": {
     "name": "Raw",
+    "description": "Not cooked; ingredients are used in their natural, uncooked state.",
     "tag_type": 4
   }
 },
@@ -261,6 +275,7 @@
   "pk": 74,
   "fields": {
     "name": "Other",
+    "description": "Prepared using a method that does not fall into any of the main cooking techniques listed.",
     "tag_type": 4
   }
 },
