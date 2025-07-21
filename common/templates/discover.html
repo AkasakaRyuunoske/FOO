@@ -164,19 +164,33 @@
 <script>
   function bindClickableTags() {
     const selectedContainer = document.getElementById("selected-tags");
-    if (!selectedContainer) return;
+    const resultsContainer = document.getElementById("cards-compact");
+
+    if (!selectedContainer || !resultsContainer) return;
+
+    function updateRecipes() {
+      const tags = [...selectedContainer.querySelectorAll("span")]
+        .map(span => span.textContent.trim())
+        .join(",");
+
+      // Esegui richiesta HTMX manuale
+      htmx.ajax('GET', `/tag/get_recipes_by_tags/?tags=${encodeURIComponent(tags)}`, {
+        target: resultsContainer,
+        swap: 'innerHTML'
+      });
+    }
 
     document.querySelectorAll(".clickable-tag").forEach(tagEl => {
       tagEl.onclick = () => {
         const tagName = tagEl.dataset.tag;
 
-        // Verify if tag is already selected
+        // Check se già selezionato
         const exists = [...selectedContainer.children].some(tag =>
           tag.querySelector("span")?.textContent === tagName
         );
         if (exists) return;
 
-        // Create selected tag
+        // Crea il tag selezionato
         const tag = document.createElement("div");
         tag.className = "flex items-center border border-black rounded-full px-3 py-1 text-sm";
 
@@ -185,10 +199,14 @@
           <button type="button" class="text-black hover:text-red-500">&times;</button>
         `;
 
-        // Adding remove behavior
-        tag.querySelector("button").onclick = () => tag.remove();
+        // Comportamento di rimozione
+        tag.querySelector("button").onclick = () => {
+          tag.remove();
+          updateRecipes();  // aggiorna la lista dopo la rimozione
+        };
 
         selectedContainer.appendChild(tag);
+        updateRecipes();  // aggiorna la lista dopo l’aggiunta
       };
     });
   }
