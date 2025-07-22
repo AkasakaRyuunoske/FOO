@@ -115,59 +115,332 @@
     <!-- Row 6: Ingredients -->
     <div class="space-y-2">
         <h2 class="text-lg font-semibold">Ingredients</h2>
+
+        <!-- User guidance message -->
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-800">
+            <p><strong>Note:</strong> For measurements like "to taste", "as needed", etc., enter <strong>0</strong> in
+                the quantity field. Quantity cannot be left blank.</p>
+        </div>
+
         <!-- Header for existing ingredients -->
-        <div class="grid grid-cols-6 gap-4 font-medium text-gray-700">
-            <div>Qty</div>
-            <div>Unit</div>
+        <div class="grid grid-cols-6 gap-4 font-medium text-gray-700 border-b pb-2">
+            <div class="w-20">Qty</div>
+            <div class="w-40">Unit</div>
             <div class="col-span-3">Ingredient</div>
-            <div></div>
+            <div class="w-16"></div>
         </div>
         <div id="ingredients-list" class="space-y-2"></div>
 
         <!-- Add new ingredient row -->
-        <div class="flex items-center space-x-2">
+        <div class="grid grid-cols-6 gap-4 items-center">
             <input
                     type="number"
                     id="new-qty"
-                    placeholder="Qty"
+                    placeholder="Qty*"
+                    min="0"
+                    step="0.01"
+                    required
                     class="w-20 border border-gray-300 rounded px-2 py-1 focus:ring focus:ring-indigo-200"
             />
-            <select id="new-unit"
-                    class="border border-gray-300 rounded px-3 py-1 focus:ring focus:ring-indigo-200">
-                <option>teaspoon</option>
-                <option>cup</option>
-                <option>kilo</option>
-                <option>ml</option>
-                <option>l</option>
-            </select>
+            <div class="w-20">
+                <input
+                        type="text"
+                        id="new-unit"
+                        placeholder="Type to search units..."
+                        autocomplete="off"
+                        required
+                        class="w-full border border-gray-300 rounded px-3 py-1 focus:ring focus:ring-indigo-200"
+                />
+                <div id="unit-dropdown"
+                     class="absolute z-10 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 max-w-60 overflow-y-auto hidden">
+                    <!-- Volume Measurements -->
+                    <div class="px-3 py-2 bg-gray-100 font-semibold text-sm text-gray-700">Volume Measurements</div>
+                    <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="tsp">Teaspoon
+                        (tsp)
+                    </div>
+                    <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="tbsp">Tablespoon
+                        (tbsp)
+                    </div>
+                    <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="fl oz">Fluid ounce
+                        (fl oz)
+                    </div>
+                    <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="c">Cup (c)</div>
+                    <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="pt">Pint (pt)</div>
+                    <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="qt">Quart (qt)</div>
+                    <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="gal">Gallon (gal)
+                    </div>
+                    <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="ml">Milliliter
+                        (ml)
+                    </div>
+                    <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="cl">Centiliter
+                        (cl)
+                    </div>
+                    <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="dl">Deciliter (dl)
+                    </div>
+                    <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="l">Liter (l)</div>
+                    <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="drop">Drop</div>
+                    <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="dash">Dash</div>
+                    <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="pinch">Pinch</div>
+                    <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="splash">Splash</div>
+                    <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="glug">Glug</div>
+
+                    <!-- Weight Measurements -->
+                    <div class="px-3 py-2 bg-gray-100 font-semibold text-sm text-gray-700">Weight Measurements</div>
+                    <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="oz">Ounce (oz)</div>
+                    <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="lb">Pound (lb)</div>
+                    <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="g">Gram (g)</div>
+                    <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="kg">Kilogram (kg)
+                    </div>
+                    <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="mg">Milligram (mg)
+                    </div>
+
+                    <!-- Length/Size Measurements -->
+                    <div class="px-3 py-2 bg-gray-100 font-semibold text-sm text-gray-700">Length/Size Measurements
+                    </div>
+                    <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="in">Inch (in)</div>
+                    <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="cm">Centimeter
+                        (cm)
+                    </div>
+
+                    <!-- Cooking-Specific Terms -->
+                    <div class="px-3 py-2 bg-gray-100 font-semibold text-sm text-gray-700">Cooking-Specific Terms</div>
+                    <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="to taste"
+                         data-auto-zero="true">To taste (enter 0 for qty)
+                    </div>
+                    <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="handful">Handful
+                    </div>
+                    <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="sprig">Sprig</div>
+                    <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="bunch">Bunch</div>
+                    <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="clove">Clove</div>
+                    <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="head">Head</div>
+                    <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="slice">Slice</div>
+                    <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="wedge">Wedge</div>
+                    <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="stalk">Stalk</div>
+                    <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="leaf">Leaf</div>
+                    <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="leaves">Leaves</div>
+                    <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="scoop">Scoop</div>
+                    <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="stick">Stick</div>
+                    <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="strip">Strip</div>
+                    <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="piece">Piece</div>
+                    <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="cube">Cube</div>
+
+                    <!-- Approximate Measures -->
+                    <div class="px-3 py-2 bg-gray-100 font-semibold text-sm text-gray-700">Approximate Measures</div>
+                    <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="small">Small</div>
+                    <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="medium">Medium</div>
+                    <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="large">Large</div>
+                    <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="heaping">Heaping
+                    </div>
+                    <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="level">Level</div>
+                    <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="rounded">Rounded
+                    </div>
+                    <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="scant">Scant</div>
+
+                    <!-- Traditional/Regional Measures -->
+                    <div class="px-3 py-2 bg-gray-100 font-semibold text-sm text-gray-700">Traditional/Regional
+                        Measures
+                    </div>
+                    <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="jigger">Jigger</div>
+                    <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="shot">Shot</div>
+                    <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="peck">Peck</div>
+                    <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="bushel">Bushel</div>
+                    <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="gill">Gill</div>
+                    <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="dram">Dram</div>
+
+                    <!-- Non-Specific Terms -->
+                    <div class="px-3 py-2 bg-gray-100 font-semibold text-sm text-gray-700">Non-Specific Terms</div>
+                    <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="as needed"
+                         data-auto-zero="true">As needed (enter 0 for qty)
+                    </div>
+                    <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="for garnish"
+                         data-auto-zero="true">For garnish (enter 0 for qty)
+                    </div>
+                    <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="for serving"
+                         data-auto-zero="true">For serving (enter 0 for qty)
+                    </div>
+                    <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="optional"
+                         data-auto-zero="true">Optional (enter 0 for qty)
+                    </div>
+                    <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="to preference"
+                         data-auto-zero="true">To preference (enter 0 for qty)
+                    </div>
+                </div>
+            </div>
             <input
                     type="text"
                     id="new-ingredient"
                     placeholder="Search ingredient…"
-                    class="flex-1 border border-gray-300 rounded px-3 py-1 focus:ring focus:ring-indigo-200"
+                    pattern="^[A-Za-z ]{1,100}$"
+                    title="Must contain only letters and spaces (1-100 characters)."
+                    required
+                    class="col-span-3 border border-gray-300 rounded px-3 py-1 focus:ring focus:ring-indigo-200"
             />
             <button type="button" id="add-ingredient-btn"
-                    class="p-1 bg-green-500 text-white rounded hover:bg-green-600">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                     viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M12 4v16m8-8H4"/>
-                </svg>
+                    class="w-12 p-1 bg-green-500 text-white rounded hover:bg-green-600">
+                <span class="text-white-500 hover:text-white-700 text-2xl">&plus;</span>
             </button>
         </div>
+        <div id="ingredient-error" class="text-red-500 text-sm mb-1" aria-live="polite"></div>
     </div>
 
     <!-- Row 7: Tags -->
     <div class="space-y-2">
         <h2 class="text-lg font-semibold">Tags</h2>
-        <div id="tags-selected" class="flex space-x-2 flex-wrap"></div>
+        <div id="tags-selected" class="flex space-x-2 flex-wrap mb-2"></div>
         <div class="flex items-center space-x-2">
-            <input
-                    type="text"
-                    id="new-tag"
-                    placeholder="Search tag…"
-                    class="flex-1 border border-gray-300 rounded px-3 py-1 focus:ring focus:ring-indigo-200"
-            />
+            <div class="flex-1 relative">
+                <input
+                        type="text"
+                        id="new-tag"
+                        placeholder="Type to search tags..."
+                        autocomplete="off"
+                        class="w-full border border-gray-300 rounded px-3 py-2 focus:ring focus:ring-indigo-200"
+                />
+                <div id="tag-dropdown"
+                     class="absolute z-10 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto hidden">
+                    <!-- Dietary Preferences -->
+                    <div class="px-3 py-2 bg-gray-100 font-semibold text-sm text-gray-700">Dietary Preferences</div>
+                    <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Vegan">Vegan</div>
+                    <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Vegetarian">
+                        Vegetarian
+                    </div>
+                    <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Pescatarian">
+                        Pescatarian
+                    </div>
+                    <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Flexitarian">
+                        Flexitarian
+                    </div>
+                    <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Plant-based">
+                        Plant-based
+                    </div>
+                    <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Dairy-free">
+                        Dairy-free
+                    </div>
+                    <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Gluten-free">
+                        Gluten-free
+                    </div>
+                    <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Grain-free">
+                        Grain-free
+                    </div>
+                    <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Nut-free">Nut-free
+                    </div>
+                    <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Soy-free">Soy-free
+                    </div>
+                    <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Egg-free">Egg-free
+                    </div>
+                    <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Sugar-free">
+                        Sugar-free
+                    </div>
+                    <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Low-sugar">
+                        Low-sugar
+                    </div>
+                    <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Keto">Keto</div>
+                    <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Low-carb">Low-carb
+                    </div>
+                    <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Paleo">Paleo</div>
+                    <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Whole30">Whole30
+                    </div>
+                    <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="FODMAP-friendly">
+                        FODMAP-friendly
+                    </div>
+                    <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Allergen-friendly">
+                        Allergen-friendly
+                    </div>
+
+                    <!-- Recipe Types -->
+                    <div class="px-3 py-2 bg-gray-100 font-semibold text-sm text-gray-700">Recipe Types</div>
+                    <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="One-pot">One-pot
+                    </div>
+                    <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Sheet pan">Sheet
+                        pan
+                    </div>
+                    <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Slow cooker">Slow
+                        cooker
+                    </div>
+                    <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Instant Pot">Instant
+                        Pot
+                    </div>
+                    <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Air fryer">Air
+                        fryer
+                    </div>
+                    <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="No-cook">No-cook
+                    </div>
+                    <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Raw">Raw</div>
+                    <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Grilled">Grilled
+                    </div>
+                    <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Baked">Baked</div>
+                    <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Steamed">Steamed
+                    </div>
+                    <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Freezer-friendly">
+                        Freezer-friendly
+                    </div>
+                    <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Meal prep">Meal
+                        prep
+                    </div>
+                    <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Make-ahead">
+                        Make-ahead
+                    </div>
+                    <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Budget-friendly">
+                        Budget-friendly
+                    </div>
+                    <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Kid-friendly">
+                        Kid-friendly
+                    </div>
+
+                    <!-- Meal Categories -->
+                    <div class="px-3 py-2 bg-gray-100 font-semibold text-sm text-gray-700">Meal Categories</div>
+                    <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Breakfast">
+                        Breakfast
+                    </div>
+                    <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Brunch">Brunch</div>
+                    <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Lunch">Lunch</div>
+                    <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Dinner">Dinner</div>
+                    <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Snack">Snack</div>
+                    <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Appetizer">
+                        Appetizer
+                    </div>
+                    <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Side dish">Side
+                        dish
+                    </div>
+                    <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Main course">Main
+                        course
+                    </div>
+                    <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Dessert">Dessert
+                    </div>
+                    <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Drink">Drink</div>
+
+                    <!-- Special Occasions -->
+                    <div class="px-3 py-2 bg-gray-100 font-semibold text-sm text-gray-700">Special Occasions</div>
+                    <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Holiday">Holiday
+                    </div>
+                    <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Party">Party</div>
+                    <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Picnic">Picnic</div>
+                    <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Potluck">Potluck
+                    </div>
+                    <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Celebration">
+                        Celebration
+                    </div>
+                    <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Weeknight">
+                        Weeknight
+                    </div>
+                    <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Weekend">Weekend
+                    </div>
+
+                    <!-- Cooking Time -->
+                    <div class="px-3 py-2 bg-gray-100 font-semibold text-sm text-gray-700">Cooking Time</div>
+                    <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer"
+                         data-value="Quick (under 30 min)">Quick (under 30 min)
+                    </div>
+                    <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="30-minute meal">
+                        30-minute meal
+                    </div>
+                    <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Slow-cooked">
+                        Slow-cooked
+                    </div>
+                    <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Express">Express
+                    </div>
+                </div>
+            </div>
             <button type="button" id="add-tag-btn"
                     class="p-1 bg-green-500 text-white rounded hover:bg-green-600">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
@@ -200,84 +473,271 @@
 </form>
 
 <script>
-    const input = document.getElementById('photo-upload');
-    const preview = document.getElementById('photo-preview');
-    const placeholder = document.getElementById('photo-placeholder');
-    const removeBtn = document.getElementById('remove-photo-btn');
+    // Get DOM elements for file upload and preview
+    const input = document.getElementById('photo-upload'); // Hidden file input
+    const preview = document.getElementById('photo-preview'); // Container to show image preview
+    const placeholder = document.getElementById('photo-placeholder'); // Placeholder text/icon
+    const removeBtn = document.getElementById('remove-photo-btn'); // Button to remove selected image
 
+    // Listen for file selection
     input.addEventListener('change', () => {
-        const file = input.files[0];
-        if (!file) return;
+        const file = input.files[0]; // Only take the first file
+        if (!file) return; // Exit if no file chosen
 
-        // Clear any existing preview
+        // Remove any existing <img> elements inside preview
         preview.querySelectorAll('img').forEach(img => img.remove());
+        // Hide the placeholder
         placeholder.classList.add('hidden');
 
-        // Show remove button
+        // Show the remove button so user can clear the image
         removeBtn.classList.remove('hidden');
 
-        // Read & display the new image
+        // Use FileReader to read the image as a data URL
         const reader = new FileReader();
         reader.onload = e => {
+            // Create an <img> element with the loaded data
             const img = document.createElement('img');
             img.src = e.target.result;
             img.alt = 'Recipe photo preview';
             img.className = 'object-cover w-full h-full';
-            preview.appendChild(img);
+            preview.appendChild(img); // Add image to preview container
         };
-        reader.readAsDataURL(file);
+        reader.readAsDataURL(file); // Trigger file read
     });
 
+    // Remove photo button click handler
     removeBtn.addEventListener('click', e => {
-        e.stopPropagation(); // prevent label click
-        // Remove preview image(s)
+        e.stopPropagation(); // Prevent the click from reopening the file picker
+        // Remove any preview images
         preview.querySelectorAll('img').forEach(img => img.remove());
-        // Hide delete button
+        // Hide the remove button again
         removeBtn.classList.add('hidden');
-        // Show placeholder again
+        // Show the placeholder back
         placeholder.classList.remove('hidden');
-        // Clear the file input so same file can be re-selected
+        // Clear the file input so same file can be reselected
         input.value = '';
     });
 
-    // minimal JS for add/remove ingredients & tags
-    const ingList = document.getElementById('ingredients-list');
-    document.getElementById('add-ingredient-btn').onclick = () => {
-        const qty = document.getElementById('new-qty').value;
-        const unit = document.getElementById('new-unit').value;
-        const name = document.getElementById('new-ingredient').value;
-        if (!qty || !name) return;
-        const row = document.createElement('div');
-        row.className = 'grid grid-cols-6 gap-4 items-center';
-        row.innerHTML = `
-        <div><input type="hidden" name="ing_qty[]" value="${qty}" />${qty}</div>
-        <div><input type="hidden" name="ing_unit[]" value="${unit}" />${unit}</div>
-        <div class="col-span-3"><input type="hidden" name="ing_name[]" value="${name}" />${name}</div>
-        <div>
-          <button type="button" class="text-red-500 hover:text-red-700 remove-ingredient">
-            &times;
-          </button>
-        </div>`;
-        ingList.appendChild(row);
-        row.querySelector('.remove-ingredient').onclick = () => row.remove();
-        document.getElementById('new-qty').value = '';
-        document.getElementById('new-ingredient').value = '';
-    };
+    // Run when the page finishes loading
+    document.addEventListener('DOMContentLoaded', function () {
+        // Unit dropdown variables
+        const unitInput = document.getElementById('new-unit');
+        const quantityInput = document.getElementById('new-qty');
+        const dropdown = document.getElementById('unit-dropdown');
+        const unitOptions = document.querySelectorAll('.unit-option');
 
-    const tagList = document.getElementById('tags-selected');
-    document.getElementById('add-tag-btn').onclick = () => {
-        const name = document.getElementById('new-tag').value;
-        if (!name) return;
-        const pill = document.createElement('div');
-        pill.className = 'flex items-center bg-gray-200 rounded-full px-3 py-1';
-        pill.innerHTML = `
-        <span>${name}</span>
-        <button type="button" class="ml-2 text-red-500 hover:text-red-700">&times;</button>`;
-        tagList.appendChild(pill);
-        pill.querySelector('button').onclick = () => pill.remove();
-        document.getElementById('new-tag').value = '';
-    };
+        // Show unit dropdown when input gains focus
+        unitInput.addEventListener('focus', function () {
+            dropdown.classList.remove('hidden');
+            filterUnits(''); // Show all options initially
+        });
+
+        // Hide dropdown when clicking outside both input and dropdown
+        document.addEventListener('click', function (e) {
+            if (!unitInput.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.classList.add('hidden');
+            }
+        });
+
+        // Filter unit list based on typed text
+        unitInput.addEventListener('input', function () {
+            const searchTerm = this.value.toLowerCase();
+            filterUnits(searchTerm);
+        });
+
+        // When a unit option is clicked
+        unitOptions.forEach(option => {
+            option.addEventListener('click', function () {
+                const unitValue = this.getAttribute('data-value');
+                const autoZero = this.getAttribute('data-auto-zero');
+
+                // Set the input to the unit's value
+                unitInput.value = unitValue;
+
+                // If this unit should auto-zero the quantity (e.g., "to taste"), set and highlight
+                if (autoZero === 'true') {
+                    quantityInput.value = '0';
+                    quantityInput.style.backgroundColor = '#fef3cd'; // Temporary highlight
+                    setTimeout(() => {
+                        quantityInput.style.backgroundColor = '';
+                    }, 2000);
+                }
+
+                // Hide dropdown after selection
+                dropdown.classList.add('hidden');
+            });
+        });
+
+        // Ingredient section: handle add button and validation
+        const errorDiv = document.getElementById('ingredient-error');
+        document.getElementById('add-ingredient-btn').addEventListener('click', function () {
+            const qty = quantityInput.value.trim();
+            const unit = unitInput.value.trim();
+            const ingredient = document.getElementById('new-ingredient').value.trim();
+
+            errorDiv.textContent = ''; // Clear previous errors
+
+            // Simple validation: all fields are required
+            if (!qty || !unit || !ingredient) {
+                errorDiv.textContent = 'Please fill in all three fields before adding.';
+                return;
+            }
+            if (isNaN(qty) || parseFloat(qty) < 0) {
+                errorDiv.textContent = 'Quantity must be a number ≥ 0.';
+                return;
+            }
+
+            // Add the validated ingredient to the list
+            addIngredientToList(qty, unit, ingredient);
+            errorDiv.textContent = ''; // Clear error on success
+
+            // Reset inputs for next entry
+            quantityInput.value = '';
+            unitInput.value = '';
+            document.getElementById('new-ingredient').value = '';
+        });
+
+        // Helper: append a new ingredient row
+        function addIngredientToList(qty, unit, ingredient) {
+            const ingredientsList = document.getElementById('ingredients-list');
+            const row = document.createElement('div');
+            row.className = 'ingredient-row grid grid-cols-6 gap-4 items-center py-2 border-b border-gray-100';
+
+            // If qty is zero, display empty to follow "to taste" convention
+            const displayQty = (parseFloat(qty) === 0) ? '' : qty;
+
+            row.innerHTML = `
+            <div class="w-20 text-sm">${displayQty}</div>
+            <div class="w-40 text-sm">${unit}</div>
+            <div class="col-span-3 text-sm">${ingredient}</div>
+            <button type="button" class="remove-ingredient"><span class="text-red-500 hover:text-red-700 text-2xl">&times;</span></button>
+        `;
+
+            // Clicking the remove button deletes this row
+            row.querySelector('.remove-ingredient').addEventListener('click', function () {
+                row.remove();
+            });
+
+            ingredientsList.appendChild(row);
+        }
+
+        // Filter units dropdown to matching terms & hide empty categories
+        function filterUnits(searchTerm) {
+            unitOptions.forEach(option => {
+                const text = option.textContent.toLowerCase();
+                const value = option.getAttribute('data-value').toLowerCase();
+                option.style.display = (text.includes(searchTerm) || value.includes(searchTerm)) ? 'block' : 'none';
+            });
+
+            // Show/hide group headers based on if any child options are visible
+            const headers = dropdown.querySelectorAll('.bg-gray-100');
+            headers.forEach(header => {
+                let sibling = header.nextElementSibling;
+                let hasVisible = false;
+                while (sibling && !sibling.classList.contains('bg-gray-100')) {
+                    if (sibling.classList.contains('unit-option') && sibling.style.display !== 'none') {
+                        hasVisible = true;
+                        break;
+                    }
+                    sibling = sibling.nextElementSibling;
+                }
+                header.style.display = hasVisible ? 'block' : 'none';
+            });
+        }
+    });
+
+    // Tags functionality: similar setup as units
+    document.addEventListener('DOMContentLoaded', function () {
+        const tagInput = document.getElementById('new-tag');
+        const tagDropdown = document.getElementById('tag-dropdown');
+        const tagOptions = document.querySelectorAll('.tag-option');
+        const selectedTags = new Set(); // Track chosen tags
+
+        // Show tag dropdown on focus
+        tagInput.addEventListener('focus', function () {
+            tagDropdown.classList.remove('hidden');
+            filterTags('');
+        });
+
+        // Hide when clicking elsewhere
+        document.addEventListener('click', function (e) {
+            if (!tagInput.contains(e.target) && !tagDropdown.contains(e.target)) {
+                tagDropdown.classList.add('hidden');
+            }
+        });
+
+        // Dynamic filtering as user types
+        tagInput.addEventListener('input', function () {
+            filterTags(this.value.toLowerCase());
+        });
+
+        // Click a tag option to add
+        tagOptions.forEach(option => {
+            option.addEventListener('click', function () {
+                const tagValue = this.getAttribute('data-value');
+                if (!selectedTags.has(tagValue)) {
+                    addTag(tagValue);
+                    tagInput.value = '';
+                    tagDropdown.classList.add('hidden');
+                }
+            });
+        });
+
+        // Add-button for custom tags
+        document.getElementById('add-tag-btn').addEventListener('click', function () {
+            const tagValue = tagInput.value.trim();
+            if (tagValue && !selectedTags.has(tagValue)) {
+                addTag(tagValue);
+                tagInput.value = '';
+            }
+        });
+
+        // Append a selected tag element
+        function addTag(tagValue) {
+            selectedTags.add(tagValue);
+            const tagsContainer = document.getElementById('tags-selected');
+            const tagElement = document.createElement('span');
+            tagElement.className = 'inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800';
+            tagElement.innerHTML = `
+            ${tagValue}
+            <button type="button" class="ml-2 text-red-600 hover:text-red-800" onclick="removeTag('${tagValue}', this)">
+                &times;
+            </button>
+        `;
+            tagsContainer.appendChild(tagElement);
+        }
+
+        // Global remove function to delete tag
+        window.removeTag = function (tagValue, buttonElement) {
+            selectedTags.delete(tagValue);
+            buttonElement.parentElement.remove();
+        };
+
+        // Filter tag dropdown options and headers
+        function filterTags(searchTerm) {
+            tagOptions.forEach(option => {
+                const text = option.textContent.toLowerCase();
+                const value = option.getAttribute('data-value').toLowerCase();
+                option.style.display = (text.includes(searchTerm) || value.includes(searchTerm)) ? 'block' : 'none';
+            });
+
+            const headers = tagDropdown.querySelectorAll('.bg-gray-100');
+            headers.forEach(header => {
+                let sibling = header.nextElementSibling;
+                let hasVisible = false;
+                while (sibling && !sibling.classList.contains('bg-gray-100')) {
+                    if (sibling.classList.contains('tag-option') && sibling.style.display !== 'none') {
+                        hasVisible = true;
+                        break;
+                    }
+                    sibling = sibling.nextElementSibling;
+                }
+                header.style.display = hasVisible ? 'block' : 'none';
+            });
+        }
+    });
 </script>
+
 </body>
 
 {% include "components/footer.html" %}
