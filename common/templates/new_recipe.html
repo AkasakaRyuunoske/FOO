@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create New Recipe</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+    />
+</head>
+
+{% include "components/header.html" %}
+
+<body class="bg-gray-100 px-8 py-4">
+<form
+        id="new-recipe-form"
+        action="/api/recipes/"
+        method="POST"
+        class="w-full max-w-2xl my-5 bg-white border border-gray-200 rounded-lg shadow p-6 space-y-8 mx-auto"
+>
+
+    <!-- Row 1: Title + Photo upload -->
+    <div class="space-y-4">
+        <h1 class="text-3xl font-bold">Create New Recipe</h1>
+        <label for="photo-upload" class="block">
+            <div class="h-48 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center hover:border-gray-400 cursor-pointer">
+                <span class="text-gray-500 font-medium">Add recipe photo</span>
+                <span class="material-symbols-outlined text-3xl">
+                    add_a_photo
+                </span>
+            </div>
+            <input type="file" name="photo" id="photo-upload" accept="image/*" class="hidden"/>
+        </label>
+    </div>
+
+    <!-- Row 2: Recipe Name -->
+    <div class="space-y-1">
+        <label for="name" class="block text-sm font-medium">Recipe Name</label>
+        <input type="text" name="name" id="name" required
+               class="w-full border border-gray-300 rounded px-3 py-2 focus:ring focus:ring-indigo-200"/>
+    </div>
+
+    <!-- Row 3: Description -->
+    <div class="space-y-1">
+        <label for="description" class="block text-sm font-medium">Description</label>
+        <textarea name="description" id="description" rows="4" required
+                  class="w-full border border-gray-300 rounded px-3 py-2 focus:ring focus:ring-indigo-200"></textarea>
+    </div>
+
+    <!-- Row 4: Cooking Time -->
+    <div class="space-y-1">
+        <label class="block text-sm font-medium">Cooking Time</label>
+        <div class="flex space-x-4">
+            <input type="number" name="cook_time_value" min="1" required
+                   class="w-24 border border-gray-300 rounded px-2 py-2 focus:ring focus:ring-indigo-200"/>
+            <select name="cook_time_unit" required
+                    class="border border-gray-300 rounded px-3 py-2 focus:ring focus:ring-indigo-200">
+                <option value="minutes">Minutes</option>
+                <option value="hours">Hours</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Row 5: Difficulty -->
+    <div class="space-y-1">
+        <label for="difficulty" class="block text-sm font-medium">Difficulty</label>
+        <select name="difficulty" id="difficulty" required
+                class="w-40 border border-gray-300 rounded px-3 py-2 focus:ring focus:ring-indigo-200">
+            <option value="">Select…</option>
+            <option value="Easy">Easy</option>
+            <option value="Medium">Medium</option>
+            <option value="Hard">Hard</option>
+        </select>
+    </div>
+
+    <!-- Row 6: Ingredients -->
+    <div class="space-y-2">
+        <h2 class="text-lg font-semibold">Ingredients</h2>
+        <!-- Header for existing ingredients -->
+        <div class="grid grid-cols-6 gap-4 font-medium text-gray-700">
+            <div>Qty</div>
+            <div>Unit</div>
+            <div class="col-span-3">Ingredient</div>
+            <div></div>
+        </div>
+        <div id="ingredients-list" class="space-y-2"></div>
+
+        <!-- Add new ingredient row -->
+        <div class="flex items-center space-x-2">
+            <input
+                    type="number"
+                    id="new-qty"
+                    placeholder="Qty"
+                    class="w-20 border border-gray-300 rounded px-2 py-1 focus:ring focus:ring-indigo-200"
+            />
+            <select id="new-unit"
+                    class="border border-gray-300 rounded px-3 py-1 focus:ring focus:ring-indigo-200">
+                <option>teaspoon</option>
+                <option>cup</option>
+                <option>kilo</option>
+                <option>ml</option>
+                <option>l</option>
+            </select>
+            <input
+                    type="text"
+                    id="new-ingredient"
+                    placeholder="Search ingredient…"
+                    class="flex-1 border border-gray-300 rounded px-3 py-1 focus:ring focus:ring-indigo-200"
+            />
+            <button type="button" id="add-ingredient-btn"
+                    class="p-1 bg-green-500 text-white rounded hover:bg-green-600">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                     viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M12 4v16m8-8H4"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Row 7: Tags -->
+    <div class="space-y-2">
+        <h2 class="text-lg font-semibold">Tags</h2>
+        <div id="tags-selected" class="flex space-x-2 flex-wrap"></div>
+        <div class="flex items-center space-x-2">
+            <input
+                    type="text"
+                    id="new-tag"
+                    placeholder="Search tag…"
+                    class="flex-1 border border-gray-300 rounded px-3 py-1 focus:ring focus:ring-indigo-200"
+            />
+            <button type="button" id="add-tag-btn"
+                    class="p-1 bg-green-500 text-white rounded hover:bg-green-600">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                     viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M12 4v16m8-8H4"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Row 8: Servings -->
+    <div class="space-y-1">
+        <label for="servings" class="block text-sm font-medium">Servings</label>
+        <input type="number" name="servings" id="servings" min="1" required
+               class="w-24 border border-gray-300 rounded px-2 py-2 focus:ring focus:ring-indigo-200"/>
+    </div>
+
+    <!-- Row 9: Actions -->
+    <div class="flex justify-between">
+        <button type="reset"
+                class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">
+            Clear All
+        </button>
+        <button type="submit"
+                class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">
+            Publish
+        </button>
+    </div>
+</form>
+
+<script>
+    // minimal JS for add/remove ingredients & tags
+    const ingList = document.getElementById('ingredients-list');
+    document.getElementById('add-ingredient-btn').onclick = () => {
+        const qty = document.getElementById('new-qty').value;
+        const unit = document.getElementById('new-unit').value;
+        const name = document.getElementById('new-ingredient').value;
+        if (!qty || !name) return;
+        const row = document.createElement('div');
+        row.className = 'grid grid-cols-6 gap-4 items-center';
+        row.innerHTML = `
+        <div><input type="hidden" name="ing_qty[]" value="${qty}" />${qty}</div>
+        <div><input type="hidden" name="ing_unit[]" value="${unit}" />${unit}</div>
+        <div class="col-span-3"><input type="hidden" name="ing_name[]" value="${name}" />${name}</div>
+        <div>
+          <button type="button" class="text-red-500 hover:text-red-700 remove-ingredient">
+            &times;
+          </button>
+        </div>`;
+        ingList.appendChild(row);
+        row.querySelector('.remove-ingredient').onclick = () => row.remove();
+        document.getElementById('new-qty').value = '';
+        document.getElementById('new-ingredient').value = '';
+    };
+
+    const tagList = document.getElementById('tags-selected');
+    document.getElementById('add-tag-btn').onclick = () => {
+        const name = document.getElementById('new-tag').value;
+        if (!name) return;
+        const pill = document.createElement('div');
+        pill.className = 'flex items-center bg-gray-200 rounded-full px-3 py-1';
+        pill.innerHTML = `
+        <span>${name}</span>
+        <button type="button" class="ml-2 text-red-500 hover:text-red-700">&times;</button>`;
+        tagList.appendChild(pill);
+        pill.querySelector('button').onclick = () => pill.remove();
+        document.getElementById('new-tag').value = '';
+    };
+</script>
+</body>
+
+{% include "components/footer.html" %}
+
+</html>

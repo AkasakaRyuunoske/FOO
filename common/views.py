@@ -1,7 +1,9 @@
 import random
 
 from django.core.paginator import Paginator
-from django.shortcuts import render
+from django.http import HttpResponseBadRequest
+from django.shortcuts import render, redirect
+from django.views import View
 
 from RecipeManager.models import Recipe
 
@@ -54,3 +56,32 @@ def discover(request):
     return render(request, "discover.html", {
         "page_obj": page_obj,
     })
+
+
+class CreateRecipeView(View):
+    template_name = 'new_recipe.html'
+
+    def get(self, request):
+        return render(request, self.template_name)
+
+    def post(self, request):
+        # simple validation
+        name = request.POST.get('name')
+        desc = request.POST.get('description')
+        cook_val = request.POST.get('cook_time_value')
+        cook_unit = request.POST.get('cook_time_unit')
+        difficulty = request.POST.get('difficulty')
+        servings = request.POST.get('servings')
+
+        if not all([name, desc, cook_val, cook_unit, difficulty, servings]):
+            return HttpResponseBadRequest("Missing required fields")
+
+        r = Recipe.objects.create(
+            name=name,
+            instructions=desc,
+            # you'll need to handle photo upload separately,
+            # e.g. request.FILES['photo'] and a proper ImageField on Recipe
+        )
+        # you can parse and save ingredients/tags manually here…
+
+        return redirect('recipe_detail', pk=r.pk)
