@@ -24,28 +24,66 @@
     <div class="space-y-4">
         <h1 class="text-3xl font-bold">Create New Recipe</h1>
         <label for="photo-upload" class="block">
-            <div class="h-48 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center hover:border-gray-400 cursor-pointer">
-                <span class="text-gray-500 font-medium">Add recipe photo</span>
-                <span class="material-symbols-outlined text-3xl">
-                    add_a_photo
-                </span>
+            <div
+                    id="photo-preview"
+                    class="relative h-48 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center hover:border-gray-400 cursor-pointer overflow-hidden"
+            >
+                <!-- Placeholder content -->
+                <div id="photo-placeholder" class="flex flex-col items-center text-gray-500">
+                    <span class="font-medium">Add recipe photo</span>
+                    <span class="material-symbols-outlined text-3xl mt-1">
+          add_a_photo
+        </span>
+                </div>
+
+                <!-- Delete button, hidden until an image is loaded -->
+                <button
+                        id="remove-photo-btn"
+                        type="button"
+                        class="hidden absolute top-0 right-2 p-1 focus:outline-none"
+                        aria-label="Remove photo"
+                >
+                    <span class="text-red-500 hover:text-red-700 text-3xl">&times;</span>
+                </button>
             </div>
-            <input type="file" name="photo" id="photo-upload" accept="image/*" class="hidden"/>
+            <input
+                    type="file"
+                    name="photo"
+                    id="photo-upload"
+                    accept="image/*"
+                    class="hidden"
+            />
         </label>
     </div>
 
     <!-- Row 2: Recipe Name -->
     <div class="space-y-1">
         <label for="name" class="block text-sm font-medium">Recipe Name</label>
-        <input type="text" name="name" id="name" required
-               class="w-full border border-gray-300 rounded px-3 py-2 focus:ring focus:ring-indigo-200"/>
+        <input
+                type="text"
+                name="name"
+                id="name"
+                required
+                maxlength="70"
+                pattern="^[A-Za-z ]{1,70}$"
+                title="Must contain only letters and spaces (1–70 characters)."
+                class="w-full border border-gray-300 rounded px-3 py-2 focus:ring focus:ring-indigo-200"
+        />
     </div>
 
     <!-- Row 3: Description -->
     <div class="space-y-1">
         <label for="description" class="block text-sm font-medium">Description</label>
-        <textarea name="description" id="description" rows="4" required
-                  class="w-full border border-gray-300 rounded px-3 py-2 focus:ring focus:ring-indigo-200"></textarea>
+        <textarea
+                name="description"
+                id="description"
+                rows="4"
+                required
+                maxlength="500"
+                pattern="^[A-Za-z0-9\s\.,!?;:()\-_'" &@#$%*+=\[\]{}|\\/]{1,500}$"
+                title="Must contain only letters, numbers, spaces, and common symbols (1–500 characters)."
+                class="w-full border border-gray-300 rounded px-3 py-2 focus:ring focus:ring-indigo-200 resize-y min-h-20"
+        ></textarea>
     </div>
 
     <!-- Row 4: Cooking Time -->
@@ -56,8 +94,8 @@
                    class="w-24 border border-gray-300 rounded px-2 py-2 focus:ring focus:ring-indigo-200"/>
             <select name="cook_time_unit" required
                     class="border border-gray-300 rounded px-3 py-2 focus:ring focus:ring-indigo-200">
-                <option value="minutes">Minutes</option>
-                <option value="hours">Hours</option>
+                <option value="minutes">minutes</option>
+                <option value="hours">hours</option>
             </select>
         </div>
     </div>
@@ -162,6 +200,46 @@
 </form>
 
 <script>
+    const input = document.getElementById('photo-upload');
+    const preview = document.getElementById('photo-preview');
+    const placeholder = document.getElementById('photo-placeholder');
+    const removeBtn = document.getElementById('remove-photo-btn');
+
+    input.addEventListener('change', () => {
+        const file = input.files[0];
+        if (!file) return;
+
+        // Clear any existing preview
+        preview.querySelectorAll('img').forEach(img => img.remove());
+        placeholder.classList.add('hidden');
+
+        // Show remove button
+        removeBtn.classList.remove('hidden');
+
+        // Read & display the new image
+        const reader = new FileReader();
+        reader.onload = e => {
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.alt = 'Recipe photo preview';
+            img.className = 'object-cover w-full h-full';
+            preview.appendChild(img);
+        };
+        reader.readAsDataURL(file);
+    });
+
+    removeBtn.addEventListener('click', e => {
+        e.stopPropagation(); // prevent label click
+        // Remove preview image(s)
+        preview.querySelectorAll('img').forEach(img => img.remove());
+        // Hide delete button
+        removeBtn.classList.add('hidden');
+        // Show placeholder again
+        placeholder.classList.remove('hidden');
+        // Clear the file input so same file can be re-selected
+        input.value = '';
+    });
+
     // minimal JS for add/remove ingredients & tags
     const ingList = document.getElementById('ingredients-list');
     document.getElementById('add-ingredient-btn').onclick = () => {
