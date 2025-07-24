@@ -2,16 +2,11 @@
 {% comment %} components/recipe_card.html {% endcomment %}
 
 <div onclick="openModal()" class="bg-white p-1.5 rounded-md shadow-lg transition duration-200 hover:shadow-xl hover:scale-105 max-w-[380px] mx-auto w-full {% if show_description_inline %}p-2{% else %}aspect-square{% endif %}"> <!-- External Padding -->
-  <div class="border-2 border-black p-2 bg-white w-full flex flex-col justify-between group relative rounded min-w-0 min-h-0 min-h-[280px] transition-all duration-300 ease-in-out overflow-visible">    <!-- Black line inside square -->
-
-    <!-- Bookmark on the right with a transition on hover -->
-    <button class="bookmark-btn absolute top-3 right-1 aspect-square w-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10" aria-label="Toggle bookmark" type="button">
-      <img class="bookmark-icon w-full h-full transition-opacity duration-200" src="{% static 'icons/bookmark-white.png' %}" alt="Bookmark">
-    </button>
+  <div class="border-2 border-black p-2 bg-white w-full flex flex-col justify-between group relative rounded min-w-0 min-h-[280px] transition-all duration-300 ease-in-out overflow-visible">    <!-- Black line inside square -->
 
     <!-- Recipe Name -->
     <div class="flex-1 flex flex-col min-w-0">
-      <h2 class="text-center font-bold mb-2 text-sm sm:text-base break-words line-clamp-2 leading-tight">
+      <h2 class="text-center font-bold mb-2 text-sm sm:text-base break-words {% if show_description_inline %}line-clamp-2{% else %}line-clamp-1{% endif %} leading-tight">
           {{ recipe.name|truncatechars:40 }}
       </h2>
 
@@ -137,7 +132,25 @@
     <!-- HEADER: Title and Close Button -->
     <div class="flex justify-between items-center mb-4">
       <h2 class="text-2xl font-semibold">Melanzane alla Parmigiana</h2>
-      <button onclick="closeModal()" class="text-gray-600 text-sm hover:text-black">✕</button>
+
+      <div class="absolute top-2 right-2 flex items-center gap-2 z-50">
+        <!-- Bookmark Toggle Button -->
+        <button
+          class="bookmark-btn aspect-square w-16 mt-1"
+          onclick="toggleBookmark({{ recipe.id }})"
+          aria-label="Toggle bookmark"
+        >
+          <img
+            id="bookmark-icon-{{ recipe.id }}"
+            src="{% static 'icons/bookmark-white.png' %}"
+            class="w-full h-full transition duration-150"
+            alt="Bookmark"
+          >
+        </button>
+
+        <!-- Close Button -->
+        <button onclick="closeModal()" class="text-gray-600 text-sm hover:text-black">✕</button>
+      </div>
     </div>
 
     <!-- Image -->
@@ -236,43 +249,37 @@
 
 <!-- Script for the Bookmark button -->
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
+  function toggleBookmark() {
     const buttons = document.querySelectorAll('.bookmark-btn');
 
-    buttons.forEach(btn => {
-      const icon = btn.querySelector('.bookmark-icon');
+    buttons.forEach(button => {
+      const icon = button.querySelector('img');
       let bookmarked = false;
 
-      btn.addEventListener('click', function (e) {
-        event.stopPropagation();
+      button.addEventListener('click', function (e) {
         e.preventDefault();
+        e.stopPropagation();
         bookmarked = !bookmarked;
-
-        if (bookmarked) {
-          icon.src = "{% static 'icons/bookmark-black.png' %}";
-          btn.classList.remove("opacity-0", "group-hover:opacity-100");
-          btn.classList.add("opacity-100");
-        } else {
-          icon.src = "{% static 'icons/bookmark-white.png' %}";
-          btn.classList.remove("opacity-100");
-          btn.classList.add("opacity-0", "group-hover:opacity-100");
-        }
+        icon.src = bookmarked
+          ? "{% static 'icons/bookmark-black.png' %}"
+          : "{% static 'icons/bookmark-white.png' %}";
       });
 
-      btn.addEventListener('mouseenter', function () {
+      button.addEventListener('mouseenter', function () {
         if (!bookmarked) {
           icon.src = "{% static 'icons/bookmark-black.png' %}";
         }
       });
 
-      btn.addEventListener('mouseleave', function () {
+      button.addEventListener('mouseleave', function () {
         if (!bookmarked) {
           icon.src = "{% static 'icons/bookmark-white.png' %}";
         }
       });
     });
-  });
+  }
 </script>
+
 
 
 <!-- Script for the Ratings -->
