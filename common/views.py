@@ -42,6 +42,11 @@ def get_random_n_recipes(n=60):
 
 
 def discover(request):
+    return render(request, "discover.html", None)
+
+
+def recipe_details(request):
+    return render(request, "recipe_details.html", None)
     # TODO: Qui va il modello
     recipes = Recipe.objects.all()
 
@@ -54,3 +59,6 @@ def discover(request):
     return render(request, "discover.html", {
         "page_obj": page_obj,
     })
+
+def recipe_details(request):
+    return render(request, "recipe_details.html", None)
