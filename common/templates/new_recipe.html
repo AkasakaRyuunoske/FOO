@@ -523,7 +523,7 @@
             handleFileChange() {
                 const file = this.input.files[0];
                 if (!file) return;
-
+                this.preview.classList.replace('border-dashed','border-solid');
                 this.clearPreview();
                 this.showRemoveButton();
                 this.displayImage(file);
@@ -553,6 +553,7 @@
             handleRemove(e) {
                 e.stopPropagation();
                 this.preview.querySelectorAll('img').forEach(img => img.remove());
+                this.preview.classList.replace('border-solid','border-dashed');
                 this.removeBtn.classList.add('hidden');
                 this.placeholder.classList.remove('hidden');
                 this.input.value = '';
