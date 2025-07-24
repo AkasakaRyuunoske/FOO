@@ -254,25 +254,30 @@
 
     buttons.forEach(button => {
       const icon = button.querySelector('img');
-      let bookmarked = false;
+
+
+      button.dataset.bookmarked = 'false';
 
       button.addEventListener('click', function (e) {
         e.preventDefault();
         e.stopPropagation();
-        bookmarked = !bookmarked;
-        icon.src = bookmarked
+
+        const isBookmarked = button.dataset.bookmarked === 'true';
+        button.dataset.bookmarked = (!isBookmarked).toString();
+
+        icon.src = isBookmarked
           ? "{% static 'icons/bookmark-black.png' %}"
           : "{% static 'icons/bookmark-white.png' %}";
       });
 
       button.addEventListener('mouseenter', function () {
-        if (!bookmarked) {
+        if (button.dataset.bookmarked === 'false') {
           icon.src = "{% static 'icons/bookmark-black.png' %}";
         }
       });
 
       button.addEventListener('mouseleave', function () {
-        if (!bookmarked) {
+        if (button.dataset.bookmarked === 'true') {
           icon.src = "{% static 'icons/bookmark-white.png' %}";
         }
       });
