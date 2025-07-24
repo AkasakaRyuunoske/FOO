@@ -13,17 +13,17 @@
         <div>
             <h2>Sign Up</h2>
 
-            <form method="post">
+            <form method="post" action="{% url 'register' %}">
                 {% csrf_token %}
 
-                <label for="username">Username</label>
-                <input type="text" name="username" id="username">
+                <label for="{{ form.username.id_for_label }}">Username</label>
+                {{ form.username }}
 
-                <label for="password">Password</label>
-                <input type="password" name="password" id="password">
+                <label for="{{ form.password1.id_for_label }}">Password</label>
+                {{ form.password1 }}
 
-                <label for="confirm-password">Confirm Password</label>
-                <input type="password" name="confirm-password" id="confirm-password">
+                <label for="{{ form.password2.id_for_label }}">Confirm Password</label>
+                {{ form.password2 }}
 
                 <input type="submit" value="Sign up">
             </form>
