@@ -266,8 +266,8 @@
         button.dataset.bookmarked = (!isBookmarked).toString();
 
         icon.src = isBookmarked
-          ? "{% static 'icons/bookmark-black.png' %}"
-          : "{% static 'icons/bookmark-white.png' %}";
+          ? "{% static 'icons/bookmark-white.png' %}"
+          : "{% static 'icons/bookmark-black.png' %}";
       });
 
       button.addEventListener('mouseenter', function () {
@@ -277,7 +277,7 @@
       });
 
       button.addEventListener('mouseleave', function () {
-        if (button.dataset.bookmarked === 'true') {
+        if (button.dataset.bookmarked === 'false') {
           icon.src = "{% static 'icons/bookmark-white.png' %}";
         }
       });
