@@ -23,8 +23,8 @@
                     <div id="photo-placeholder" class="flex flex-col items-center text-gray-500">
                         <span class="font-medium">Add recipe photo</span>
                         <span class="material-symbols-outlined text-3xl mt-1">
-          add_a_photo
-        </span>
+                            add_a_photo
+                        </span>
                     </div>
 
                     <!-- Delete button, hidden until an image is loaded -->
@@ -486,11 +486,9 @@
                 </div>
                 <button type="button" id="add-tag-btn"
                         class="p-1 bg-green-500 text-white rounded hover:bg-green-600">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                         viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M12 4v16m8-8H4"/>
-                    </svg>
+                    <span class="material-symbols-outlined">
+                        add
+                    </span>
                 </button>
             </div>
         </div>
@@ -509,268 +507,386 @@
     </form>
 
     <script>
-        // Get DOM elements for file upload and preview
-        const input = document.getElementById('photo-upload'); // Hidden file input
-        const preview = document.getElementById('photo-preview'); // Container to show image preview
-        const placeholder = document.getElementById('photo-placeholder'); // Placeholder text/icon
-        const removeBtn = document.getElementById('remove-photo-btn'); // Button to remove selected image
-
-        // Listen for file selection
-        input.addEventListener('change', () => {
-            const file = input.files[0]; // Only take the first file
-            if (!file) return; // Exit if no file chosen
-
-            // Remove any existing <img> elements inside preview
-            preview.querySelectorAll('img').forEach(img => img.remove());
-            // Hide the placeholder
-            placeholder.classList.add('hidden');
-
-            // Show the remove button so user can clear the image
-            removeBtn.classList.remove('hidden');
-
-            // Use FileReader to read the image as a data URL
-            const reader = new FileReader();
-            reader.onload = e => {
-                // Create an <img> element with the loaded data
-                const img = document.createElement('img');
-                img.src = e.target.result;
-                img.alt = 'Recipe photo preview';
-                img.className = 'object-cover w-full h-full';
-                preview.appendChild(img); // Add image to preview container
-            };
-            reader.readAsDataURL(file); // Trigger file read
-        });
-
-        // Remove photo button click handler
-        removeBtn.addEventListener('click', e => {
-            e.stopPropagation(); // Prevent the click from reopening the file picker
-            // Remove any preview images
-            preview.querySelectorAll('img').forEach(img => img.remove());
-            // Hide the remove button again
-            removeBtn.classList.add('hidden');
-            // Show the placeholder back
-            placeholder.classList.remove('hidden');
-            // Clear the file input so same file can be reselected
-            input.value = '';
-        });
-
-        // Run when the page finishes loading
-        document.addEventListener('DOMContentLoaded', function () {
-            // Unit dropdown variables
-            const unitInput = document.getElementById('new-unit');
-            const quantityInput = document.getElementById('new-qty');
-            const dropdown = document.getElementById('unit-dropdown');
-            const unitOptions = document.querySelectorAll('.unit-option');
-
-            // Show unit dropdown when input gains focus
-            unitInput.addEventListener('focus', function () {
-                dropdown.classList.remove('hidden');
-                filterUnits(''); // Show all options initially
-            });
-
-            // Hide dropdown when clicking outside both input and dropdown
-            document.addEventListener('click', function (e) {
-                if (!unitInput.contains(e.target) && !dropdown.contains(e.target)) {
-                    dropdown.classList.add('hidden');
-                }
-            });
-
-            // Filter unit list based on typed text
-            unitInput.addEventListener('input', function () {
-                const searchTerm = this.value.toLowerCase();
-                filterUnits(searchTerm);
-            });
-
-            // When a unit option is clicked
-            unitOptions.forEach(option => {
-                option.addEventListener('click', function () {
-                    const unitValue = this.getAttribute('data-value');
-                    const autoZero = this.getAttribute('data-auto-zero');
-
-                    // Set the input to the unit's value
-                    unitInput.value = unitValue;
-
-                    // If this unit should auto-zero the quantity (e.g., "to taste"), set and highlight
-                    if (autoZero === 'true') {
-                        quantityInput.value = '0';
-                        quantityInput.style.backgroundColor = '#fef3cd'; // Temporary highlight
-                        setTimeout(() => {
-                            quantityInput.style.backgroundColor = '';
-                        }, 2000);
-                    }
-
-                    // Hide dropdown after selection
-                    dropdown.classList.add('hidden');
-                });
-            });
-
-            // Ingredient section: handle add button and validation
-            const errorDiv = document.getElementById('ingredient-error');
-            document.getElementById('add-ingredient-btn').addEventListener('click', function () {
-                const qty = quantityInput.value.trim();
-                const unit = unitInput.value.trim();
-                const ingredient = document.getElementById('new-ingredient').value.trim();
-
-                errorDiv.textContent = ''; // Clear previous errors
-
-                // Simple validation: all fields are required
-                if (!qty || !unit || !ingredient) {
-                    errorDiv.textContent = 'Please fill in all three fields before adding.';
-                    return;
-                }
-                if (isNaN(qty) || parseFloat(qty) < 0) {
-                    errorDiv.textContent = 'Quantity must be a number ≥ 0.';
-                    return;
-                }
-
-                // Add the validated ingredient to the list
-                addIngredientToList(qty, unit, ingredient);
-                errorDiv.textContent = ''; // Clear error on success
-
-                // Reset inputs for next entry
-                quantityInput.value = '';
-                unitInput.value = '';
-                document.getElementById('new-ingredient').value = '';
-            });
-
-            // Helper: append a new ingredient row
-            function addIngredientToList(qty, unit, ingredient) {
-                const ingredientsList = document.getElementById('ingredients-list');
-                const row = document.createElement('div');
-                row.className = 'ingredient-row grid grid-cols-6 gap-4 items-center py-2 border-b border-gray-100';
-
-                // If qty is zero, display empty to follow "to taste" convention
-                const displayQty = (parseFloat(qty) === 0) ? '' : qty;
-
-                row.innerHTML = `
-            <div class="w-20 text-sm">${displayQty}</div>
-            <div class="w-40 text-sm">${unit}</div>
-            <div class="col-span-3 text-sm">${ingredient}</div>
-            <button type="button" class="remove-ingredient"><span class="text-red-500 hover:text-red-700 text-2xl">&times;</span></button>
-        `;
-
-                // Clicking the remove button deletes this row
-                row.querySelector('.remove-ingredient').addEventListener('click', function () {
-                    row.remove();
-                });
-
-                ingredientsList.appendChild(row);
+        // ===== PHOTO UPLOAD FUNCTIONALITY =====
+        class PhotoUploader {
+            constructor(inputId, previewId, placeholderId, removeBtnId) {
+                this.input = document.getElementById(inputId);
+                this.preview = document.getElementById(previewId);
+                this.placeholder = document.getElementById(placeholderId);
+                this.removeBtn = document.getElementById(removeBtnId);
+                this.init();
             }
 
-            // Filter units dropdown to matching terms & hide empty categories
-            function filterUnits(searchTerm) {
-                unitOptions.forEach(option => {
+            init() {
+                this.input.addEventListener('change', () => this.handleFileChange());
+                this.removeBtn.addEventListener('click', (e) => this.handleRemove(e));
+            }
+
+            handleFileChange() {
+                const file = this.input.files[0];
+                if (!file) return;
+
+                this.clearPreview();
+                this.showRemoveButton();
+                this.displayImage(file);
+            }
+
+            clearPreview() {
+                this.preview.querySelectorAll('img').forEach(img => img.remove());
+                this.placeholder.classList.add('hidden');
+            }
+
+            showRemoveButton() {
+                this.removeBtn.classList.remove('hidden');
+            }
+
+            displayImage(file) {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.alt = 'Recipe photo preview';
+                    img.className = 'object-cover w-full h-full';
+                    this.preview.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            }
+
+            handleRemove(e) {
+                e.stopPropagation();
+                this.preview.querySelectorAll('img').forEach(img => img.remove());
+                this.removeBtn.classList.add('hidden');
+                this.placeholder.classList.remove('hidden');
+                this.input.value = '';
+            }
+        }
+
+        // ===== DROPDOWN FUNCTIONALITY =====
+        class DropdownManager {
+            constructor(input, dropdown) {
+                this.input = input;
+                this.dropdown = dropdown;
+                this.init();
+            }
+
+            init() {
+                this.input.addEventListener('focus', () => this.show());
+                document.addEventListener('click', (e) => this.handleOutsideClick(e));
+            }
+
+            show() {
+                this.dropdown.classList.remove('hidden');
+            }
+
+            hide() {
+                this.dropdown.classList.add('hidden');
+            }
+
+            handleOutsideClick(e) {
+                if (!this.input.contains(e.target) && !this.dropdown.contains(e.target)) {
+                    this.hide();
+                }
+            }
+        }
+
+        class DropdownFilter {
+            constructor(dropdown, optionSelector) {
+                this.dropdown = dropdown;
+                this.options = dropdown.querySelectorAll(optionSelector);
+                this.headers = dropdown.querySelectorAll('.bg-gray-100');
+            }
+
+            filter(searchTerm) {
+                this.filterOptions(searchTerm);
+                this.filterHeaders();
+            }
+
+            filterOptions(searchTerm) {
+                this.options.forEach(option => {
                     const text = option.textContent.toLowerCase();
                     const value = option.getAttribute('data-value').toLowerCase();
-                    option.style.display = (text.includes(searchTerm) || value.includes(searchTerm)) ? 'block' : 'none';
-                });
-
-                // Show/hide group headers based on if any child options are visible
-                const headers = dropdown.querySelectorAll('.bg-gray-100');
-                headers.forEach(header => {
-                    let sibling = header.nextElementSibling;
-                    let hasVisible = false;
-                    while (sibling && !sibling.classList.contains('bg-gray-100')) {
-                        if (sibling.classList.contains('unit-option') && sibling.style.display !== 'none') {
-                            hasVisible = true;
-                            break;
-                        }
-                        sibling = sibling.nextElementSibling;
-                    }
-                    header.style.display = hasVisible ? 'block' : 'none';
+                    const matches = text.includes(searchTerm) || value.includes(searchTerm);
+                    option.style.display = matches ? 'block' : 'none';
                 });
             }
-        });
 
-        // Tags functionality: similar setup as units
-        document.addEventListener('DOMContentLoaded', function () {
-            const tagInput = document.getElementById('new-tag');
-            const tagDropdown = document.getElementById('tag-dropdown');
-            const tagOptions = document.querySelectorAll('.tag-option');
-            const selectedTags = new Set(); // Track chosen tags
+            filterHeaders() {
+                this.headers.forEach(header => {
+                    const hasVisibleOptions = this.hasVisibleSiblings(header);
+                    header.style.display = hasVisibleOptions ? 'block' : 'none';
+                });
+            }
 
-            // Show tag dropdown on focus
-            tagInput.addEventListener('focus', function () {
-                tagDropdown.classList.remove('hidden');
-                filterTags('');
-            });
-
-            // Hide when clicking elsewhere
-            document.addEventListener('click', function (e) {
-                if (!tagInput.contains(e.target) && !tagDropdown.contains(e.target)) {
-                    tagDropdown.classList.add('hidden');
+            hasVisibleSiblings(header) {
+                let sibling = header.nextElementSibling;
+                while (sibling && !sibling.classList.contains('bg-gray-100')) {
+                    if (sibling.style.display !== 'none') return true;
+                    sibling = sibling.nextElementSibling;
                 }
-            });
+                return false;
+            }
+        }
 
-            // Dynamic filtering as user types
-            tagInput.addEventListener('input', function () {
-                filterTags(this.value.toLowerCase());
-            });
+        // ===== INGREDIENT FUNCTIONALITY =====
+        class Ingredient {
+            constructor(quantity, unit, name) {
+                this.quantity = this.validateQuantity(quantity);
+                this.unit = this.validateUnit(unit);
+                this.name = this.validateName(name);
+            }
 
-            // Click a tag option to add
-            tagOptions.forEach(option => {
-                option.addEventListener('click', function () {
-                    const tagValue = this.getAttribute('data-value');
-                    if (!selectedTags.has(tagValue)) {
-                        addTag(tagValue);
-                        tagInput.value = '';
-                        tagDropdown.classList.add('hidden');
+            validateQuantity(qty) {
+                const num = parseFloat(qty);
+                if (isNaN(num) || num < 0) throw new Error('Quantity must be a number ≥ 0.');
+                return num;
+            }
+
+            validateUnit(unit) {
+                if (!unit || unit.trim() === '') throw new Error('Please fill in all three fields before adding.');
+                return unit.trim();
+            }
+
+            validateName(name) {
+                if (!name || name.trim() === '') throw new Error('Please fill in all three fields before adding.');
+                return name.trim();
+            }
+
+            getDisplayQuantity() {
+                return this.quantity === 0 ? '' : this.quantity.toString();
+            }
+        }
+
+        class IngredientList {
+            constructor(container) {
+                this.container = container;
+                this.ingredients = [];
+            }
+
+            add(ingredient) {
+                this.ingredients.push(ingredient);
+                this.render();
+            }
+
+            remove(index) {
+                this.ingredients.splice(index, 1);
+                this.render();
+            }
+
+            render() {
+                this.container.innerHTML = '';
+                this.ingredients.forEach((ingredient, index) => {
+                    this.container.appendChild(this.createIngredientRow(ingredient, index));
+                });
+            }
+
+            createIngredientRow(ingredient, index) {
+                const row = document.createElement('div');
+                row.className = 'ingredient-row grid grid-cols-6 gap-4 items-center py-2 border-b border-gray-100';
+                row.innerHTML = `
+            <div class="w-20 text-sm">${ingredient.getDisplayQuantity()}</div>
+            <div class="w-40 text-sm">${ingredient.unit}</div>
+            <div class="col-span-3 text-sm">${ingredient.name}</div>
+            <button type="button" class="remove-ingredient" data-index="${index}">
+                <span class="text-red-500 hover:text-red-700 text-2xl">&times;</span>
+            </button>
+        `;
+
+                row.querySelector('.remove-ingredient').addEventListener('click', () => {
+                    this.remove(index);
+                });
+
+                return row;
+            }
+        }
+
+        class IngredientForm {
+            constructor(quantityInput, unitInput, nameInput, errorDiv) {
+                this.quantityInput = quantityInput;
+                this.unitInput = unitInput;
+                this.nameInput = nameInput;
+                this.errorDiv = errorDiv;
+            }
+
+            getValues() {
+                return {
+                    quantity: this.quantityInput.value.trim(),
+                    unit: this.unitInput.value.trim(),
+                    name: this.nameInput.value.trim()
+                };
+            }
+
+            clear() {
+                this.quantityInput.value = '';
+                this.unitInput.value = '';
+                this.nameInput.value = '';
+                this.clearError();
+            }
+
+            showError(message) {
+                this.errorDiv.textContent = message;
+            }
+
+            clearError() {
+                this.errorDiv.textContent = '';
+            }
+
+            setQuantity(value) {
+                this.quantityInput.value = value;
+                this.highlightQuantity();
+            }
+
+            highlightQuantity() {
+                this.quantityInput.style.backgroundColor = '#fef3cd';
+                setTimeout(() => {
+                    this.quantityInput.style.backgroundColor = '';
+                }, 2000);
+            }
+        }
+
+        class IngredientManager {
+            constructor() {
+                this.form = new IngredientForm(
+                    document.getElementById('new-qty'),
+                    document.getElementById('new-unit'),
+                    document.getElementById('new-ingredient'),
+                    document.getElementById('ingredient-error')
+                );
+
+                this.ingredientList = new IngredientList(
+                    document.getElementById('ingredients-list')
+                );
+
+                this.setupDropdown();
+                this.setupAddButton();
+            }
+
+            setupDropdown() {
+                const unitInput = document.getElementById('new-unit');
+                const dropdown = document.getElementById('unit-dropdown');
+
+                this.dropdownManager = new DropdownManager(unitInput, dropdown);
+                this.dropdownFilter = new DropdownFilter(dropdown, '.unit-option');
+
+                unitInput.addEventListener('input', (e) => {
+                    this.dropdownFilter.filter(e.target.value.toLowerCase());
+                });
+
+                dropdown.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('unit-option')) {
+                        this.handleUnitSelection(e.target);
                     }
                 });
-            });
+            }
 
-            // Add-button for custom tags
-            document.getElementById('add-tag-btn').addEventListener('click', function () {
-                const tagValue = tagInput.value.trim();
-                if (tagValue && !selectedTags.has(tagValue)) {
-                    addTag(tagValue);
-                    tagInput.value = '';
+            setupAddButton() {
+                document.getElementById('add-ingredient-btn').addEventListener('click', () => {
+                    this.addIngredient();
+                });
+            }
+
+            handleUnitSelection(option) {
+                const unitValue = option.getAttribute('data-value');
+                const autoZero = option.getAttribute('data-auto-zero');
+
+                this.form.unitInput.value = unitValue;
+
+                if (autoZero === 'true') {
+                    this.form.setQuantity('0');
                 }
-            });
 
-            // Append a selected tag element
-            function addTag(tagValue) {
-                selectedTags.add(tagValue);
-                const tagsContainer = document.getElementById('tags-selected');
+                this.dropdownManager.hide();
+            }
+
+            addIngredient() {
+                try {
+                    this.form.clearError();
+                    const values = this.form.getValues();
+                    const ingredient = new Ingredient(values.quantity, values.unit, values.name);
+                    this.ingredientList.add(ingredient);
+                    this.form.clear();
+                } catch (error) {
+                    this.form.showError(error.message);
+                }
+            }
+        }
+
+        // ===== TAG FUNCTIONALITY =====
+        class TagManager {
+            constructor() {
+                this.tagInput = document.getElementById('new-tag');
+                this.tagDropdown = document.getElementById('tag-dropdown');
+                this.tagsContainer = document.getElementById('tags-selected');
+                this.selectedTags = new Set();
+
+                this.dropdownManager = new DropdownManager(this.tagInput, this.tagDropdown);
+                this.dropdownFilter = new DropdownFilter(this.tagDropdown, '.tag-option');
+
+                this.init();
+            }
+
+            init() {
+                this.tagInput.addEventListener('input', (e) => {
+                    this.dropdownFilter.filter(e.target.value.toLowerCase());
+                });
+
+                this.tagDropdown.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('tag-option')) {
+                        this.handleTagSelection(e.target);
+                    }
+                });
+
+                document.getElementById('add-tag-btn').addEventListener('click', () => {
+                    this.addCustomTag();
+                });
+            }
+
+            handleTagSelection(option) {
+                const tagValue = option.getAttribute('data-value');
+                if (!this.selectedTags.has(tagValue)) {
+                    this.addTag(tagValue);
+                    this.tagInput.value = '';
+                    this.dropdownManager.hide();
+                }
+            }
+
+            addCustomTag() {
+                const tagValue = this.tagInput.value.trim();
+                if (tagValue && !this.selectedTags.has(tagValue)) {
+                    this.addTag(tagValue);
+                    this.tagInput.value = '';
+                }
+            }
+
+            addTag(tagValue) {
+                this.selectedTags.add(tagValue);
                 const tagElement = document.createElement('span');
                 tagElement.className = 'inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800';
                 tagElement.innerHTML = `
             ${tagValue}
-            <button type="button" class="ml-2 text-red-600 hover:text-red-800" onclick="removeTag('${tagValue}', this)">
+            <button type="button" class="ml-2 text-red-600 hover:text-red-800">
                 &times;
             </button>
-        `;
-                tagsContainer.appendChild(tagElement);
-            }
+            `;
 
-            // Global remove function to delete tag
-            window.removeTag = function (tagValue, buttonElement) {
-                selectedTags.delete(tagValue);
-                buttonElement.parentElement.remove();
-            };
-
-            // Filter tag dropdown options and headers
-            function filterTags(searchTerm) {
-                tagOptions.forEach(option => {
-                    const text = option.textContent.toLowerCase();
-                    const value = option.getAttribute('data-value').toLowerCase();
-                    option.style.display = (text.includes(searchTerm) || value.includes(searchTerm)) ? 'block' : 'none';
+                tagElement.querySelector('button').addEventListener('click', () => {
+                    this.removeTag(tagValue, tagElement);
                 });
 
-                const headers = tagDropdown.querySelectorAll('.bg-gray-100');
-                headers.forEach(header => {
-                    let sibling = header.nextElementSibling;
-                    let hasVisible = false;
-                    while (sibling && !sibling.classList.contains('bg-gray-100')) {
-                        if (sibling.classList.contains('tag-option') && sibling.style.display !== 'none') {
-                            hasVisible = true;
-                            break;
-                        }
-                        sibling = sibling.nextElementSibling;
-                    }
-                    header.style.display = hasVisible ? 'block' : 'none';
-                });
+                this.tagsContainer.appendChild(tagElement);
             }
+
+            removeTag(tagValue, element) {
+                this.selectedTags.delete(tagValue);
+                element.remove();
+            }
+        }
+
+        // ===== INITIALIZATION =====
+        document.addEventListener('DOMContentLoaded', function () {
+            // Initialize all components
+            new PhotoUploader('photo-upload', 'photo-preview', 'photo-placeholder', 'remove-photo-btn');
+            new IngredientManager();
+            new TagManager();
         });
     </script>
 
