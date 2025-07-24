@@ -15,7 +15,7 @@
         hx-get="{% url 'get_recipes_by_tags' %}?tags={{ request.GET.tags }}&page={{ page_obj.previous_page_number }}"
         hx-target="#cards-wrapper"
         hx-swap="innerHTML"
-        class="px-3 py-1 border rounded"
+        class="px-3 py-1 border rounded cursor-pointer hover:bg-gray-200"
       >«</a>
     {% endif %}
 
@@ -28,7 +28,7 @@
       hx-get="{% url 'get_recipes_by_tags' %}?tags={{ request.GET.tags }}&page={{ page_obj.next_page_number }}"
       hx-target="#cards-wrapper"
       hx-swap="innerHTML"
-      class="px-3 py-1 border rounded"
+      class="px-3 py-1 border rounded cursor-pointer hover:bg-gray-200"
     >»</a>
   {% endif %}
   </div>
