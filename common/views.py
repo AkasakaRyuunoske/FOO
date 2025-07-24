@@ -7,6 +7,10 @@ from RecipeManager.models import Recipe
 
 
 def home(request):
+    # if user realoads without page param, generate new random recipes
+    if "page" not in request.GET and "random_recipe_ids" in request.session:
+        del request.session["random_recipe_ids"]
+
     # Step 1: Generate and persist random IDs
     if "random_recipe_ids" not in request.session:
         all_ids = list(Recipe.objects.values_list("id", flat=True))
@@ -35,19 +39,7 @@ def recipe_list(request):
     return render(request, "recipes/recipe_list.html", {"page_obj": page_obj})
 
 
-def get_random_n_recipes(n=60):
-    ids = list(Recipe.objects.values_list('id', flat=True))
-    random_ids = random.sample(ids, min(len(ids), n))  # In case there are <60 recipes
-    return Recipe.objects.filter(id__in=random_ids)
-
-
 def discover(request):
-    return render(request, "discover.html", None)
-
-
-def recipe_details(request):
-    return render(request, "recipe_details.html", None)
-    # TODO: Qui va il modello
     recipes = Recipe.objects.all()
 
     # Paginazione
