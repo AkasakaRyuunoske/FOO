@@ -500,13 +500,13 @@
 
         <!-- Row 9: Actions -->
         <div class="flex justify-between">
-            <button type="reset"
+            <button type="button" id="clear-all-btn"
                     class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">
                 Clear All
             </button>
             <button type="submit"
                     class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">
-                Publish
+                Save Recipe
             </button>
         </div>
     </form>
@@ -814,6 +814,12 @@
                     this.form.showError(error.message);
                 }
             }
+
+            clearInputs() {
+                document.getElementById('new-qty').value = '';
+                document.getElementById('new-unit').value = '';
+                document.getElementById('new-ingredient').value = '';
+            }
         }
 
         // ===== TAG FUNCTIONALITY =====
@@ -885,15 +891,78 @@
                 this.selectedTags.delete(tagValue);
                 element.remove();
             }
+
+            clearTags() {
+                this.selectedTags.clear();
+                document.getElementById('new-tag').value = '';
+            }
+        }
+
+        // ===== FORM RESET =====
+        class FormResetter {
+            constructor(formId, photoUploader, ingredientManager, tagManager) {
+                this.form = document.getElementById(formId);
+                this.photoUploader = photoUploader;
+                this.ingredientManager = ingredientManager;
+                this.tagManager = tagManager;
+            }
+
+            resetAll() {
+                this.resetFormInputs();
+                this.resetPhoto();
+                this.resetIngredients();
+                this.resetTags();
+                this.resetCustomInputs();
+            }
+
+            resetFormInputs() {
+                this.form.reset();
+            }
+
+            resetPhoto() {
+                this.photoUploader.handleRemove(new Event('click'));
+            }
+
+            resetIngredients() {
+                const ingredientsList = document.getElementById('ingredients-list');
+                ingredientsList.innerHTML = '';
+                this.ingredientManager.clearInputs();
+            }
+
+            resetTags() {
+                const tagsContainer = document.getElementById('tags-selected');
+                tagsContainer.innerHTML = '';
+                this.tagManager.clearTags();
+            }
+
+            resetCustomInputs() {
+                document.getElementById('new-qty').value = '';
+                document.getElementById('new-unit').value = '';
+                document.getElementById('new-ingredient').value = '';
+                document.getElementById('new-tag').value = '';
+            }
         }
 
         // ===== INITIALIZATION =====
         document.addEventListener('DOMContentLoaded', function () {
-            // Initialize all components
-            new PhotoUploader('photo-upload', 'photo-preview', 'photo-placeholder', 'remove-photo-btn');
-            new IngredientManager();
-            new TagManager();
+            // Initialize all components and store references
+            const photoUploader = new PhotoUploader('photo-upload', 'photo-preview', 'photo-placeholder', 'remove-photo-btn');
+            const ingredientManager = new IngredientManager();
+            const tagManager = new TagManager();
+
+            // Pass the instances to FormResetter
+            const formResetter = new FormResetter(
+                'new-recipe-form',
+                photoUploader,
+                ingredientManager,
+                tagManager
+            );
+
+            document.getElementById('clear-all-btn').addEventListener('click', () => {
+                formResetter.resetAll();
+            });
         });
+
     </script>
 
 {% endblock %}
