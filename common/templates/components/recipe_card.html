@@ -1,7 +1,7 @@
 {% load static %}
 {% comment %} components/recipe_card.html {% endcomment %}
 
-<div onclick="openModal()" class="bg-white p-1.5 rounded-md shadow-lg transition duration-200 hover:shadow-xl hover:scale-105 max-w-[380px] mx-auto w-full {% if show_description_inline %}p-2{% else %}aspect-square{% endif %}"> <!-- External Padding -->
+<div onclick="openModal()" class="bg-white p-1.5 rounded-md shadow-lg transition duration-200 hover:shadow-xl hover:scale-105 max-w-[380px] mx-auto w-full {% if show_description_inline %}p-2{% else %}p-1.5{% endif %}"> <!-- External Padding -->
   <div class="border-2 border-black p-2 bg-white w-full flex flex-col justify-between group relative rounded min-w-0 min-h-[280px] transition-all duration-300 ease-in-out overflow-visible">    <!-- Black line inside square -->
 
     <!-- Recipe Name -->
@@ -98,7 +98,7 @@
             <h2 class="text-center font-bold mb-2 text-sm sm:text-base break-words">
                {{ recipe.name }}
             </h2>
-            <p>{{ recipe.Instructions|truncatechars:350 }}</p>
+            <p>{{ recipe.Instructions|truncatechars:310 }}</p>
             <div class="flex justify-center space-x-2 text-base sm:text-lg mb-2 text-yellow-500">
               <span>★</span>
               <span>★</span>
