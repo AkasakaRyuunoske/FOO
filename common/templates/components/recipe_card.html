@@ -147,11 +147,21 @@
 
     <div id="tab-description" class="tab-content text-sm leading-relaxed">
       <!-- Author -->
-      <div class="flex items-center mb-2 gap-2">
-        <img src="{% static 'icons/hat.png' %}" class="w-6 h-6" alt="">
-        <div>
-          <p class="text-sm">Recipe by</p>
-          <p class="font-semibold text-base">Name Person</p>
+      <div class="flex items-center justify-between mb-2 gap-2">
+        <div class="flex items-center gap-2">
+          <img src="{% static 'icons/hat.png' %}" class="w-6 h-6" alt="">
+          <div>
+            <p class="text-sm">Recipe by</p>
+            <p class="font-semibold text-base">Name Person</p>
+          </div>
+        </div>
+
+        <div class="rating-stars flex justify-center space-x-1 text-base sm:text-lg lg:text-2xl mt-auto pr-5 min-h-[1.5rem] shrink-0">
+          <button class="text-yellow-500 hover:scale-125 hover:shadow-sm transition-transform duration-150 p-0.5">★</button>
+          <button class="text-yellow-500 hover:scale-125 hover:shadow-sm transition-transform duration-150 p-0.5">★</button>
+          <button class="text-yellow-500 hover:scale-125 hover:shadow-sm transition-transform duration-150 p-0.5">★</button>
+          <button class="text-yellow-500 hover:scale-125 hover:shadow-sm transition-transform duration-150 p-0.5">★</button>
+          <button class="text-black hover:scale-125 hover:shadow-sm transition-transform duration-150 p-0.5">★</button>
         </div>
       </div>
 
