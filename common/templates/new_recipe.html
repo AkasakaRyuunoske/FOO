@@ -1,4 +1,3 @@
-
 {% block content %}
 
     <form
@@ -28,10 +27,12 @@
                     <button
                             id="remove-photo-btn"
                             type="button"
-                            class="hidden absolute top-0 right-2 p-1 focus:outline-none"
+                            class="hidden absolute top-0 right-2 focus:outline-none cursor-pointer text-red-500 hover:text-red-800 py-2"
                             aria-label="Remove photo"
                     >
-                        <span class="text-red-500 hover:text-red-700 text-3xl">&times;</span>
+                        <span class="material-symbols-outlined">
+                            close
+                        </span>
                     </button>
                 </div>
                 <input
