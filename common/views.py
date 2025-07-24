@@ -59,13 +59,37 @@ def discover(request):
 
 
 class CreateRecipeView(View):
+    # Template file that will be rendered when showing the form
     template_name = 'new_recipe.html'
 
     def get(self, request):
-        return render(request, self.template_name)
+        """
+        Handles GET requests (when user visits the page)
+        Django automatically calls this method for GET requests
+        """
+        return self.get_recipe_form(request)
 
     def post(self, request):
-        # simple validation
+        """
+        Handles POST requests (when user submits the form)
+        Django automatically calls this method for POST requests
+        """
+        return self.post_recipe_form(request)
+
+    def get_recipe_form(self, request):
+        """
+        Shows the empty recipe creation form to the user
+        This is called when someone first visits the page
+        """
+        return render(request, self.template_name)
+
+    def post_recipe_form(self, request):
+        """
+        Processes the submitted form data and creates a new recipe
+        This is called when the user clicks submit on the form
+        """
+        # Extract data from the submitted form
+        # request.POST.get() safely gets form field values
         name = request.POST.get('name')
         desc = request.POST.get('description')
         cook_val = request.POST.get('cook_time_value')
@@ -73,15 +97,19 @@ class CreateRecipeView(View):
         difficulty = request.POST.get('difficulty')
         servings = request.POST.get('servings')
 
+        # Check if all required fields have values
+        # all() returns True only if all items in the list are truthy (not empty)
         if not all([name, desc, cook_val, cook_unit, difficulty, servings]):
+            # Return error response if any field is missing
             return HttpResponseBadRequest("Missing required fields")
 
+        # Create a new Recipe object in the database
+        # Only saving name and instructions for now (other fields not included)
         r = Recipe.objects.create(
             name=name,
             instructions=desc,
-            # you'll need to handle photo upload separately,
-            # e.g. request.FILES['photo'] and a proper ImageField on Recipe
         )
-        # you can parse and save ingredients/tags manually here…
 
+        # Redirect user to the detail page of the newly created recipe
+        # pk=r.pk passes the recipe's ID to the URL
         return redirect('recipe_detail', pk=r.pk)
