@@ -117,24 +117,29 @@
         const fc = document.getElementById('first-column');
         const grid = document.getElementById('main-grid');
         const inlineCards = document.getElementById('cards-inline');
-        const compactCards = document.getElementById('cards-wrapper');
+        const cardsWrapper = document.getElementById('cards-wrapper');
         const icon = document.getElementById('toggle-icon');
         const container = document.getElementById('toggle-button-container');
 
         const isHidden = fc.classList.toggle('hidden');
 
         if (isHidden) {
-          inlineCards.classList.remove('hidden');
-          compactCards.classList.add('hidden');
           icon.textContent = '>>';
+          cardsWrapper.classList.remove('xl:grid-cols-3');
+          cardsWrapper.classList.add('xl:grid-cols-4');
+
+          inlineCards.classList.remove('hidden');
+          cardsWrapper.classList.add('hidden');
         } else {
-          inlineCards.classList.add('hidden');
-          compactCards.classList.remove('hidden');
           icon.textContent = '<<';
+          cardsWrapper.classList.add('xl:grid-cols-3');
+          cardsWrapper.classList.remove('xl:grid-cols-4');
+
+          inlineCards.classList.add('hidden');
+          cardsWrapper.classList.remove('hidden');
         }
       "
       class="w-6 h-full rounded-sm text-black hover:bg-gray-200 border-none shadow-none bg-gray-100"
-      aria-label="Toggle first column"
     >
       <span id="toggle-icon">&lt;&lt;</span>
     </button>
