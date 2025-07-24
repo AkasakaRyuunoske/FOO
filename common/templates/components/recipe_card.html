@@ -1,7 +1,7 @@
 {% load static %}
 {% comment %} components/recipe_card.html {% endcomment %}
 
-<div onclick="openModal()" class="bg-white p-1.5 rounded-md transition duration-200 hover:shadow-xl hover:scale-105 max-w-[380px] mx-auto w-full {% if show_description_inline %}p-2{% else %}aspect-square{% endif %}"> <!-- External Padding -->
+<div onclick="openModal()" class="bg-white p-1.5 rounded-md shadow-lg transition duration-200 hover:shadow-xl hover:scale-105 max-w-[380px] mx-auto w-full {% if show_description_inline %}p-2{% else %}aspect-square{% endif %}"> <!-- External Padding -->
   <div class="border-2 border-black p-2 bg-white w-full flex flex-col justify-between group relative rounded min-w-0 min-h-0 min-h-[280px] transition-all duration-300 ease-in-out overflow-visible">    <!-- Black line inside square -->
 
     <!-- Bookmark on the right with a transition on hover -->
@@ -117,12 +117,12 @@
     </div>
 
     <!-- Stars -->
-    <div class="flex justify-center space-x-1 text-base sm:text-lg mt-auto min-h-[1.5rem] shrink-0">
-      <button class="text-yellow-500 hover:scale-125 hover:shadow-sm transition-transform duration-150 p-0.5">★</button>
-      <button class="text-yellow-500 hover:scale-125 hover:shadow-sm transition-transform duration-150 p-0.5">★</button>
-      <button class="text-yellow-500 hover:scale-125 hover:shadow-sm transition-transform duration-150 p-0.5">★</button>
-      <button class="text-yellow-500 hover:scale-125 hover:shadow-sm transition-transform duration-150 p-0.5">★</button>
-      <button class="text-black hover:scale-125 hover:shadow-sm transition-transform duration-150 p-0.5">★</button>
+    <div class="flex justify-center space-x-2 text-base sm:text-lg mt-auto min-h-[1.5rem] shrink-0 text-yellow-500">
+      <span>★</span>
+      <span>★</span>
+      <span>★</span>
+      <span>★</span>
+      <span class="text-black">★</span>
     </div>
   </div>
 </div>
