@@ -318,7 +318,7 @@
         <!-- Row 7: Tags -->
         <div class="space-y-2">
             <h2 class="text-lg font-semibold">Tags</h2>
-            <div id="tags-selected" class="flex space-x-2 flex-wrap mb-2"></div>
+            <div id="tags-selected" class="flex flex-wrap gap-1"></div>
             <div class="flex items-center space-x-2">
                 <div class="flex-1 relative">
                     <input
@@ -874,11 +874,13 @@
             addTag(tagValue) {
                 this.selectedTags.add(tagValue);
                 const tagElement = document.createElement('span');
-                tagElement.className = 'inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800';
+                tagElement.className = 'inline-flex items-center px-3 py-1 rounded-full text-sm text-black border border-black rounded-lg gap-1';
                 tagElement.innerHTML = `
             ${tagValue}
-            <button type="button" class="ml-2 text-red-600 hover:text-red-800">
-                &times;
+            <button type="button" class="text-red-600 hover:text-red-800 flex items-center justify-center">
+                <span class="material-symbols-outlined text-sm leading-none">
+                    close
+                </span>
             </button>
             `;
 
