@@ -1,4 +1,6 @@
 import random
+import os
+import pickle
 
 from RecipeManager.models import Recipe
 from TagManager.models import Tag
@@ -6,6 +8,8 @@ from django.core.paginator import Paginator
 from django.http import HttpResponseBadRequest, JsonResponse
 from django.shortcuts import render, redirect
 from django.views import View
+from tensorflow.keras.models import load_model
+from tensorflow.keras.preprocessing.sequence import pad_sequences
 
 
 def home(request):
@@ -108,6 +112,29 @@ class CreateRecipeView(View):
         )
 
         # TODO @alemassim0: Qui inserisci inferenza sul modello.
+        BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        MODEL_DIR = os.path.join(BASE_DIR, 'TagManager/mvp_tagging/classifiers')
+
+        # Carica tokenizer pickle
+        with open(os.path.join(MODEL_DIR, 'difficulty', 'difficulty_classifier_tokenizer.pkl'), 'rb') as f:
+            difficulty_tokenizer = pickle.load(f)
+
+        with open(os.path.join(MODEL_DIR, 'prep_time', 'prep_time_classifier_tokenizer.pkl'), 'rb') as f:
+            time_tokenizer = pickle.load(f)
+
+        # Carica modelli
+        difficulty_model = load_model(os.path.join(MODEL_DIR, 'difficulty', 'difficulty_classifier.h5'))
+        time_model = load_model(os.path.join(MODEL_DIR, 'prep_time', 'prep_time_classifier.h5'))
+
+        ingredients = ["potatoes", "fish", "peaches", "banana"]
 
         # Redirect user to the detail page of the newly created recipe
         return render(request, "components/recipe_created_success.html", {"recipe": recipe})
+
+def preprocess_text(text, tokenizer):
+    sequences = tokenizer.texts_to_sequences([text])
+    padded = pad_sequences(sequences, maxlen=500)
+    return padded
+
+def get_difficulty_tag(predicted_label):
+    return Tag.objects.filter(type='Difficulty', name__iexact=predicted_label).first()
