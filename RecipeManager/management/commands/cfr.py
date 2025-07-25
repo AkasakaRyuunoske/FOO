@@ -51,12 +51,14 @@ class Command(BaseCommand):
                     )
                     count += 1
 
-                    RecipeTag.objects.create(recipe=recipe, tag=tags["difficulty"][row["difficulty"].strip().lower()])
+                    RecipeTag.objects.create(recipe=recipe, tag=tags["difficulty"][row["DIFFICULTY"].strip().lower()])
                     RecipeTag.objects.create(recipe=recipe, tag=tags["preparation time"][row["PREPARATION_TIME"].split('(')[0].strip().lower()])
-                    RecipeTag.objects.create(recipe=recipe, tag=tags["vegetarian"]["yes" if row["vegetarian"] else "no"])
-                    RecipeTag.objects.create(recipe=recipe, tag=tags["vegan"]["yes" if row["vegan"] else "no"])
-                    RecipeTag.objects.create(recipe=recipe, tag=tags["cooking method"][row["method"].strip().lower()])
+                    RecipeTag.objects.create(recipe=recipe, tag=tags["vegetarian"]["yes" if row["VEGETARIAN"] else "no"])
+                    RecipeTag.objects.create(recipe=recipe, tag=tags["vegan"]["yes" if row["VEGAN"] else "no"])
+                    RecipeTag.objects.create(recipe=recipe, tag=tags["cooking method"][row["COOKING_METHOD"].strip().lower()])
                     RecipeTag.objects.create(recipe=recipe, tag=tags["cost"][row["price_tag"].strip().lower()])
+                    RecipeTag.objects.create(recipe=recipe, tag=tags["lactose_free"][row["LACTOSE_FREE"].strip().lower()])
+                    RecipeTag.objects.create(recipe=recipe, tag=tags["gluten_free"][row["GLUTEN_FREE"].strip().lower()])
 
                 except Exception as exception:
                     self.stderr.write(f"Skipping row due to error: {exception}")
