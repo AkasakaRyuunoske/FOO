@@ -111,11 +111,11 @@
 
     <!-- Stars -->
     <div class="flex justify-center space-x-1 text-base sm:text-lg mt-auto min-h-[1.5rem] shrink-0">
-      <button class="text-yellow-500 hover:scale-125 hover:shadow-sm transition-transform duration-150 p-0.5">★</button>
-      <button class="text-yellow-500 hover:scale-125 hover:shadow-sm transition-transform duration-150 p-0.5">★</button>
-      <button class="text-yellow-500 hover:scale-125 hover:shadow-sm transition-transform duration-150 p-0.5">★</button>
-      <button class="text-yellow-500 hover:scale-125 hover:shadow-sm transition-transform duration-150 p-0.5">★</button>
-      <button class="text-black hover:scale-125 hover:shadow-sm transition-transform duration-150 p-0.5">★</button>
+      <button class="star-btn text-yellow-500 hover:scale-125 hover:shadow-sm transition-transform duration-150 p-0.5">★</button>
+      <button class="star-btn text-yellow-500 hover:scale-125 hover:shadow-sm transition-transform duration-150 p-0.5">★</button>
+      <button class="star-btn text-yellow-500 hover:scale-125 hover:shadow-sm transition-transform duration-150 p-0.5">★</button>
+      <button class="star-btn text-yellow-500 hover:scale-125 hover:shadow-sm transition-transform duration-150 p-0.5">★</button>
+      <button class="star-btn text-black hover:scale-125 hover:shadow-sm transition-transform duration-150 p-0.5">★</button>
     </div>
   </div>
 </div>
@@ -264,7 +264,7 @@
     const cards = document.querySelectorAll('div.border-2');
 
     cards.forEach(card => {
-      const starButtons = card.querySelectorAll('div.flex.justify-center > button');
+      const starButtons = card.querySelectorAll('.star-btn');
       let currentRating = 2.5; // 2.5 starting rating
 
       function updateStars(rating) {

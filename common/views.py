@@ -1,7 +1,9 @@
 import random
 
 from django.core.paginator import Paginator
-from django.shortcuts import render
+from django.http import HttpResponseBadRequest
+from django.shortcuts import render, redirect
+from django.views import View
 
 from RecipeManager.models import Recipe
 
@@ -42,11 +44,6 @@ def get_random_n_recipes(n=60):
 
 
 def discover(request):
-    return render(request, "discover.html", None)
-
-
-def recipe_details(request):
-    return render(request, "recipe_details.html", None)
     # TODO: Qui va il modello
     recipes = Recipe.objects.all()
 
@@ -60,5 +57,59 @@ def recipe_details(request):
         "page_obj": page_obj,
     })
 
-def recipe_details(request):
-    return render(request, "recipe_details.html", None)
+
+class CreateRecipeView(View):
+    # Template file that will be rendered when showing the form
+    template_name = 'new_recipe.html'
+
+    def get(self, request):
+        """
+        Handles GET requests (when user visits the page)
+        Django automatically calls this method for GET requests
+        """
+        return self.get_recipe_form(request)
+
+    def post(self, request):
+        """
+        Handles POST requests (when user submits the form)
+        Django automatically calls this method for POST requests
+        """
+        return self.post_recipe_form(request)
+
+    def get_recipe_form(self, request):
+        """
+        Shows the empty recipe creation form to the user
+        This is called when someone first visits the page
+        """
+        return render(request, self.template_name)
+
+    def post_recipe_form(self, request):
+        """
+        Processes the submitted form data and creates a new recipe
+        This is called when the user clicks submit on the form
+        """
+        # Extract data from the submitted form
+        # request.POST.get() safely gets form field values
+        name = request.POST.get('name')
+        desc = request.POST.get('description')
+        cook_val = request.POST.get('cook_time_value')
+        cook_unit = request.POST.get('cook_time_unit')
+        difficulty = request.POST.get('difficulty')
+        servings = request.POST.get('servings')
+
+        # Check if all required fields have values
+        # all() returns True only if all items in the list are truthy (not empty)
+        if not all([name, desc, cook_val, cook_unit, difficulty, servings]):
+            # Return error response if any field is missing
+            return HttpResponseBadRequest("Missing required fields")
+
+        # Create a new Recipe object in the database
+        # Only saving name and instructions for now (other fields not included)
+        r = Recipe.objects.create(
+            name=name,
+            instructions=desc,
+        )
+
+        # Redirect user to the detail page of the newly created recipe
+        # pk=r.pk passes the recipe's ID to the URL
+        return redirect('recipe_detail', pk=r.pk)
