@@ -277,7 +277,7 @@
 
 <!-- Script for the Ratings -->
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
+  function bindStarRatings() {
     const cards = document.querySelectorAll('div.border-2');
 
     cards.forEach(card => {
@@ -287,15 +287,13 @@
       function updateStars(rating) {
         starButtons.forEach((btn, i) => {
           const starIndex = i + 1;
-          btn.innerHTML = ''; // reset star
+          btn.innerHTML = '';
 
           if (starIndex <= Math.floor(rating)) {
-            // full stars
             btn.classList.remove('text-black');
             btn.classList.add('text-yellow-500');
             btn.textContent = '★';
           } else if (starIndex === Math.ceil(rating) && rating % 1 !== 0) {
-            // create partial overlay for half stars
             btn.classList.remove('text-yellow-500', 'text-black');
             btn.innerHTML = `
               <div class="relative inline-block text-black">
@@ -304,7 +302,6 @@
               </div>
             `;
           } else {
-            // empty stars
             btn.classList.remove('text-yellow-500');
             btn.classList.add('text-black');
             btn.textContent = '★';
@@ -313,26 +310,28 @@
       }
 
       starButtons.forEach((btn, i) => {
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', (event) => {
           event.stopPropagation();
           currentRating = i + 1;
           updateStars(currentRating);
           console.log('Valutazione selezionata:', currentRating);
         });
 
-        btn.addEventListener('mouseenter', () => {
-          updateStars(i + 1);
-        });
-
-        btn.addEventListener('mouseleave', () => {
-          updateStars(currentRating);
-        });
+        btn.addEventListener('mouseenter', () => updateStars(i + 1));
+        btn.addEventListener('mouseleave', () => updateStars(currentRating));
       });
 
       updateStars(currentRating);
     });
+  }
+
+  document.addEventListener('DOMContentLoaded', bindStarRatings);
+
+  document.body.addEventListener('htmx:afterSettle', (evt) => {
+    bindStarRatings();
   });
 </script>
+
 
 
 <!-- Script for the modal -->
