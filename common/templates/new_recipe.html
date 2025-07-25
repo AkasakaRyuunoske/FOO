@@ -1,13 +1,13 @@
 {% block content %}
-
-    <form
+    <div id="new-recipe-modal-body">
+        <form
             id="new-recipe-form"
-            action="/api/recipes/"
-            method="POST"
+            hx-post="{% url 'new_recipe' %}"
+            hx-swap="#new-recipe-modal-body"
             autocomplete="off"
             class="w-full max-w-2xl my-5 bg-white border border-gray-200 rounded-lg shadow p-6 space-y-8 mx-auto"
     >
-
+        {% csrf_token %}
         <!-- Row 1: Title + Photo upload -->
         <div class="space-y-4">
             <h1 class="text-3xl font-bold">Create New Recipe</h1>
@@ -57,7 +57,8 @@
                     maxlength="70"
                     pattern="^[A-Za-z ]{1,70}$"
                     title="Must contain only letters and spaces (1–70 characters)."
-                    class="w-full border border-gray-300 rounded px-3 py-2  "
+                    class="w-full border border-gray-300 rounded px-3 py-2"
+                    placeholder="Pizza 'Kansas'"
             />
         </div>
 
@@ -68,11 +69,11 @@
                     name="description"
                     id="description"
                     rows="4"
-                    required
                     maxlength="500"
                     pattern="^[A-Za-z0-9\s\.,!?;:()\-_'" &@#$%*+=\[\]{}|\\/]{1,500}$"
                     title="Must contain only letters, numbers, spaces, and common symbols (1–500 characters)."
                     class="w-full border border-gray-300 rounded px-3 py-2   resize-y min-h-20"
+                    placeholder="(optional) Provide a short description for your recipe..."
             ></textarea>
         </div>
 
@@ -93,14 +94,13 @@
                         class="w-32 border border-gray-300 rounded px-3 py-2 cursor-pointer appearance-none"
                         title="Select if number represents minutes or hours"
                 >
-                    <option value="">Select...</option>
                     <option value="minutes">minutes</option>
                     <option value="hours">hours</option>
                 </select>
             </div>
         </div>
 
-        <!-- Row 6: Ingredients -->
+        <!-- Row 5: Ingredients -->
         <div class="space-y-2">
             <h2 class="text-lg font-semibold">Ingredients</h2>
 
@@ -306,7 +306,23 @@
             <div id="ingredient-error" class="text-red-500 text-sm mb-1" aria-live="polite"></div>
         </div>
 
-        <!-- Row 9: Actions -->
+        <!-- Row 6: Cooking steps -->
+        <div class="space-y-1">
+            <h2 class="text-lg font-semibold">Cooking Steps</h2>
+            <textarea
+                    name="instructions"
+                    id="instructions"
+                    rows="4"
+                    required
+                    maxlength="500"
+                    pattern="^[A-Za-z0-9\s\.,!?;:()\-_'" &@#$%*+=\[\]{}|\\/]{1,1000}$"
+                    title="Must contain only letters, numbers, spaces, and common symbols (1–1000 characters)."
+                    class="w-full border border-gray-300 rounded px-3 py-2   resize-y min-h-20"
+                    placeholder="Describe here specific steps to follow for your recipe..."
+            ></textarea>
+        </div>
+
+        <!-- Row 7: Actions -->
         <div class="flex justify-between">
             <button type="button" id="clear-all-btn"
                     class="px-4 py-2 text-white bg-red-500 rounded-lg hover:bg-red-700 cursor-pointer">
@@ -318,6 +334,7 @@
             </button>
         </div>
     </form>
+    </div>
 
     <script>
         // ===== PHOTO UPLOAD FUNCTIONALITY =====

@@ -3,7 +3,7 @@ import random
 from RecipeManager.models import Recipe
 from TagManager.models import Tag
 from django.core.paginator import Paginator
-from django.http import HttpResponseBadRequest
+from django.http import HttpResponseBadRequest, JsonResponse
 from django.shortcuts import render, redirect
 from django.views import View
 
@@ -89,24 +89,25 @@ class CreateRecipeView(View):
         # Extract data from the submitted form
         # request.POST.get() safely gets form field values
         name = request.POST.get('name')
-        desc = request.POST.get('description')
-        cook_val = request.POST.get('cook_time_value')
-        cook_unit = request.POST.get('cook_time_unit')
-        difficulty = request.POST.get('difficulty')
+        description = request.POST.get('description')   # TODO ricordare di aggiungere eventualmente
+        instructions = request.POST.get('instructions')
+        cooking_time = request.POST.get('cook_time_value')
+        cooking_time_unit = request.POST.get('cook_time_unit')
 
         # Check if all required fields have values
         # all() returns True only if all items in the list are truthy (not empty)
-        if not all([name, desc, cook_val, cook_unit, difficulty]):
+        if not all([name, cooking_time, cooking_time_unit]):
             # Return error response if any field is missing
             return HttpResponseBadRequest("Missing required fields")
 
         # Create a new Recipe object in the database
         # Only saving name and instructions for now (other fields not included)
-        r = Recipe.objects.create(
+        recipe = Recipe.objects.create(
             name=name,
-            instructions=desc,
+            Instructions=instructions,
         )
 
+        # TODO @alemassim0: Qui inserisci inferenza sul modello.
+
         # Redirect user to the detail page of the newly created recipe
-        # pk=r.pk passes the recipe's ID to the URL
-        return redirect('recipe_detail', pk=r.pk)
+        return render(request, "components/recipe_created_success.html", {"recipe": recipe})

@@ -1,0 +1,12 @@
+{% block content %}
+<h1 class="text-lg font-semibold">Recipe {{recipe.name}} created with Success! </h1>
+
+<div class="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-800">
+    <p>You may now close this dialog and create another recipe*</p>
+</div>
+
+    <button class="px-4 py-2 text-white bg-green-500 rounded-lg hover:bg-green-700 cursor-pointer"
+            onclick="window.location.reload()">
+        <strong>Back to Discovery page</strong>
+    </button>
+{% endblock %}
