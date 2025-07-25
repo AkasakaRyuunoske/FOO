@@ -110,31 +110,37 @@
   </div>
 
 
-  <div id="toggle-button-container" class="sticky rounded top-0 h-screen flex flex-col items-center justify-center bg-gray-100">
+  <div id="toggle-button-container" class="sticky rounded top-0 h-screen flex flex-col items-center justify-center">
     <!-- Toggle button -->
     <button
       onclick="
         const fc = document.getElementById('first-column');
         const grid = document.getElementById('main-grid');
         const inlineCards = document.getElementById('cards-inline');
-        const compactCards = document.getElementById('cards-wrapper');
+        const cardsWrapper = document.getElementById('cards-wrapper');
         const icon = document.getElementById('toggle-icon');
         const container = document.getElementById('toggle-button-container');
 
         const isHidden = fc.classList.toggle('hidden');
+        const recipeCards = document.getElementById('recipe-cards');
 
         if (isHidden) {
-          inlineCards.classList.remove('hidden');
-          compactCards.classList.add('hidden');
           icon.textContent = '>>';
+          recipeCards.classList.remove('xl:grid-cols-3');
+          recipeCards.classList.add('xl:grid-cols-4');
+
+          inlineCards.classList.remove('hidden');
+          cardsWrapper.classList.add('hidden');
         } else {
-          inlineCards.classList.add('hidden');
-          compactCards.classList.remove('hidden');
           icon.textContent = '<<';
+          recipeCards.classList.add('xl:grid-cols-3');
+          recipeCards.classList.remove('xl:grid-cols-4');
+
+          inlineCards.classList.add('hidden');
+          cardsWrapper.classList.remove('hidden');
         }
       "
-      class="w-6 h-full rounded-sm text-black hover:bg-gray-200 bg-transparent border-none shadow-none"
-      aria-label="Toggle first column"
+      class="w-6 h-full rounded-sm text-black hover:bg-gray-200 border-none shadow-none bg-gray-100"
     >
       <span id="toggle-icon">&lt;&lt;</span>
     </button>
@@ -251,5 +257,4 @@ function updateSelectedTagsInput(form) {
 }
 
 </script>
-
 {% endblock %}

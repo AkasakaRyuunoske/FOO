@@ -13,14 +13,14 @@
         <div>
             <h2>Log In</h2>
 
-            <form method="post">
+            <form method="post" action="{% url 'login' %}">
                 {% csrf_token %}
 
-                <label for="username">Username</label>
-                <input type="text" name="username" id="username">
+                <label for="{{ form.username.id_for_label }}">Username</label>
+                {{ form.username }}
 
-                <label for="password">Password</label>
-                <input type="password" name="password" id="password">
+                <label for="{{ form.password.id_for_label }}">Password</label>
+                {{ form.password }}
 
                 <a href="/forgot-password">Forgot password?</a>
 

@@ -1,0 +1,1 @@
+sono soluzione temporanea al warning -> ?: (staticfiles.W004) The directory 'C:\Users\...\FOO\FOO\static' in the STATICFILES_DIRS setting does not exist.

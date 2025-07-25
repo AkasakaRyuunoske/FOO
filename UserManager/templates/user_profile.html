@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="max-w-xl mx-auto p-6 bg-white shadow-md rounded">
+    <h2 class="text-xl font-semibold mb-4">Your Profile</h2>
+    <p><strong>Username:</strong> {{ user.username }}</p>
+    <p><strong>Email:</strong> {{ user.email }}</p>
+    <p><strong>Date joined:</strong> {{ user.date_joined }}</p>
+    <a href="{% url 'logout' %}" class="mt-4 inline-block bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded">Logout</a>
+  </div>
+{% endblock %}

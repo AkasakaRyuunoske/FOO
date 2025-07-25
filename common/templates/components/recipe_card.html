@@ -1,7 +1,7 @@
 {% load static %}
 {% comment %} components/recipe_card.html {% endcomment %}
 
-<div onclick="openModal()" class="bg-white p-1.5 rounded-md transition duration-200 hover:shadow-xl hover:scale-105 max-w-[380px] mx-auto w-full {% if show_description_inline %}p-2{% else %}aspect-square{% endif %}"> <!-- External Padding -->
+<div onclick="openModal()" class="bg-white p-1.5 rounded-md shadow-lg transition duration-200 hover:shadow-xl hover:scale-105 max-w-[380px] mx-auto w-full {% if show_description_inline %}p-2{% else %}aspect-square{% endif %}"> <!-- External Padding -->
   <div class="border-2 border-black p-2 bg-white w-full flex flex-col justify-between group relative rounded min-w-0 min-h-0 min-h-[280px] transition-all duration-300 ease-in-out overflow-visible">    <!-- Black line inside square -->
 
     <!-- Bookmark on the right with a transition on hover -->
@@ -11,7 +11,7 @@
 
     <!-- Recipe Name -->
     <div class="flex-1 flex flex-col min-w-0">
-      <h2 class="text-center font-bold mb-2 text-sm sm:text-base break-words line-clamp-2 leading-tight">
+      <h2 class="text-center font-bold mb-2 text-sm sm:text-base break-words {% if show_description_inline %}line-clamp-2{% else %}line-clamp-1{% endif %} leading-tight">
           {{ recipe.name|truncatechars:40 }}
       </h2>
 
@@ -99,23 +99,30 @@
           </div>
 
           <!-- DESCRIPTION WRAPPER -->
-          <div class="absolute top-0 left-0 w-full h-full bg-white bg-opacity-95 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-2 overflow-auto rounded">
+          <div class="absolute top-0 left-0 w-full h-full bg-white z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-2 overflow-auto rounded">
             <h2 class="text-center font-bold mb-2 text-sm sm:text-base break-words">
                {{ recipe.name }}
             </h2>
-            <p>{{ recipe.Instructions|truncatechars:350 }}</p>
+            <p>{{ recipe.Instructions|truncatechars:310 }}</p>
+            <div class="flex justify-center space-x-2 text-base sm:text-lg mb-2 text-yellow-500">
+              <span>★</span>
+              <span>★</span>
+              <span>★</span>
+              <span>★</span>
+              <span class="text-black">★</span>
+            </div>
           </div>
         </div>
       {% endif %}
     </div>
 
     <!-- Stars -->
-    <div class="flex justify-center space-x-1 text-base sm:text-lg mt-auto min-h-[1.5rem] shrink-0">
-      <button class="star-btn text-yellow-500 hover:scale-125 hover:shadow-sm transition-transform duration-150 p-0.5">★</button>
-      <button class="star-btn text-yellow-500 hover:scale-125 hover:shadow-sm transition-transform duration-150 p-0.5">★</button>
-      <button class="star-btn text-yellow-500 hover:scale-125 hover:shadow-sm transition-transform duration-150 p-0.5">★</button>
-      <button class="star-btn text-yellow-500 hover:scale-125 hover:shadow-sm transition-transform duration-150 p-0.5">★</button>
-      <button class="star-btn text-black hover:scale-125 hover:shadow-sm transition-transform duration-150 p-0.5">★</button>
+    <div class="flex justify-center space-x-2 text-base sm:text-lg mt-auto min-h-[1.5rem] shrink-0 text-yellow-500">
+      <span>★</span>
+      <span>★</span>
+      <span>★</span>
+      <span>★</span>
+      <span class="text-black">★</span>
     </div>
   </div>
 </div>
@@ -130,7 +137,25 @@
     <!-- HEADER: Title and Close Button -->
     <div class="flex justify-between items-center mb-4">
       <h2 class="text-2xl font-semibold">Melanzane alla Parmigiana</h2>
-      <button onclick="closeModal()" class="text-gray-600 text-sm hover:text-black">✕</button>
+
+      <div class="absolute top-2 right-2 flex items-center gap-2 z-50">
+        <!-- Bookmark Toggle Button -->
+        <button
+          class="bookmark-btn aspect-square w-16 mt-1"
+          onclick="toggleBookmark({{ recipe.id }})"
+          aria-label="Toggle bookmark"
+        >
+          <img
+            id="bookmark-icon-{{ recipe.id }}"
+            src="{% static 'icons/bookmark-white.png' %}"
+            class="w-full h-full transition duration-150"
+            alt="Bookmark"
+          >
+        </button>
+
+        <!-- Close Button -->
+        <button onclick="closeModal()" class="text-gray-600 text-sm hover:text-black">✕</button>
+      </div>
     </div>
 
     <!-- Image -->
@@ -140,11 +165,21 @@
 
     <div id="tab-description" class="tab-content text-sm leading-relaxed">
       <!-- Author -->
-      <div class="flex items-center mb-2 gap-2">
-        <img src="{% static 'icons/hat.png' %}" class="w-6 h-6" alt="">
-        <div>
-          <p class="text-sm">Recipe by</p>
-          <p class="font-semibold text-base">Name Person</p>
+      <div class="flex items-center justify-between mb-2 gap-2">
+        <div class="flex items-center gap-2">
+          <img src="{% static 'icons/hat.png' %}" class="w-6 h-6" alt="">
+          <div>
+            <p class="text-sm">Recipe by</p>
+            <p class="font-semibold text-base">Name Person</p>
+          </div>
+        </div>
+
+        <div class="rating-stars flex justify-center space-x-1 text-base sm:text-lg lg:text-2xl mt-auto pr-5 min-h-[1.5rem] shrink-0">
+          <button class="text-yellow-500 hover:scale-125 hover:shadow-sm transition-transform duration-150 p-0.5">★</button>
+          <button class="text-yellow-500 hover:scale-125 hover:shadow-sm transition-transform duration-150 p-0.5">★</button>
+          <button class="text-yellow-500 hover:scale-125 hover:shadow-sm transition-transform duration-150 p-0.5">★</button>
+          <button class="text-yellow-500 hover:scale-125 hover:shadow-sm transition-transform duration-150 p-0.5">★</button>
+          <button class="text-black hover:scale-125 hover:shadow-sm transition-transform duration-150 p-0.5">★</button>
         </div>
       </div>
 
@@ -219,48 +254,47 @@
 
 <!-- Script for the Bookmark button -->
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
+  function toggleBookmark() {
     const buttons = document.querySelectorAll('.bookmark-btn');
 
-    buttons.forEach(btn => {
-      const icon = btn.querySelector('.bookmark-icon');
-      let bookmarked = false;
+    buttons.forEach(button => {
+      const icon = button.querySelector('img');
 
-      btn.addEventListener('click', function (e) {
-        event.stopPropagation();
+
+      button.dataset.bookmarked = 'false';
+
+      button.addEventListener('click', function (e) {
         e.preventDefault();
-        bookmarked = !bookmarked;
+        e.stopPropagation();
 
-        if (bookmarked) {
-          icon.src = "{% static 'icons/bookmark-black.png' %}";
-          btn.classList.remove("opacity-0", "group-hover:opacity-100");
-          btn.classList.add("opacity-100");
-        } else {
-          icon.src = "{% static 'icons/bookmark-white.png' %}";
-          btn.classList.remove("opacity-100");
-          btn.classList.add("opacity-0", "group-hover:opacity-100");
-        }
+        const isBookmarked = button.dataset.bookmarked === 'true';
+        button.dataset.bookmarked = (!isBookmarked).toString();
+
+        icon.src = isBookmarked
+          ? "{% static 'icons/bookmark-white.png' %}"
+          : "{% static 'icons/bookmark-black.png' %}";
       });
 
-      btn.addEventListener('mouseenter', function () {
-        if (!bookmarked) {
+      button.addEventListener('mouseenter', function () {
+        if (button.dataset.bookmarked === 'false') {
           icon.src = "{% static 'icons/bookmark-black.png' %}";
         }
       });
 
-      btn.addEventListener('mouseleave', function () {
-        if (!bookmarked) {
+      button.addEventListener('mouseleave', function () {
+        if (button.dataset.bookmarked === 'false') {
           icon.src = "{% static 'icons/bookmark-white.png' %}";
         }
       });
     });
-  });
+  }
 </script>
+
 
 
 <!-- Script for the Ratings -->
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
+  function bindStarRatings() {
     const cards = document.querySelectorAll('div.border-2');
 
     cards.forEach(card => {
@@ -270,15 +304,13 @@
       function updateStars(rating) {
         starButtons.forEach((btn, i) => {
           const starIndex = i + 1;
-          btn.innerHTML = ''; // reset star
+          btn.innerHTML = '';
 
           if (starIndex <= Math.floor(rating)) {
-            // full stars
             btn.classList.remove('text-black');
             btn.classList.add('text-yellow-500');
             btn.textContent = '★';
           } else if (starIndex === Math.ceil(rating) && rating % 1 !== 0) {
-            // create partial overlay for half stars
             btn.classList.remove('text-yellow-500', 'text-black');
             btn.innerHTML = `
               <div class="relative inline-block text-black">
@@ -287,7 +319,6 @@
               </div>
             `;
           } else {
-            // empty stars
             btn.classList.remove('text-yellow-500');
             btn.classList.add('text-black');
             btn.textContent = '★';
@@ -296,26 +327,28 @@
       }
 
       starButtons.forEach((btn, i) => {
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', (event) => {
           event.stopPropagation();
           currentRating = i + 1;
           updateStars(currentRating);
           console.log('Valutazione selezionata:', currentRating);
         });
 
-        btn.addEventListener('mouseenter', () => {
-          updateStars(i + 1);
-        });
-
-        btn.addEventListener('mouseleave', () => {
-          updateStars(currentRating);
-        });
+        btn.addEventListener('mouseenter', () => updateStars(i + 1));
+        btn.addEventListener('mouseleave', () => updateStars(currentRating));
       });
 
       updateStars(currentRating);
     });
+  }
+
+  document.addEventListener('DOMContentLoaded', bindStarRatings);
+
+  document.body.addEventListener('htmx:afterSettle', (evt) => {
+    bindStarRatings();
   });
 </script>
+
 
 
 <!-- Script for the modal -->
