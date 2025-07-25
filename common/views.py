@@ -1,11 +1,11 @@
 import random
 
+from RecipeManager.models import Recipe
+from TagManager.models import Tag
 from django.core.paginator import Paginator
 from django.http import HttpResponseBadRequest
 from django.shortcuts import render, redirect
 from django.views import View
-
-from RecipeManager.models import Recipe
 
 
 def home(request):
@@ -78,7 +78,8 @@ class CreateRecipeView(View):
         Shows the empty recipe creation form to the user
         This is called when someone first visits the page
         """
-        return render(request, self.template_name)
+        tags = Tag.objects.all()
+        return render(request, self.template_name, context={"tags": tags})
 
     def post_recipe_form(self, request):
         """
@@ -92,11 +93,10 @@ class CreateRecipeView(View):
         cook_val = request.POST.get('cook_time_value')
         cook_unit = request.POST.get('cook_time_unit')
         difficulty = request.POST.get('difficulty')
-        servings = request.POST.get('servings')
 
         # Check if all required fields have values
         # all() returns True only if all items in the list are truthy (not empty)
-        if not all([name, desc, cook_val, cook_unit, difficulty, servings]):
+        if not all([name, desc, cook_val, cook_unit, difficulty]):
             # Return error response if any field is missing
             return HttpResponseBadRequest("Missing required fields")
 

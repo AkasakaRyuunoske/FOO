@@ -87,26 +87,17 @@
                         required
                         oninput="this.value = Math.max(0, this.value)"
                         class="w-24 border border-gray-300 rounded px-2 py-2"
+                        title="Must contain only positive numbers"
                 />
                 <select name="cook_time_unit" required
-                        class="w-32 border border-gray-300 rounded px-3 py-2 cursor-pointer appearance-none">
+                        class="w-32 border border-gray-300 rounded px-3 py-2 cursor-pointer appearance-none"
+                        title="Select if number represents minutes or hours"
+                >
                     <option value="">Select...</option>
                     <option value="minutes">minutes</option>
                     <option value="hours">hours</option>
                 </select>
             </div>
-        </div>
-
-        <!-- Row 5: Difficulty -->
-        <div class="space-y-1">
-            <label for="difficulty" class="block text-sm font-medium">Difficulty</label>
-            <select name="difficulty" id="difficulty" required
-                    class="w-40 border border-gray-300 rounded px-3 py-2 cursor-pointer appearance-none">
-                <option value="">Select…</option>
-                <option value="Easy">Easy</option>
-                <option value="Medium">Medium</option>
-                <option value="Hard">Hard</option>
-            </select>
         </div>
 
         <!-- Row 6: Ingredients -->
@@ -313,191 +304,6 @@
                 </button>
             </div>
             <div id="ingredient-error" class="text-red-500 text-sm mb-1" aria-live="polite"></div>
-        </div>
-
-        <!-- Row 7: Tags -->
-        <div class="space-y-2">
-            <h2 class="text-lg font-semibold">Tags</h2>
-            <div id="tags-selected" class="flex flex-wrap gap-1"></div>
-            <div class="flex items-center space-x-2">
-                <div class="flex-1 relative">
-                    <input
-                            type="text"
-                            id="new-tag"
-                            placeholder="Type to search tags..."
-                            autocomplete="off"
-                            oninput="this.value = this.value.replace(/[^A-Za-z\s]/g, '')"
-                            class="w-full border border-gray-300 rounded px-3 py-2"
-                    />
-                    <div id="tag-dropdown"
-                         class="absolute z-10 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-28 overflow-y-auto hidden">
-                        <!-- Dietary Preferences -->
-                        <div class="px-3 py-2 bg-gray-100 font-semibold text-sm text-gray-700">Dietary Preferences</div>
-                        <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Vegan">Vegan
-                        </div>
-                        <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Vegetarian">
-                            Vegetarian
-                        </div>
-                        <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Pescatarian">
-                            Pescatarian
-                        </div>
-                        <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Flexitarian">
-                            Flexitarian
-                        </div>
-                        <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Plant-based">
-                            Plant-based
-                        </div>
-                        <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Dairy-free">
-                            Dairy-free
-                        </div>
-                        <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Gluten-free">
-                            Gluten-free
-                        </div>
-                        <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Grain-free">
-                            Grain-free
-                        </div>
-                        <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Nut-free">
-                            Nut-free
-                        </div>
-                        <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Soy-free">
-                            Soy-free
-                        </div>
-                        <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Egg-free">
-                            Egg-free
-                        </div>
-                        <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Sugar-free">
-                            Sugar-free
-                        </div>
-                        <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Low-sugar">
-                            Low-sugar
-                        </div>
-                        <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Keto">Keto</div>
-                        <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Low-carb">
-                            Low-carb
-                        </div>
-                        <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Paleo">Paleo
-                        </div>
-                        <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Whole30">Whole30
-                        </div>
-                        <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="FODMAP-friendly">
-                            FODMAP-friendly
-                        </div>
-                        <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer"
-                             data-value="Allergen-friendly">
-                            Allergen-friendly
-                        </div>
-
-                        <!-- Recipe Types -->
-                        <div class="px-3 py-2 bg-gray-100 font-semibold text-sm text-gray-700">Recipe Types</div>
-                        <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="One-pot">One-pot
-                        </div>
-                        <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Sheet pan">Sheet
-                            pan
-                        </div>
-                        <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Slow cooker">Slow
-                            cooker
-                        </div>
-                        <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Instant Pot">
-                            Instant
-                            Pot
-                        </div>
-                        <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Air fryer">Air
-                            fryer
-                        </div>
-                        <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="No-cook">No-cook
-                        </div>
-                        <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Raw">Raw</div>
-                        <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Grilled">Grilled
-                        </div>
-                        <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Baked">Baked
-                        </div>
-                        <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Steamed">Steamed
-                        </div>
-                        <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer"
-                             data-value="Freezer-friendly">
-                            Freezer-friendly
-                        </div>
-                        <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Meal prep">Meal
-                            prep
-                        </div>
-                        <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Make-ahead">
-                            Make-ahead
-                        </div>
-                        <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Budget-friendly">
-                            Budget-friendly
-                        </div>
-                        <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Kid-friendly">
-                            Kid-friendly
-                        </div>
-
-                        <!-- Meal Categories -->
-                        <div class="px-3 py-2 bg-gray-100 font-semibold text-sm text-gray-700">Meal Categories</div>
-                        <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Breakfast">
-                            Breakfast
-                        </div>
-                        <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Brunch">Brunch
-                        </div>
-                        <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Lunch">Lunch
-                        </div>
-                        <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Dinner">Dinner
-                        </div>
-                        <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Snack">Snack
-                        </div>
-                        <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Appetizer">
-                            Appetizer
-                        </div>
-                        <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Side dish">Side
-                            dish
-                        </div>
-                        <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Main course">Main
-                            course
-                        </div>
-                        <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Dessert">Dessert
-                        </div>
-                        <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Drink">Drink
-                        </div>
-
-                        <!-- Special Occasions -->
-                        <div class="px-3 py-2 bg-gray-100 font-semibold text-sm text-gray-700">Special Occasions</div>
-                        <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Holiday">Holiday
-                        </div>
-                        <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Party">Party
-                        </div>
-                        <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Picnic">Picnic
-                        </div>
-                        <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Potluck">Potluck
-                        </div>
-                        <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Celebration">
-                            Celebration
-                        </div>
-                        <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Weeknight">
-                            Weeknight
-                        </div>
-                        <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Weekend">Weekend
-                        </div>
-
-                        <!-- Cooking Time -->
-                        <div class="px-3 py-2 bg-gray-100 font-semibold text-sm text-gray-700">Cooking Time</div>
-                        <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer"
-                             data-value="Quick (under 30 min)">Quick (under 30 min)
-                        </div>
-                        <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="30-minute meal">
-                            30-minute meal
-                        </div>
-                        <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Slow-cooked">
-                            Slow-cooked
-                        </div>
-                        <div class="tag-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="Express">Express
-                        </div>
-                    </div>
-                </div>
-                <button type="button" id="add-tag-btn"
-                        class="text-green-400 hover:text-green-600 flex items-center justify-center">
-                    <span class="material-symbols-outlined">
-                        add
-                    </span>
-                </button>
-            </div>
         </div>
 
         <!-- Row 9: Actions -->
