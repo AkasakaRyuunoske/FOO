@@ -1,5 +1,5 @@
 
-<div class="grid sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 auto-rows-min gap-2">
+<div class="grid sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 auto-rows-min gap-2" id="recipe-cards">
   {% for recipe in page_obj %}
     {% include "components/recipe_card.html" with recipe=recipe show_description_inline=show_description_inline%}
   {% empty %}

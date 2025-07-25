@@ -122,18 +122,19 @@
         const container = document.getElementById('toggle-button-container');
 
         const isHidden = fc.classList.toggle('hidden');
+        const recipeCards = document.getElementById('recipe-cards');
 
         if (isHidden) {
           icon.textContent = '>>';
-          cardsWrapper.classList.remove('xl:grid-cols-3');
-          cardsWrapper.classList.add('xl:grid-cols-4');
+          recipeCards.classList.remove('xl:grid-cols-3');
+          recipeCards.classList.add('xl:grid-cols-4');
 
           inlineCards.classList.remove('hidden');
           cardsWrapper.classList.add('hidden');
         } else {
           icon.textContent = '<<';
-          cardsWrapper.classList.add('xl:grid-cols-3');
-          cardsWrapper.classList.remove('xl:grid-cols-4');
+          recipeCards.classList.add('xl:grid-cols-3');
+          recipeCards.classList.remove('xl:grid-cols-4');
 
           inlineCards.classList.add('hidden');
           cardsWrapper.classList.remove('hidden');
@@ -256,5 +257,4 @@ function updateSelectedTagsInput(form) {
 }
 
 </script>
-
 {% endblock %}
