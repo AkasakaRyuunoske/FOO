@@ -1,11 +1,202 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block content %}
-  <div class="max-w-xl mx-auto p-6 bg-white shadow-md rounded">
-    <h2 class="text-xl font-semibold mb-4">Your Profile</h2>
-    <p><strong>Username:</strong> {{ user.username }}</p>
-    <p><strong>Email:</strong> {{ user.email }}</p>
-    <p><strong>Date joined:</strong> {{ user.date_joined }}</p>
-    <a href="{% url 'logout' %}" class="mt-4 inline-block bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded">Logout</a>
-  </div>
+<section class="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg space-y-6" aria-labelledby="profile-heading">
+    <h1 id="profile-heading" class="text-3xl font-bold text-center">Your Profile</h1>
+
+    <!-- Row 1: Photo + Edit -->
+    <!-- Row 1: Photo + Edit -->
+    <div class="flex justify-center">
+        <div class="inline-flex flex-col items-center">
+            <label for="user-profile-upload" class="block cursor-pointer" aria-label="Upload profile photo">
+                <div id="user-profile-photo-preview"
+                     class="relative w-52 h-52 rounded-full border-2 border-dashed border-gray-300
+                        flex items-center justify-center hover:border-gray-600"
+                     role="button">
+                    <!-- Placeholder content -->
+                    <div id="user-profile-photo-placeholder" class="flex flex-col items-center text-gray-500">
+                        <span class="material-symbols-outlined text-4xl">account_circle</span>
+                        <span class="sr-only">Add profile photo</span>
+                    </div>
+
+                    <!-- Delete button, hidden until an image is loaded -->
+            <button id="user-profile-remove-photo-btn"
+                    type="button"
+                    class="hidden absolute -top-1 -right-1 text-red-400 rounded-full flex items-center justify-center hover:text-red-700 focus:outline-none cursor-pointer"
+                    aria-label="Remove photo">
+                <span class="material-symbols-outlined text-lg">close</span>
+            </button>
+                </div>
+
+                <input type="file"
+                       id="user-profile-upload"
+                       name="photo"
+                       accept="image/*"
+                       class="hidden"/>
+            </label>
+
+            <div class="flex justify-end w-full -mt-5">
+                <button id="user-profile-edit-photo-btn"
+                        type="button"
+                        class="text-black focus:outline-none"
+                        aria-label="Edit photo">
+                    <span class="material-symbols-outlined">edit</span>
+                </button>
+            </div>
+
+            <div id="user-profile-photo-help" class="sr-only">
+                Click to upload or change your profile photo. Use the remove button to delete.
+            </div>
+        </div>
+    </div>
+
+    <!-- Row 2: Username -->
+    <div class="text-center mb-6">
+        <h2 class="text-2xl font-semibold">Username</h2>
+    </div>
+
+    <!-- Row 3: Published recipes count -->
+    <div class="flex flex-col justify-center items-center mb-6">
+        <span class="text-3xl font-bold">0</span>
+        <span class="text-gray-600">Published Recipes</span>
+    </div>
+
+    <!-- Row 4: Tabs -->
+    <div role="tablist" aria-label="Profile sections" class="flex justify-center space-x-8 border-b mb-6">
+        <button hx-get="{% url 'saved_recipes' %}"
+                hx-target="#tab-content"
+                hx-swap="innerHTML"
+                role="tab"
+                aria-selected="true"
+                id="tab-saved"
+                class="pb-2 text-lg font-medium border-b-2 border-blue-500 focus:outline-none">
+            Saved Recipes
+        </button>
+        <button hx-get="{% url 'profile_activity' %}"
+                hx-target="#tab-content"
+                hx-swap="innerHTML"
+                role="tab"
+                aria-selected="false"
+                id="tab-activity"
+                class="pb-2 text-lg font-medium text-gray-500 hover:text-gray-700 focus:outline-none">
+            Activity
+        </button>
+    </div>
+
+    <!-- Row 5: Tab Content -->
+    <div id="tab-content">
+        {% include "components/recipes_list.html" with page_obj=saved_page_obj %}
+    </div>
+</section>
+
+<script>
+    // ===== PROFILE PHOTO UPLOAD FUNCTIONALITY =====
+    class ProfilePhotoUploader {
+        constructor(inputId, previewId, placeholderId, removeBtnId) {
+            console.log('Initializing ProfilePhotoUploader...');
+            this.input = document.getElementById(inputId);
+            this.preview = document.getElementById(previewId);
+            this.placeholder = document.getElementById(placeholderId);
+            this.removeBtn = document.getElementById(removeBtnId);
+
+            if (!this.input || !this.preview || !this.placeholder || !this.removeBtn) {
+                console.error('Some elements not found!');
+                return;
+            }
+
+            this.init();
+        }
+
+        init() {
+            this.input.addEventListener('change', (e) => {
+                this.handleFileChange();
+            });
+            this.removeBtn.addEventListener('click', (e) => {
+                this.handleRemove(e);
+            });
+        }
+
+        handleFileChange() {
+            const file = this.input.files[0];
+            if (!file) return;
+
+            this.preview.classList.replace('border-dashed', 'border-solid');
+            this.clearPreview();
+            this.showRemoveButton();
+            this.displayImage(file);
+        }
+
+        clearPreview() {
+            this.preview.querySelectorAll('img').forEach(img => img.remove());
+            this.placeholder.classList.add('hidden');
+        }
+
+        showRemoveButton() {
+            this.removeBtn.classList.remove('hidden');
+        }
+
+        displayImage(file) {
+            const reader = new FileReader();
+            reader.onload = e => {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.alt = 'Profile photo preview';
+                img.className = 'absolute inset-0 object-cover w-full h-full rounded-full';
+                this.preview.appendChild(img);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        handleRemove(e) {
+            e.stopPropagation();
+            e.preventDefault();
+
+            // Show confirmation popup for remove
+            if (confirm('Are you sure you want to remove your profile photo?')) {
+                this.preview.querySelectorAll('img').forEach(img => img.remove());
+                this.preview.classList.replace('border-solid', 'border-dashed');
+                this.removeBtn.classList.add('hidden');
+                this.placeholder.classList.remove('hidden');
+                this.input.value = '';
+            }
+        }
+
+        // Method to handle edit with confirmation
+        handleEdit() {
+            if (confirm('Do you want to change your profile photo?')) {
+                this.input.click();
+            }
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // Initialize with the new IDs
+        const photoUploader = new ProfilePhotoUploader(
+            'user-profile-upload',
+            'user-profile-photo-preview',
+            'user-profile-photo-placeholder',
+            'user-profile-remove-photo-btn'
+        );
+
+        // Tab functionality
+        document.querySelectorAll('[role="tab"]').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('[role="tab"]').forEach(t => t.setAttribute('aria-selected', 'false'));
+                tab.setAttribute('aria-selected', 'true');
+            });
+        });
+
+        // Edit button functionality with confirmation
+        const editBtn = document.getElementById('user-profile-edit-photo-btn');
+        if (editBtn && photoUploader) {
+            editBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                photoUploader.handleEdit();
+            });
+        }
+    });
+</script>
+
 {% endblock %}
