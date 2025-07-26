@@ -1,6 +1,7 @@
 import random
 
 from django.core.paginator import Paginator
+from django.db.models import Q
 from django.http import HttpResponseBadRequest
 from django.shortcuts import render, redirect
 from django.views import View
@@ -110,3 +111,24 @@ class CreateRecipeView(View):
         # Redirect user to the detail page of the newly created recipe
         # pk=r.pk passes the recipe's ID to the URL
         return redirect('recipe_detail', pk=r.pk)
+
+
+def discover_search(request):
+    query = request.GET.get('search_term', '').strip()
+    recipes = Recipe.objects.all()
+
+    if query:
+        # Search in recipe name and Instructions (note the capital I)
+        recipes = recipes.filter(
+            Q(name__icontains=query) | Q(Instructions__icontains=query)
+        ).distinct()
+
+    # Pagination for discover page (12 items like your existing discover view)
+    page_number = request.GET.get('page', 1)
+    paginator = Paginator(recipes, 12)
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'discover.html', {
+        'page_obj': page_obj,
+        'query': query,
+    })
