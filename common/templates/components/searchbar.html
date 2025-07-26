@@ -1,15 +1,21 @@
-<form method="get" action="{{ action|default:'' }}" class="w-full max-w-md mx-auto">
+<form
+        hx-get="{{ action|default:'' }}"
+        hx-target="#cards-wrapper"
+        hx-trigger="keyup changed delay:300ms"
+        class="w-full max-w-md mx-auto"
+        role="search"
+        aria-label="Search"
+>
     <div class="relative">
         <input
                 type="text"
                 name="{{ input_name|default:'q' }}"
                 placeholder="{{ placeholder|default:'Search...' }}"
                 class="w-full pl-10 pr-4 py-2 border border-gray-900 rounded-lg focus:outline-none"
+                aria-label="{{ placeholder|default:'Search...' }}"
         />
         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <span class="material-symbols-outlined">
-                search
-            </span>
+            <span class="material-symbols-outlined">search</span>
         </div>
     </div>
 </form>
