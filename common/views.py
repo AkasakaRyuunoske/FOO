@@ -11,7 +11,7 @@ from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 
 from RecipeManager.models import Recipe
-from TagManager.models import Tag
+from TagManager.models import Tag, RecipeTag
 
 
 def home(request):
@@ -109,7 +109,7 @@ class CreateRecipeView(View):
 
         # Create a new Recipe object in the database
         # Only saving name and instructions for now (other fields not included)
-        recipe = Recipe.objects.create(
+        recipe_obj = Recipe.objects.create(
             name=name,
             Instructions=instructions,
         )
@@ -155,6 +155,15 @@ class CreateRecipeView(View):
         price_predictions = predict_and_print(recipe, price_model, price_tokenizer, inverse_price_map, "Price")
         vegan_predictions = predict_and_print(recipe, vegan_model, vegan_tokenizer, inverse_vegan_map, "Vegan")
         vegetarian_predictions = predict_and_print(recipe, vegetarian_model, vegetarian_tokenizer, inverse_vegetarian_map, "Vegetarian")
+
+        RecipeTag.objects.create(recipe=recipe_obj, tag=Tag.objects.get(name=difficulty_predictions["predicted"], tag_type__name="Difficulty"))
+        RecipeTag.objects.create(recipe=recipe_obj, tag=Tag.objects.get(name=time_predictions["predicted"].split('(')[0].strip(), tag_type__name="Preparation Time"))
+        RecipeTag.objects.create(recipe=recipe_obj, tag=Tag.objects.get(name="Yes" if gluten_free_predictions["predicted"] else "No", tag_type__name="Gluten Free"))
+        RecipeTag.objects.create(recipe=recipe_obj, tag=Tag.objects.get(name="Yes" if lactose_free_predictions["predicted"] else "No", tag_type__name="Lactose Free"))
+        RecipeTag.objects.create(recipe=recipe_obj, tag=Tag.objects.get(name=cooking_method_predictions["predicted"], tag_type__name="Cooking Method"))
+        RecipeTag.objects.create(recipe=recipe_obj, tag=Tag.objects.get(name=price_predictions["predicted"], tag_type__name="Cost"))
+        RecipeTag.objects.create(recipe=recipe_obj, tag=Tag.objects.get(name="Yes" if vegan_predictions["predicted"] else "No", tag_type__name="Vegan"))
+        RecipeTag.objects.create(recipe=recipe_obj, tag=Tag.objects.get(name="Yes" if vegetarian_predictions["predicted"] else "No", tag_type__name="Vegetarian"))
 
         # Redirect user to the detail page of the newly created recipe
         return render(request, "components/recipe_created_success.html", {"recipe": recipe})
