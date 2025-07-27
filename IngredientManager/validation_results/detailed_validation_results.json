@@ -7,13 +7,13 @@
       "toast",
       "milk"
     ],
-    "query_time": 0.009966373443603516,
+    "query_time": 0.0,
     "results_count": 0,
     "flagged_count": 0,
     "avg_relevance_score": 0,
     "coherence": {
-      "coherence_score": 0.06418691355264809,
-      "analysis": "Coerenza molto bassa - le ricette sembrano non correlate"
+      "coherence_score": 0,
+      "analysis": "Nessuna raccomandazione da analizzare"
     },
     "validated_results": [],
     "filtered_out": true
@@ -26,13 +26,13 @@
       "garlic",
       "basil"
     ],
-    "query_time": 0.002002239227294922,
+    "query_time": 0.0,
     "results_count": 0,
     "flagged_count": 0,
     "avg_relevance_score": 0,
     "coherence": {
-      "coherence_score": 0.06527539130734131,
-      "analysis": "Coerenza molto bassa - le ricette sembrano non correlate"
+      "coherence_score": 0,
+      "analysis": "Nessuna raccomandazione da analizzare"
     },
     "validated_results": [],
     "filtered_out": true
@@ -45,13 +45,13 @@
       "avocado",
       "salsa"
     ],
-    "query_time": 0.0009794235229492188,
+    "query_time": 0.0,
     "results_count": 0,
     "flagged_count": 0,
     "avg_relevance_score": 0,
     "coherence": {
-      "coherence_score": 0.036004709664880216,
-      "analysis": "Coerenza molto bassa - le ricette sembrano non correlate"
+      "coherence_score": 0,
+      "analysis": "Nessuna raccomandazione da analizzare"
     },
     "validated_results": [],
     "filtered_out": true
@@ -64,13 +64,13 @@
       "butter",
       "chocolate"
     ],
-    "query_time": 0.0019016265869140625,
+    "query_time": 0.0,
     "results_count": 0,
     "flagged_count": 0,
     "avg_relevance_score": 0,
     "coherence": {
-      "coherence_score": 0.11131329380057188,
-      "analysis": "Coerenza bassa - le ricette sono parzialmente correlate"
+      "coherence_score": 0,
+      "analysis": "Nessuna raccomandazione da analizzare"
     },
     "validated_results": [],
     "filtered_out": true
@@ -83,13 +83,13 @@
       "chickpeas",
       "quinoa"
     ],
-    "query_time": 0.0034027099609375,
+    "query_time": 0.0,
     "results_count": 0,
     "flagged_count": 0,
     "avg_relevance_score": 0,
     "coherence": {
-      "coherence_score": 0.07777952653546281,
-      "analysis": "Coerenza molto bassa - le ricette sembrano non correlate"
+      "coherence_score": 0,
+      "analysis": "Nessuna raccomandazione da analizzare"
     },
     "validated_results": [],
     "filtered_out": true
@@ -102,13 +102,13 @@
       "onion",
       "carrots"
     ],
-    "query_time": 0.0020444393157958984,
+    "query_time": 0.0,
     "results_count": 0,
     "flagged_count": 0,
     "avg_relevance_score": 0,
     "coherence": {
-      "coherence_score": 0.14316197828022048,
-      "analysis": "Coerenza bassa - le ricette sono parzialmente correlate"
+      "coherence_score": 0,
+      "analysis": "Nessuna raccomandazione da analizzare"
     },
     "validated_results": [],
     "filtered_out": true
@@ -121,13 +121,13 @@
       "lemon",
       "olive oil"
     ],
-    "query_time": 0.0020263195037841797,
+    "query_time": 0.0,
     "results_count": 0,
     "flagged_count": 0,
     "avg_relevance_score": 0,
     "coherence": {
-      "coherence_score": 0.0678933030511142,
-      "analysis": "Coerenza molto bassa - le ricette sembrano non correlate"
+      "coherence_score": 0,
+      "analysis": "Nessuna raccomandazione da analizzare"
     },
     "validated_results": [],
     "filtered_out": true
@@ -140,13 +140,13 @@
       "ground beef",
       "cream"
     ],
-    "query_time": 0.0029821395874023438,
+    "query_time": 0.0,
     "results_count": 0,
     "flagged_count": 0,
     "avg_relevance_score": 0,
     "coherence": {
-      "coherence_score": 0.023234847987235952,
-      "analysis": "Coerenza molto bassa - le ricette sembrano non correlate"
+      "coherence_score": 0,
+      "analysis": "Nessuna raccomandazione da analizzare"
     },
     "validated_results": [],
     "filtered_out": true
@@ -159,13 +159,13 @@
       "chicken",
       "garam masala"
     ],
-    "query_time": 0.002965688705444336,
+    "query_time": 0.0,
     "results_count": 0,
     "flagged_count": 0,
     "avg_relevance_score": 0,
     "coherence": {
-      "coherence_score": 0.2231513919560104,
-      "analysis": "Coerenza bassa - le ricette sono parzialmente correlate"
+      "coherence_score": 0,
+      "analysis": "Nessuna raccomandazione da analizzare"
     },
     "validated_results": [],
     "filtered_out": true
@@ -178,13 +178,13 @@
       "ginger",
       "sesame oil"
     ],
-    "query_time": 0.0030012130737304688,
+    "query_time": 0.0,
     "results_count": 0,
     "flagged_count": 0,
     "avg_relevance_score": 0,
     "coherence": {
-      "coherence_score": 0.020183295343641404,
-      "analysis": "Coerenza molto bassa - le ricette sembrano non correlate"
+      "coherence_score": 0,
+      "analysis": "Nessuna raccomandazione da analizzare"
     },
     "validated_results": [],
     "filtered_out": true
@@ -197,13 +197,13 @@
       "mint",
       "garlic"
     ],
-    "query_time": 0.001995086669921875,
+    "query_time": 0.0,
     "results_count": 0,
     "flagged_count": 0,
     "avg_relevance_score": 0,
     "coherence": {
-      "coherence_score": 0.0,
-      "analysis": "Coerenza molto bassa - le ricette sembrano non correlate"
+      "coherence_score": 0,
+      "analysis": "Nessuna raccomandazione da analizzare"
     },
     "validated_results": [],
     "filtered_out": true
@@ -214,13 +214,13 @@
       "salt",
       "pepper"
     ],
-    "query_time": 0.0039980411529541016,
+    "query_time": 0.0,
     "results_count": 0,
     "flagged_count": 0,
     "avg_relevance_score": 0,
     "coherence": {
-      "coherence_score": 0.05185185185185182,
-      "analysis": "Coerenza molto bassa - le ricette sembrano non correlate"
+      "coherence_score": 0,
+      "analysis": "Nessuna raccomandazione da analizzare"
     },
     "validated_results": [],
     "filtered_out": true
@@ -230,13 +230,13 @@
     "ingredients": [
       "banana"
     ],
-    "query_time": 0.002946615219116211,
+    "query_time": 0.0,
     "results_count": 0,
     "flagged_count": 0,
     "avg_relevance_score": 0,
     "coherence": {
-      "coherence_score": 0.1239996752752888,
-      "analysis": "Coerenza bassa - le ricette sono parzialmente correlate"
+      "coherence_score": 0,
+      "analysis": "Nessuna raccomandazione da analizzare"
     },
     "validated_results": [],
     "filtered_out": true
@@ -249,13 +249,13 @@
       "potato",
       "gravy"
     ],
-    "query_time": 0.0020067691802978516,
+    "query_time": 0.0,
     "results_count": 0,
     "flagged_count": 0,
     "avg_relevance_score": 0,
     "coherence": {
-      "coherence_score": 0.027194870651218533,
-      "analysis": "Coerenza molto bassa - le ricette sembrano non correlate"
+      "coherence_score": 0,
+      "analysis": "Nessuna raccomandazione da analizzare"
     },
     "validated_results": [],
     "filtered_out": true
@@ -268,13 +268,13 @@
       "mint",
       "rum"
     ],
-    "query_time": 0.0019981861114501953,
+    "query_time": 0.004565715789794922,
     "results_count": 0,
     "flagged_count": 0,
     "avg_relevance_score": 0,
     "coherence": {
-      "coherence_score": 0.180050026505181,
-      "analysis": "Coerenza bassa - le ricette sono parzialmente correlate"
+      "coherence_score": 0,
+      "analysis": "Nessuna raccomandazione da analizzare"
     },
     "validated_results": [],
     "filtered_out": true
