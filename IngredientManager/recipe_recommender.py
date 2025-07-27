@@ -680,6 +680,29 @@ class UserQueryHandler:
 
         return formatted_results
 
+    def display_recommendations(self, results):
+        """
+        Mostra le raccomandazioni in formato leggibile.
+
+        Parametri:
+        - results: Lista risultati formattati
+        """
+        if not results:
+            print("No recommendations to display.")
+            return
+
+        print(f"\n=== TOP {len(results)} RECIPE RECOMMENDATIONS ===")
+        print("-" * 60)
+
+        for recipe in results:
+            print(f"{recipe['rank']}. {recipe['title']}")
+            print(f"   Similarity Score: {recipe['similarity_score']}")
+            print(f"   Ingredients ({recipe['ingredients_count']}): {', '.join(recipe['ingredients'][:5])}")
+            if len(recipe['ingredients']) > 5:
+                print(f"   ... and {len(recipe['ingredients']) - 5} more")
+            print(f"   Link: {recipe['link']}")
+            print("-" * 60)
+
 
 def test_recommender(recommender, test_cases_file=None):
     """
