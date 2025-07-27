@@ -2,142 +2,377 @@
 {% load static %}
 
 {% block content %}
-<section class="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg space-y-6" aria-labelledby="profile-heading">
+<!-- Main Profile Section Container -->
+<section class="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg space-y-6"
+         aria-labelledby="profile-heading"
+         role="main">
     <h1 id="profile-heading" class="text-3xl font-bold text-center">Your Profile</h1>
 
-    <!-- Row 1: Photo + Edit -->
-    <!-- Row 1: Photo + Edit -->
-    <div class="flex justify-center">
+    <!-- Profile Photo Upload Section -->
+    <div class="flex justify-center" role="region" aria-label="Profile photo section">
         <div class="inline-flex flex-col items-center">
-            <label for="user-profile-upload" class="block cursor-pointer" aria-label="Upload profile photo">
+            <!-- Photo Upload Label and Container -->
+            <label for="user-profile-upload"
+                   class="block cursor-pointer focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-offset-2 rounded-full"
+                   aria-label="Upload profile photo">
+                <!-- Photo Preview Container -->
                 <div id="user-profile-photo-preview"
                      class="relative w-52 h-52 rounded-full border-2 border-dashed border-gray-300
-                        flex items-center justify-center hover:border-gray-600"
-                     role="button">
-                    <!-- Placeholder content -->
-                    <div id="user-profile-photo-placeholder" class="flex flex-col items-center text-gray-500">
-                        <span class="material-symbols-outlined text-4xl">account_circle</span>
-                        <span class="sr-only">Add profile photo</span>
+                            flex items-center justify-center hover:border-gray-600
+                            transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                     role="button"
+                     tabindex="0"
+                     aria-describedby="user-profile-photo-help">
+                    <!-- Default Placeholder Content -->
+                    <div id="user-profile-photo-placeholder"
+                         class="flex flex-col items-center text-gray-600">
+                        <span class="material-symbols-outlined text-4xl" aria-hidden="true">account_circle</span>
+                        <span class="text-sm mt-2">Click to add photo</span>
+                        <span class="sr-only">Upload profile photo</span>
                     </div>
 
-                    <!-- Delete button, hidden until an image is loaded -->
-            <button id="user-profile-remove-photo-btn"
-                    type="button"
-                    class="hidden absolute -top-1 -right-1 text-red-400 rounded-full flex items-center justify-center hover:text-red-700 focus:outline-none cursor-pointer"
-                    aria-label="Remove photo">
-                <span class="material-symbols-outlined text-lg">close</span>
-            </button>
+                    <!-- Remove Photo Button (Hidden by default) -->
+                    <button id="user-profile-remove-photo-btn"
+                            type="button"
+                            class="hidden absolute -top-2 -right-2 focus:outline-none cursor-pointer text-red-500 hover:text-red-800 py-2"
+                            aria-label="Remove profile photo">
+                        <span class="material-symbols-outlined text-base text-red" aria-hidden="true">close</span>
+                    </button>
                 </div>
 
+                <!-- Hidden File Input -->
                 <input type="file"
                        id="user-profile-upload"
                        name="photo"
                        accept="image/*"
-                       class="hidden"/>
+                       aria-describedby="user-profile-photo-help"
+                       class="sr-only"/>
             </label>
 
-            <div class="flex justify-end w-full -mt-5">
+            <!-- Edit Photo Button -->
+            <div class="flex justify-end w-full -mt-6">
                 <button id="user-profile-edit-photo-btn"
                         type="button"
-                        class="text-black focus:outline-none"
-                        aria-label="Edit photo">
-                    <span class="material-symbols-outlined">edit</span>
+                        class="text-zinc-950 hover:text-zinc-600 focus:outline-none
+                               focus:ring-2 focus:ring-zinc-950 focus:ring-offset-2 rounded-full
+                               transition-colors duration-200"
+                        aria-label="Edit profile photo">
+                    <span class="material-symbols-outlined" aria-hidden="true">edit</span>
                 </button>
             </div>
 
+            <!-- Screen Reader Help Text -->
             <div id="user-profile-photo-help" class="sr-only">
-                Click to upload or change your profile photo. Use the remove button to delete.
+                Click to upload or change your profile photo. Supported formats: JPG, PNG, GIF. Maximum size: 5MB.
             </div>
         </div>
     </div>
 
-    <!-- Row 2: Username -->
-    <div class="text-center mb-6">
-        <h2 class="text-2xl font-semibold">Username</h2>
+    <!-- User Display Name Section -->
+    <div class="text-center" role="region" aria-label="User information">
+        <h2 class="text-2xl font-semibold text-gray-900">{{ user.get_display_name|default:"Username" }}</h2>
     </div>
 
-    <!-- Row 3: Published recipes count -->
-    <div class="flex flex-col justify-center items-center mb-6">
-        <span class="text-3xl font-bold">0</span>
+    <!-- Published Recipes Count Display -->
+    <div class="flex flex-col justify-center items-center" role="region" aria-label="Recipe statistics">
+        <span class="text-3xl font-bold text-gray-900"
+              aria-label="Number of published recipes">{{ user.recipes.count|default:0 }}</span>
         <span class="text-gray-600">Published Recipes</span>
     </div>
 
-    <!-- Row 4: Tabs -->
-    <div role="tablist" aria-label="Profile sections" class="flex justify-center space-x-8 border-b mb-6">
-        <button hx-get="{% url 'saved_recipes' %}"
-                hx-target="#tab-content"
-                hx-swap="innerHTML"
+    <!-- Tab Navigation (Saved Recipes / Activity) -->
+    <div role="tablist"
+         aria-label="Profile content sections"
+         class="flex justify-center space-x-8">
+        <!-- Saved Recipes Tab -->
+        <button id="tab-saved"
                 role="tab"
                 aria-selected="true"
-                id="tab-saved"
-                class="pb-2 text-lg font-medium border-b-2 border-blue-500 focus:outline-none">
+                aria-controls="saved-recipes-content"
+                tabindex="0"
+                class="flex items-center pb-3 px-4 text-lg font-medium text-black
+               border-b-2 border-transparent
+               hover:border-zinc-950 focus:outline-none
+               focus:ring-2 focus:ring-zinc-950 focus:ring-offset-2
+               transition-colors duration-200 rounded-t-md
+               min-w-0 flex-shrink-0">
+            <span class="sr-only">View </span>
+            <span class="material-symbols-outlined mr-1" aria-hidden="true">bookmark</span>
             Saved Recipes
         </button>
-        <button hx-get="{% url 'profile_activity' %}"
-                hx-target="#tab-content"
-                hx-swap="innerHTML"
+        <!-- Activity Tab -->
+        <button id="tab-activity"
                 role="tab"
                 aria-selected="false"
-                id="tab-activity"
-                class="pb-2 text-lg font-medium text-gray-500 hover:text-gray-700 focus:outline-none">
+                aria-controls="activity-content"
+                tabindex="-1"
+                class="flex items-center pb-3 px-4 text-lg font-medium text-black
+               border-b-2 border-transparent
+               hover:border-zinc-950 focus:outline-none
+               focus:ring-2 focus:ring-zinc-950 focus:ring-offset-2
+               transition-colors duration-200 rounded-t-md
+               min-w-0 flex-shrink-0">
+            <span class="sr-only">View </span>
+            <span class="material-symbols-outlined mr-1" aria-hidden="true">timeline</span>
             Activity
         </button>
     </div>
 
-    <!-- Row 5: Tab Content -->
-    <div id="tab-content">
-        {% include "components/recipes_list.html" with page_obj=saved_page_obj %}
+    <!-- Tab Content Container -->
+    <div id="tab-content"
+         class="min-h-[300px]"
+         role="region"
+         aria-live="polite"
+         aria-atomic="false">
+
+        <!-- Saved Recipes Tab Panel (Default Active) -->
+        <div id="saved-recipes-content"
+             role="tabpanel"
+             aria-labelledby="tab-saved"
+             class="focus:outline-none"
+             tabindex="0">
+
+            <!-- Future Enhancement: Recipe Cards Component -->
+            <!-- {% include "components/recipes_list.html" with page_obj=saved_page_obj %} -->
+
+            <div class="space-y-4">
+                <!-- Section Header -->
+                <h3 class="text-xl font-semibold text-gray-900 border-b-2 border-zinc-950 pb-2 flex items-center"
+                    id="saved-summary-heading">
+                    <span class="material-symbols-outlined mr-1" aria-hidden="true">bookmark</span>
+                    Recently Saved
+                </h3>
+
+                <!-- Saved Recipes List -->
+                <div class="space-y-3"
+                     role="region"
+                     aria-labelledby="saved-summary-heading">
+                    <div id="saved-recipes-summary" class="space-y-2">
+                        <!-- Sample Recipe Item 1 -->
+                        <div class="flex items-center justify-between p-3 bg-zinc-200 rounded-lg
+                                           border-l-4 border-zinc-950 hover:bg-zinc-300 transition-colors duration-200">
+                            <div class="flex-1 min-w-0">
+                                <h4 class="text-sm font-medium text-gray-900 truncate">Chocolate Cake</h4>
+                                <p class="text-xs text-gray-600 mt-1">by Chef Maria</p>
+                            </div>
+                            <time class="text-xs text-gray-500 ml-2 flex-shrink-0"
+                                  datetime="2025-01-25">25/01/2025
+                            </time>
+                        </div>
+                        <!-- Sample Recipe Item 2 -->
+                        <div class="flex items-center justify-between p-3 bg-zinc-200 rounded-lg
+                                           border-l-4 border-zinc-950 hover:bg-zinc-300 transition-colors duration-200">
+                            <div class="flex-1 min-w-0">
+                                <h4 class="text-sm font-medium text-gray-900 truncate">Pasta Bolognese</h4>
+                                <p class="text-xs text-gray-600 mt-1">by Chef Antonio</p>
+                            </div>
+                            <time class="text-xs text-gray-500 ml-2 flex-shrink-0"
+                                  datetime="2025-01-24">24/01/2025
+                            </time>
+                        </div>
+                        <!-- Sample Recipe Item 3 -->
+                        <div class="flex items-center justify-between p-3 bg-zinc-200 rounded-lg
+                                           border-l-4 border-zinc-950 hover:bg-zinc-300 transition-colors duration-200">
+                            <div class="flex-1 min-w-0">
+                                <h4 class="text-sm font-medium text-gray-900 truncate">Caesar Salad</h4>
+                                <p class="text-xs text-gray-600 mt-1">by Chef Sophie</p>
+                            </div>
+                            <time class="text-xs text-gray-500 ml-2 flex-shrink-0"
+                                  datetime="2025-01-23">23/01/2025
+                            </time>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Activity Tab Panel (Hidden by default) -->
+        <div id="activity-content"
+             role="tabpanel"
+             aria-labelledby="tab-activity"
+             class="hidden focus:outline-none"
+             tabindex="0">
+
+            <div class="space-y-6">
+                <div class="">
+                    <div class="space-y-4">
+                        <!-- Activity Section Header -->
+                        <h3 class="text-xl font-semibold text-gray-900 border-b-2 border-zinc-950 pb-2 flex items-center"
+                            id="activity-feed-heading">
+                            <span class="material-symbols-outlined mr-1" aria-hidden="true">timeline</span>
+                            Recent Activity
+                        </h3>
+
+                        <!-- Activity Feed List -->
+                        <div class="space-y-3"
+                             role="region"
+                             aria-labelledby="activity-feed-heading">
+                            <div id="activity-feed" class="space-y-2">
+                                <!-- Sample Activity Item 1 -->
+                                <div class="flex items-center justify-between p-3 bg-zinc-200 rounded-lg
+                                           border-l-4 border-zinc-950 hover:bg-zinc-300 transition-colors duration-200">
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm text-gray-900">
+                                            <span class="font-medium text-green-900">John</span>
+                                            <span class="text-gray-600"> published </span>
+                                            <span class="font-medium">Chocolate Cake</span>
+                                        </p>
+                                    </div>
+                                    <time class="text-xs text-gray-500 ml-2 flex-shrink-0"
+                                          datetime="2025-01-27">27/01/2025
+                                    </time>
+                                </div>
+                                <!-- Sample Activity Item 2 -->
+                                <div class="flex items-center justify-between p-3 bg-zinc-200 rounded-lg
+                                           border-l-4 border-zinc-950 hover:bg-zinc-300 transition-colors duration-200">
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm text-gray-900">
+                                            <span class="font-medium text-green-900">Sarah</span>
+                                            <span class="text-gray-600"> published </span>
+                                            <span class="font-medium">Pasta Bolognese</span>
+                                        </p>
+                                    </div>
+                                    <time class="text-xs text-gray-500 ml-2 flex-shrink-0"
+                                          datetime="2025-01-26">26/01/2025
+                                    </time>
+                                </div>
+                                <!-- Sample Activity Item 3 -->
+                                <div class="flex items-center justify-between p-3 bg-zinc-200 rounded-lg
+                                           border-l-4 border-zinc-950 hover:bg-zinc-300 transition-colors duration-200">
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm text-gray-900">
+                                            <span class="font-medium text-green-900">Mike</span>
+                                            <span class="text-gray-600"> published </span>
+                                            <span class="font-medium">Caesar Salad</span>
+                                        </p>
+                                    </div>
+                                    <time class="text-xs text-gray-500 ml-2 flex-shrink-0"
+                                          datetime="2025-01-25">25/01/2025
+                                    </time>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 
 <script>
-    // ===== PROFILE PHOTO UPLOAD FUNCTIONALITY =====
+    // PROFILE PHOTO UPLOAD MANAGEMENT
+    /**
+     * Handles profile photo upload, preview, validation, and removal
+     * Follows Single Responsibility Principle - only manages photo operations
+     */
     class ProfilePhotoUploader {
+        /**
+         * Initialize photo uploader with required DOM elements
+         * @param {string} inputId - File input element ID
+         * @param {string} previewId - Photo preview container ID
+         * @param {string} placeholderId - Placeholder content ID
+         * @param {string} removeBtnId - Remove button ID
+         */
         constructor(inputId, previewId, placeholderId, removeBtnId) {
-            console.log('Initializing ProfilePhotoUploader...');
             this.input = document.getElementById(inputId);
             this.preview = document.getElementById(previewId);
             this.placeholder = document.getElementById(placeholderId);
             this.removeBtn = document.getElementById(removeBtnId);
 
+            // Validate all required elements exist
             if (!this.input || !this.preview || !this.placeholder || !this.removeBtn) {
-                console.error('Some elements not found!');
+                console.error('ProfilePhotoUploader: Missing required elements');
                 return;
             }
 
             this.init();
         }
 
+        /**
+         * Initialize event listeners for photo upload functionality
+         */
         init() {
-            this.input.addEventListener('change', (e) => {
-                this.handleFileChange();
-            });
-            this.removeBtn.addEventListener('click', (e) => {
-                this.handleRemove(e);
+            // File selection handler
+            this.input.addEventListener('change', () => this.handleFileChange());
+
+            // Remove photo handler
+            this.removeBtn.addEventListener('click', (e) => this.handleRemove(e));
+
+            // Keyboard accessibility for photo preview area
+            this.preview.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.input.click();
+                }
             });
         }
 
+        /**
+         * Handle file selection and validation
+         */
         handleFileChange() {
             const file = this.input.files[0];
             if (!file) return;
 
+            // Validate file before processing
+            if (!this.validateFile(file)) return;
+
+            // Update UI to show selected photo
             this.preview.classList.replace('border-dashed', 'border-solid');
             this.clearPreview();
             this.showRemoveButton();
             this.displayImage(file);
+
+            // Notify screen readers of change
+            this.announceChange('Profile photo updated');
         }
 
+        /**
+         * Validate uploaded file type and size
+         * @param {File} file - Selected file to validate
+         * @returns {boolean} - True if file is valid
+         */
+        validateFile(file) {
+            const maxSize = 5 * 1024 * 1024; // 5MB limit
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+
+            // Check file type
+            if (!allowedTypes.includes(file.type)) {
+                alert('Please select a valid image file (JPG, PNG, or GIF)');
+                return false;
+            }
+
+            // Check file size
+            if (file.size > maxSize) {
+                alert('File size must be less than 5MB');
+                return false;
+            }
+
+            return true;
+        }
+
+        /**
+         * Clear existing preview content
+         */
         clearPreview() {
             this.preview.querySelectorAll('img').forEach(img => img.remove());
             this.placeholder.classList.add('hidden');
         }
 
+        /**
+         * Show the remove photo button
+         */
         showRemoveButton() {
             this.removeBtn.classList.remove('hidden');
         }
 
+        /**
+         * Display selected image in preview area
+         * @param {File} file - Image file to display
+         */
         displayImage(file) {
             const reader = new FileReader();
+
             reader.onload = e => {
                 const img = document.createElement('img');
                 img.src = e.target.result;
@@ -145,58 +380,293 @@
                 img.className = 'absolute inset-0 object-cover w-full h-full rounded-full';
                 this.preview.appendChild(img);
             };
+
+            reader.onerror = () => {
+                alert('Error reading file. Please try again.');
+            };
+
             reader.readAsDataURL(file);
         }
 
+        /**
+         * Handle photo removal with confirmation
+         * @param {Event} e - Click event
+         */
         handleRemove(e) {
             e.stopPropagation();
             e.preventDefault();
 
-            // Show confirmation popup for remove
-            if (confirm('Are you sure you want to remove your profile photo?')) {
+            if (this.confirmAction('Are you sure you want to remove your profile photo?')) {
+                // Reset preview to default state
                 this.preview.querySelectorAll('img').forEach(img => img.remove());
                 this.preview.classList.replace('border-solid', 'border-dashed');
                 this.removeBtn.classList.add('hidden');
                 this.placeholder.classList.remove('hidden');
                 this.input.value = '';
+
+                this.announceChange('Profile photo removed');
             }
         }
 
-        // Method to handle edit with confirmation
+        /**
+         * Handle edit button click (triggers file selection)
+         */
         handleEdit() {
-            if (confirm('Do you want to change your profile photo?')) {
+            if (this.confirmAction('Do you want to change your profile photo?')) {
                 this.input.click();
+            }
+        }
+
+        /**
+         * Show confirmation dialog
+         * @param {string} message - Confirmation message
+         * @returns {boolean} - User confirmation result
+         */
+        confirmAction(message) {
+            return confirm(message);
+        }
+
+        /**
+         * Announce changes to screen readers
+         * @param {string} message - Message to announce
+         */
+        announceChange(message) {
+            const announcement = document.createElement('div');
+            announcement.setAttribute('aria-live', 'polite');
+            announcement.setAttribute('aria-atomic', 'true');
+            announcement.className = 'sr-only';
+            announcement.textContent = message;
+            document.body.appendChild(announcement);
+
+            // Clean up announcement after brief delay
+            setTimeout(() => document.body.removeChild(announcement), 1000);
+        }
+    }
+
+    // TAB NAVIGATION MANAGEMENT
+    /**
+     * Manages tab navigation with full keyboard accessibility
+     * Handles Saved Recipes and Activity tabs
+     */
+    class TabManager {
+        /**
+         * Initialize tab manager with all tab elements
+         */
+        constructor() {
+            this.tabs = document.querySelectorAll('[role="tab"]');
+            this.tabPanels = document.querySelectorAll('[role="tabpanel"]');
+            this.init();
+        }
+
+        /**
+         * Set up tab event listeners
+         */
+        init() {
+            this.tabs.forEach(tab => {
+                // Mouse click handler
+                tab.addEventListener('click', (e) => this.handleTabClick(e));
+
+                // Keyboard navigation handler
+                tab.addEventListener('keydown', (e) => this.handleKeydown(e));
+            });
+        }
+
+        /**
+         * Handle tab click events
+         * @param {Event} event - Click event
+         */
+        handleTabClick(event) {
+            const clickedTab = event.currentTarget;
+            this.setActiveTab(clickedTab);
+        }
+
+        /**
+         * Handle keyboard navigation for tabs
+         * @param {Event} event - Keydown event
+         */
+        handleKeydown(event) {
+            const currentTab = event.currentTarget;
+            let targetTab = null;
+
+            // Determine target tab based on key pressed
+            switch (event.key) {
+                case 'ArrowLeft':
+                case 'ArrowUp':
+                    targetTab = this.getPreviousTab(currentTab);
+                    break;
+                case 'ArrowRight':
+                case 'ArrowDown':
+                    targetTab = this.getNextTab(currentTab);
+                    break;
+                case 'Home':
+                    targetTab = this.tabs[0];
+                    break;
+                case 'End':
+                    targetTab = this.tabs[this.tabs.length - 1];
+                    break;
+                default:
+                    return; // Exit if key not handled
+            }
+
+            // Activate target tab and focus it
+            if (targetTab) {
+                event.preventDefault();
+                this.setActiveTab(targetTab);
+                targetTab.focus();
+            }
+        }
+
+        /**
+         * Get previous tab in sequence (wraps to end if at beginning)
+         * @param {Element} currentTab - Currently focused tab
+         * @returns {Element} - Previous tab element
+         */
+        getPreviousTab(currentTab) {
+            const currentIndex = Array.from(this.tabs).indexOf(currentTab);
+            return currentIndex > 0 ? this.tabs[currentIndex - 1] : this.tabs[this.tabs.length - 1];
+        }
+
+        /**
+         * Get next tab in sequence (wraps to beginning if at end)
+         * @param {Element} currentTab - Currently focused tab
+         * @returns {Element} - Next tab element
+         */
+        getNextTab(currentTab) {
+            const currentIndex = Array.from(this.tabs).indexOf(currentTab);
+            return currentIndex < this.tabs.length - 1 ? this.tabs[currentIndex + 1] : this.tabs[0];
+        }
+
+        /**
+         * Set the active tab and update all related UI states
+         * @param {Element} activeTab - Tab to activate
+         */
+        setActiveTab(activeTab) {
+            const activeTabId = activeTab.id;
+            const activeTabPanel = document.getElementById(activeTab.getAttribute('aria-controls'));
+
+            // Update all tab states
+            this.tabs.forEach(tab => {
+                const isActive = tab === activeTab;
+
+                // Update ARIA attributes
+                tab.setAttribute('aria-selected', isActive);
+                tab.tabIndex = isActive ? 0 : -1;
+
+                // Update visual styling
+                if (isActive) {
+                    tab.classList.add('border-b-2', 'border-zinc-950', 'text-zinc-800');
+                    tab.classList.remove('text-zinc-600');
+                } else {
+                    tab.classList.remove('border-b-2', 'border-zinc-950', 'text-zinc-800');
+                    tab.classList.add('text-zinc-600');
+                }
+            });
+
+            // Update tab panel visibility
+            this.tabPanels.forEach(panel => {
+                const isActive = panel === activeTabPanel;
+                if (isActive) {
+                    panel.classList.remove('hidden');
+                    panel.focus(); // Focus panel for screen readers
+                } else {
+                    panel.classList.add('hidden');
+                }
+            });
+
+            // Announce tab change to screen readers
+            this.announceTabChange(activeTab.textContent.trim());
+        }
+
+        /**
+         * Announce tab changes to assistive technologies
+         * @param {string} tabName - Name of activated tab
+         */
+        announceTabChange(tabName) {
+            const announcement = document.createElement('div');
+            announcement.setAttribute('aria-live', 'polite');
+            announcement.setAttribute('aria-atomic', 'true');
+            announcement.className = 'sr-only';
+            announcement.textContent = `${tabName} tab selected`;
+            document.body.appendChild(announcement);
+
+            // Clean up announcement after brief delay
+            setTimeout(() => document.body.removeChild(announcement), 1000);
+        }
+    }
+
+    // APPLICATION INITIALIZATION AND COORDINATION
+    /**
+     * Main application class that coordinates all profile page functionality
+     * Uses dependency injection pattern for component management
+     */
+    class ProfileApp {
+        /**
+         * Initialize the profile application
+         */
+        constructor() {
+            this.photoUploader = null;
+            this.tabManager = null;
+            this.init();
+        }
+
+        /**
+         * Set up application initialization
+         */
+        init() {
+            document.addEventListener('DOMContentLoaded', () => {
+                this.initializeComponents();
+                this.setupEventListeners();
+            });
+        }
+
+        /**
+         * Initialize all application components
+         */
+        initializeComponents() {
+            // Initialize photo uploader if all required elements exist
+            if (this.hasPhotoUploadElements()) {
+                this.photoUploader = new ProfilePhotoUploader(
+                    'user-profile-upload',
+                    'user-profile-photo-preview',
+                    'user-profile-photo-placeholder',
+                    'user-profile-remove-photo-btn'
+                );
+            }
+
+            // Initialize tab management system
+            this.tabManager = new TabManager();
+        }
+
+        /**
+         * Check if all photo upload elements are present in DOM
+         * @returns {boolean} - True if all elements exist
+         */
+        hasPhotoUploadElements() {
+            return document.getElementById('user-profile-upload') &&
+                document.getElementById('user-profile-photo-preview') &&
+                document.getElementById('user-profile-photo-placeholder') &&
+                document.getElementById('user-profile-remove-photo-btn');
+        }
+
+        /**
+         * Set up additional event listeners not handled by components
+         */
+        setupEventListeners() {
+            // Connect edit button to photo uploader
+            const editBtn = document.getElementById('user-profile-edit-photo-btn');
+            if (editBtn && this.photoUploader) {
+                editBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    this.photoUploader.handleEdit();
+                });
             }
         }
     }
 
-    document.addEventListener('DOMContentLoaded', function () {
-        // Initialize with the new IDs
-        const photoUploader = new ProfilePhotoUploader(
-            'user-profile-upload',
-            'user-profile-photo-preview',
-            'user-profile-photo-placeholder',
-            'user-profile-remove-photo-btn'
-        );
-
-        // Tab functionality
-        document.querySelectorAll('[role="tab"]').forEach(tab => {
-            tab.addEventListener('click', () => {
-                document.querySelectorAll('[role="tab"]').forEach(t => t.setAttribute('aria-selected', 'false'));
-                tab.setAttribute('aria-selected', 'true');
-            });
-        });
-
-        // Edit button functionality with confirmation
-        const editBtn = document.getElementById('user-profile-edit-photo-btn');
-        if (editBtn && photoUploader) {
-            editBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                photoUploader.handleEdit();
-            });
-        }
-    });
+    // APPLICATION STARTUP
+    // Initialize the complete profile application
+    new ProfileApp();
 </script>
 
 {% endblock %}
