@@ -1,16 +1,17 @@
 import json
-import random
 import os
 import pickle
+import random
 
-from RecipeManager.models import Recipe
-from TagManager.models import Tag
 from django.core.paginator import Paginator
-from django.http import HttpResponseBadRequest, JsonResponse
-from django.shortcuts import render, redirect
+from django.http import HttpResponseBadRequest
+from django.shortcuts import render
 from django.views import View
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.sequence import pad_sequences
+
+from RecipeManager.models import Recipe
+from TagManager.models import Tag
 
 
 def home(request):
@@ -94,13 +95,12 @@ class CreateRecipeView(View):
         # Extract data from the submitted form
         # request.POST.get() safely gets form field values
         name = request.POST.get('name')
-        description = request.POST.get('description')   # TODO ricordare di aggiungere eventualmente
+        description = request.POST.get('description')  # TODO ricordare di aggiungere eventualmente
         instructions = request.POST.get('instructions')
         cooking_time = request.POST.get('cook_time_value')
         cooking_time_unit = request.POST.get('cook_time_unit')
-        ingredients_data = json.loads(request.POST.get("ingredients_json", "[]"))
+        ingredients_data = json.loads(request.POST.get("ingredients_json"))
 
-        print(f"ingredients data ==> {ingredients_data}")
         # Check if all required fields have values
         # all() returns True only if all items in the list are truthy (not empty)
         if not all([name, cooking_time, cooking_time_unit]):
@@ -114,29 +114,64 @@ class CreateRecipeView(View):
             Instructions=instructions,
         )
 
+        ingredients = []
+        for ingredient in ingredients_data:
+            ingredients.append(f"{ingredient['quantity']}{ingredient['unit']} {ingredient['name']}")
+
         BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         MODEL_DIR = os.path.join(BASE_DIR, 'TagManager/mvp_tagging/classifiers')
 
-        # Carica tokenizer pickle
-        with open(os.path.join(MODEL_DIR, 'difficulty', 'difficulty_classifier_tokenizer.pkl'), 'rb') as f:
-            difficulty_tokenizer = pickle.load(f)
+        difficulty_model, difficulty_tokenizer, inverse_difficulty_map = load_model_components(
+            os.path.join(MODEL_DIR, "difficulty"), "difficulty_classifier")
 
-        with open(os.path.join(MODEL_DIR, 'prep_time', 'prep_time_classifier_tokenizer.pkl'), 'rb') as f:
-            time_tokenizer = pickle.load(f)
+        time_model, time_tokenizer, inverse_time_map = load_model_components(
+            os.path.join(MODEL_DIR, "prep_time"), "prep_time_classifier")
 
-        # Carica modelli
-        difficulty_model = load_model(os.path.join(MODEL_DIR, 'difficulty', 'difficulty_classifier.h5'))
-        time_model = load_model(os.path.join(MODEL_DIR, 'prep_time', 'prep_time_classifier.h5'))
+        recipe = [{"ingredients": ingredients, "instructions": instructions}]
 
-        ingredients = ["potatoes", "fish", "peaches", "banana"]
+        difficulty_predictions = predict_and_print(recipe, difficulty_model, difficulty_tokenizer, inverse_difficulty_map, "Difficulty")
+        time_predictions = predict_and_print(recipe, time_model, time_tokenizer, inverse_time_map, "Difficulty")
 
+        print(f"difficulty_predictions => {difficulty_predictions}")
+        print(f"time_predictions => {time_predictions}")
         # Redirect user to the detail page of the newly created recipe
         return render(request, "components/recipe_created_success.html", {"recipe": recipe})
 
-def preprocess_text(text, tokenizer):
-    sequences = tokenizer.texts_to_sequences([text])
-    padded = pad_sequences(sequences, maxlen=500)
-    return padded
 
 def get_difficulty_tag(predicted_label):
     return Tag.objects.filter(type='Difficulty', name__iexact=predicted_label).first()
+
+
+def predict_and_print(recipes, model, tokenizer, inv_label_map, prediction_label):
+    # Prepare input texts for models (ingredients + instructions)
+    texts = [" ".join(r["ingredients"]) + " " + r["instructions"] for r in recipes]
+
+    # Tokenize and padding
+    sequences = tokenizer.texts_to_sequences(texts)
+    padded = pad_sequences(sequences, maxlen=500, padding='post', truncating='post')
+
+    # Predicting with probabilities
+    preds = model.predict(padded)
+    pred_classes = preds.argmax(axis=1)
+    pred_labels = [inv_label_map[c] for c in pred_classes]
+
+    # Printing results
+    print(f"  Predicted {prediction_label}: {pred_labels[0]}")
+    probs_str = ", ".join([f"{inv_label_map[j]}: {preds[0][j] * 100:.2f}%" for j in range(len(preds[0]))])
+    print(f"  {prediction_label} probabilities: {probs_str}\n")
+
+    return {"predicted": pred_labels[0], "probabilities": probs_str}
+
+
+def load_model_components(model_dir, model_name_prefix):
+    model = load_model(f"{model_dir}/{model_name_prefix}.h5")
+
+    with open(f"{model_dir}/{model_name_prefix}_tokenizer.pkl", "rb") as f:
+        tokenizer = pickle.load(f)
+
+    with open(f"{model_dir}/{model_name_prefix}_label_mapping.pkl", "rb") as f:
+        label_map = pickle.load(f)
+
+    # Reverse dictionaries to decode predictions
+    inv_label_map = {v: k for k, v in label_map.items()}
+    return model, tokenizer, inv_label_map
