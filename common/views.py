@@ -60,6 +60,21 @@ def discover(request):
         "page_obj": page_obj,
     })
 
+def random_recipe(request):
+    all_ids = Recipe.objects.values_list('id', flat=True)
+
+    rand_id = random.choice(list(all_ids))
+    recipe = Recipe.objects.get(pk=rand_id)
+
+    recipes = [recipe]
+
+    paginator = Paginator(recipes, per_page=1)
+    page_obj = paginator.page(1)
+
+    return render(request, "components/recipe_cards.html", {
+        'page_obj': page_obj,
+    })
+
 
 class CreateRecipeView(View):
     # Template file that will be rendered when showing the form

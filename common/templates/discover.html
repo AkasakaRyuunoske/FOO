@@ -2,118 +2,131 @@
 {% block title %}Discover{% endblock %}
 {% block content %}
 
-<!-- Grid with 2 columns and 4 rows in the first column -->
-<div id="main-grid" class="grid grid-cols-[3fr_auto_3fr] gap-1" style="font-family:'Inclusive Sans',sans-serif;">
-  <div id="first-column" class="border-2 border-black rounded-md grid grid-rows-4 gap-2">
+    <!-- Grid with 2 columns and 4 rows in the first column -->
+    <div id="main-grid" class="grid grid-cols-[3fr_auto_3fr] gap-1" style="font-family:'Inclusive Sans',sans-serif;">
+        <div id="first-column" class="border-2 border-black rounded-md grid grid-rows-4 gap-2">
 
-    <!-- ingredients -->
-    <div class="p-4 grid grid-cols-2 grid-rows-2">
-      <div class="relative">
-        <span class="text-xl md:text-2xl font-bold mb-2">Ingredients</span>
-      </div>
+            <!-- ingredients -->
+            <div class="p-4 grid grid-cols-2 grid-rows-2">
+                <div class="relative">
+                    <span class="text-xl md:text-2xl font-bold mb-2">Ingredients</span>
+                </div>
 
-      <div class="relative">
-        {% include "components/searchbar.html" with input_name="search_term" placeholder="Search ingredient..." action="/search/" %}
-      </div>
+                <div class="relative">
+                    {% include "components/searchbar.html" with input_name="search_term" placeholder="Search ingredient..." action="/search/" %}
+                </div>
 
-      <!-- Spinner element (initially hidden) -->
-      <div id="spinner" class="hidden text-center my-4" aria-hidden="true">
-        <svg class="animate-spin h-6 w-6 text-blue-600 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none"
-          viewBox="0 0 24 24" stroke="currentColor">
-        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-        <path class="opacity-75" fill="currentColor"
-          d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 11-8 8z"></path>
-        </svg>
-      </div>
+                <!-- Spinner element (initially hidden) -->
+                <div id="spinner" class="hidden text-center my-4" aria-hidden="true">
+                    <svg class="animate-spin h-6 w-6 text-blue-600 mx-auto" xmlns="http://www.w3.org/2000/svg"
+                         fill="none"
+                         viewBox="0 0 24 24" stroke="currentColor">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor"
+                              d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 11-8 8z"></path>
+                    </svg>
+                </div>
 
-      <div class="relative col-span-2">
-        <h1 class="text-center">Selected Ingredients</h1>
+                <div class="relative col-span-2">
+                    <h1 class="text-center">Selected Ingredients</h1>
 
-            <!-- Tag Container -->
-        <div id="selected-ingredients" class="w-full  border border-black rounded px-2 py-2 flex flex-wrap gap-2">
+                    <!-- Tag Container -->
+                    <div id="selected-ingredients"
+                         class="w-full  border border-black rounded px-2 py-2 flex flex-wrap gap-2">
 
+                    </div>
+                </div>
+
+                <!-- Content placeholder (updates itself with hx-get) -->
+                <div
+                        hx-get="{% url 'get_ingredients' %}"
+                        hx-trigger="load"
+                        hx-target="this"
+                        hx-swap="innerHTML"
+                        hx-indicator="#spinner"
+                        class="relative col-span-2"
+                >
+                    Loading content...
+                </div>
+            </div>
+
+            <!-- Tags -->
+            <div class="p-4 grid grid-cols-2 grid-rows-2">
+                <div class="relative">
+                    <span class="text-xl md:text-2xl font-bold mb-2">Tags</span>
+                </div>
+
+                <div class="relative">
+                    <form method="get" class="w-full max-w-md mx-auto">
+                        {% include "components/searchbar.html" with input_name="search_term" placeholder="Search tag..." action=search_tags %}
+                    </form>
+                </div>
+
+                <div class="relative col-span-2">
+                    <h1 class="text-center">Selected Tags</h1>
+
+                    <!-- Tag Container -->
+                    <div id="selected-tags" class="w-full  border border-black rounded px-2 py-2 flex flex-wrap gap-2">
+                        <!-- One Tag -->
+
+                    </div>
+                </div>
+
+                <!-- Content placeholder (updates itself with hx-get) -->
+                <div
+                        hx-get="{% url 'get_tags' %}"
+                        hx-trigger="load"
+                        hx-target="this"
+                        hx-swap="innerHTML"
+                        hx-indicator="#spinner"
+                        class="relative col-span-2"
+                >
+                    Loading content...
+                </div>
+            </div>
+
+            <!-- Bookmarks -->
+            <div class="p-4 grid grid-cols-2">
+                <div class="relative">
+                    <span class="text-xl md:text-2xl font-bold mb-2">Bookmarked Recipes</span>
+                </div>
+
+                <div class="relative">
+                    {% include "components/searchbar.html" with input_name="search_term" placeholder="Search recipes..." action="/search/" %}
+                </div>
+            </div>
+
+            <!-- Gamble -->
+            <div class="p-4">
+                <div class="relative">
+                    <span class="text-xl md:text-2xl font-bold mb-2">Free Selection</span>
+                </div>
+
+                <div>
+                    <button
+                            hx-get="{% url 'random_recipe' %}"
+                            hx-target="#cards-wrapper"
+                            hx-swap="innerHTML"
+                            class="flex items-center gap-2 border border-black px-4 py-2 rounded hover:bg-gray-100 transition"
+                    >
+                        <img
+                                width="64" height="64"
+                                src="https://img.icons8.com/sf-black-filled/64/dice.png"
+                                alt="dice"
+                        />
+                        <span>Gamble</span>
+                    </button>
+                </div>
+            </div>
         </div>
-      </div>
-
-      <!-- Content placeholder (updates itself with hx-get) -->
-      <div
-        hx-get="{% url 'get_ingredients' %}"
-        hx-trigger="load"
-        hx-target="this"
-        hx-swap="innerHTML"
-        hx-indicator="#spinner"
-        class="relative col-span-2"
-      >
-        Loading content...
-      </div>
-    </div>
-
-    <!-- Tags -->
-    <div class="p-4 grid grid-cols-2 grid-rows-2">
-      <div class="relative">
-        <span class="text-xl md:text-2xl font-bold mb-2">Tags</span>
-      </div>
-
-      <div class="relative">
-        <form method="get" class="w-full max-w-md mx-auto">
-          {% include "components/searchbar.html" with input_name="search_term" placeholder="Search tag..." action=search_tags %}
-        </form>
-      </div>
-
-      <div class="relative col-span-2">
-        <h1 class="text-center">Selected Tags</h1>
-
-        <!-- Tag Container -->
-        <div id="selected-tags"  class="w-full  border border-black rounded px-2 py-2 flex flex-wrap gap-2">
-          <!-- One Tag -->
-
-        </div>
-      </div>
-
-      <!-- Content placeholder (updates itself with hx-get) -->
-      <div
-        hx-get="{% url 'get_tags' %}"
-        hx-trigger="load"
-        hx-target="this"
-        hx-swap="innerHTML"
-        hx-indicator="#spinner"
-        class="relative col-span-2"
-      >
-        Loading content...
-      </div>
-    </div>
-
-    <!-- Bookmarks -->
-    <div class="p-4 grid grid-cols-2">
-      <div class="relative">
-        <span class="text-xl md:text-2xl font-bold mb-2">Bookmarked Recipes</span>
-      </div>
-
-      <div class="relative">
-        {% include "components/searchbar.html" with input_name="search_term" placeholder="Search recipes..." action="/search/" %}
-      </div>
-    </div>
-
-    <!-- Gamble -->
-    <div class="p-4">
-      <div class="relative">
-        <span class="text-xl md:text-2xl font-bold mb-2">Free Selection</span>
-      </div>
-
-      <div>
-        <button class="flex items-center gap-2 border border-black px-4 py-2 rounded hover:bg-gray-100">
-          <img width="64" height="64" src="https://img.icons8.com/sf-black-filled/64/dice.png" alt="dice"/>
-          <span>Gamble</span>
-        </button>
-      </div>
-    </div>
-  </div>
 
 
-  <div id="toggle-button-container" class="sticky rounded top-0 h-screen flex flex-col items-center justify-center">
-    <!-- Toggle button -->
-    <button
-      onclick="
+        <div id="toggle-button-container"
+             class="sticky rounded top-0 h-screen flex flex-col items-center justify-center">
+            <!-- Toggle button -->
+            <button
+                    onclick="
         const fc = document.getElementById('first-column');
         const grid = document.getElementById('main-grid');
         const inlineCards = document.getElementById('cards-inline');
@@ -140,121 +153,121 @@
           cardsWrapper.classList.remove('hidden');
         }
       "
-      class="w-6 h-full rounded-sm text-black hover:bg-gray-200 border-none shadow-none bg-gray-100"
-    >
-      <span id="toggle-icon">&lt;&lt;</span>
-    </button>
-  </div>
+                    class="w-6 h-full rounded-sm text-black hover:bg-gray-200 border-none shadow-none bg-gray-100"
+            >
+                <span id="toggle-icon">&lt;&lt;</span>
+            </button>
+        </div>
 
-  <!-- Second Column -->
-  <div id="recipe-card-grid" class="relative p-4 w-full grid gap-2" data-show-inline="false">
+        <!-- Second Column -->
+        <div id="recipe-card-grid" class="relative p-4 w-full grid gap-2" data-show-inline="false">
 
-    <div id="cards-wrapper" hx-get="/tag/get_recipes_by_tags" hx-trigger="load" hx-swap="innerHTML">
-      {% include "components/discover_recipe_list_wrapper.html" %}
+            <div id="cards-wrapper" hx-get="/tag/get_recipes_by_tags" hx-trigger="load" hx-swap="innerHTML">
+                {% include "components/discover_recipe_list_wrapper.html" %}
+            </div>
+
+        </div>
     </div>
 
-  </div>
-</div>
+    <script>
+        function bindClickableTags() {
+            const selectedContainer = document.getElementById("selected-tags");
+            const resultsContainer = document.getElementById("cards-wrapper");
 
-<script>
-  function bindClickableTags() {
-    const selectedContainer = document.getElementById("selected-tags");
-    const resultsContainer = document.getElementById("cards-wrapper");
+            if (!selectedContainer || !resultsContainer) return;
 
-    if (!selectedContainer || !resultsContainer) return;
+            function updateRecipes() {
+                const tags = [...selectedContainer.querySelectorAll("span")]
+                    .map(span => span.textContent.trim())
+                    .join(",");
 
-    function updateRecipes() {
-      const tags = [...selectedContainer.querySelectorAll("span")]
-        .map(span => span.textContent.trim())
-        .join(",");
+                // Esegui richiesta HTMX manuale
+                htmx.ajax('GET', `/tag/get_recipes_by_tags/?tags=${encodeURIComponent(tags)}`, {
+                    target: resultsContainer,
+                    swap: 'innerHTML'
+                });
+            }
 
-      // Esegui richiesta HTMX manuale
-      htmx.ajax('GET', `/tag/get_recipes_by_tags/?tags=${encodeURIComponent(tags)}`, {
-        target: resultsContainer,
-        swap: 'innerHTML'
-      });
-    }
+            document.querySelectorAll(".clickable-tag").forEach(tagEl => {
+                tagEl.onclick = () => {
+                    const tagName = tagEl.dataset.tag;
 
-    document.querySelectorAll(".clickable-tag").forEach(tagEl => {
-      tagEl.onclick = () => {
-        const tagName = tagEl.dataset.tag;
+                    // Check se già selezionato
+                    const exists = [...selectedContainer.children].some(tag =>
+                        tag.querySelector("span")?.textContent === tagName
+                    );
+                    if (exists) return;
 
-        // Check se già selezionato
-        const exists = [...selectedContainer.children].some(tag =>
-          tag.querySelector("span")?.textContent === tagName
-        );
-        if (exists) return;
+                    // Crea il tag selezionato
+                    const tag = document.createElement("div");
+                    tag.className = "flex items-center border border-black rounded-full px-3 py-1 text-sm";
 
-        // Crea il tag selezionato
-        const tag = document.createElement("div");
-        tag.className = "flex items-center border border-black rounded-full px-3 py-1 text-sm";
-
-        tag.innerHTML = `
+                    tag.innerHTML = `
           <span class="mr-2">${tagName}</span>
           <button type="button" class="text-black hover:text-red-500">&times;</button>
         `;
 
-        // Comportamento di rimozione
-        tag.querySelector("button").onclick = () => {
-          tag.remove();
-          updateRecipes();  // aggiorna la lista dopo la rimozione
-        };
+                    // Comportamento di rimozione
+                    tag.querySelector("button").onclick = () => {
+                        tag.remove();
+                        updateRecipes();  // aggiorna la lista dopo la rimozione
+                    };
 
-        selectedContainer.appendChild(tag);
-        updateRecipes();  // aggiorna la lista dopo l’aggiunta
-      };
-    });
-  }
+                    selectedContainer.appendChild(tag);
+                    updateRecipes();  // aggiorna la lista dopo l’aggiunta
+                };
+            });
+        }
 
-  function bindClickableIngredients() {
-  const selectedContainer = document.getElementById("selected-ingredients");
-  if (!selectedContainer) return;
+        function bindClickableIngredients() {
+            const selectedContainer = document.getElementById("selected-ingredients");
+            if (!selectedContainer) return;
 
-  document.querySelectorAll(".clickable-ingredient").forEach(ingredientEl => {
-    ingredientEl.onclick = () => {
-      const ingredientName = ingredientEl.dataset.ingredient;
+            document.querySelectorAll(".clickable-ingredient").forEach(ingredientEl => {
+                ingredientEl.onclick = () => {
+                    const ingredientName = ingredientEl.dataset.ingredient;
 
-      const exists = [...selectedContainer.children].some(ing =>
-        ing.querySelector("span")?.textContent === ingredientName
-      );
-      if (exists) return;
+                    const exists = [...selectedContainer.children].some(ing =>
+                        ing.querySelector("span")?.textContent === ingredientName
+                    );
+                    if (exists) return;
 
-      const ing = document.createElement("div");
-      ing.className = "flex items-center border border-black rounded-full px-3 py-1 text-sm";
+                    const ing = document.createElement("div");
+                    ing.className = "flex items-center border border-black rounded-full px-3 py-1 text-sm";
 
-      ing.innerHTML = `
+                    ing.innerHTML = `
         <span class="mr-2">${ingredientName}</span>
         <button type="button" class="text-black hover:text-red-500">&times;</button>
       `;
 
-      ing.querySelector("button").onclick = () => ing.remove();
+                    ing.querySelector("button").onclick = () => ing.remove();
 
-      selectedContainer.appendChild(ing);
-    };
-  });
-}
-
-
-  // Execute at initial loading
-  document.addEventListener("DOMContentLoaded", () => {
-  bindClickableTags();
-  bindClickableIngredients();
-});
-
-  // Reconnect click after every update HTMX
-  document.body.addEventListener("htmx:afterSwap", (e) => {
-    bindClickableTags();
-    bindClickableIngredients();
-  });
+                    selectedContainer.appendChild(ing);
+                };
+            });
+        }
 
 
-function updateSelectedTagsInput(form) {
-  const selectedContainer = document.getElementById("selected-tags");
-  const tags = Array.from(selectedContainer.querySelectorAll("span"))
-    .map(span => span.textContent.trim());
-  const input = form.querySelector("input[name='tags']");
-  input.value = tags.join(",");
-}
+        // Execute at initial loading
+        document.addEventListener("DOMContentLoaded", () => {
+            bindClickableTags();
+            bindClickableIngredients();
+        });
 
-</script>
+        // Reconnect click after every update HTMX
+        document.body.addEventListener("htmx:afterSwap", (e) => {
+            bindClickableTags();
+            bindClickableIngredients();
+        });
+
+
+        function updateSelectedTagsInput(form) {
+            const selectedContainer = document.getElementById("selected-tags");
+            const tags = Array.from(selectedContainer.querySelectorAll("span"))
+                .map(span => span.textContent.trim());
+            const input = form.querySelector("input[name='tags']");
+            input.value = tags.join(",");
+        }
+
+    </script>
 {% endblock %}
