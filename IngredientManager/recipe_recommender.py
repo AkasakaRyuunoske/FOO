@@ -752,6 +752,78 @@ def demonstrate_user_interaction():
             print("Model files not found. Please run the main() function first to build the model.")
 
 
+def quick_test():
+    """
+    Test rapido per verificare che il sistema funzioni.
+    """
+    print("\n=== QUICK SYSTEM TEST ===")
+
+    # Inizializza il sistema
+    recommender = RecipeRecommender()
+
+    # Percorsi dei file del modello
+    index_path = "models/recipes_faiss.index"
+    df_path = "models/recipes_dataframe.csv"
+    word2vec_model_path = "models/word2vec_model.bin"
+
+    # Verifica se i file del modello esistono
+    if not all(os.path.exists(path) for path in [index_path, df_path, word2vec_model_path]):
+        print("Model files not found. Building model first...")
+        # Usa il tuo codice esistente per costruire il modello
+        dataset_path = "dataset"
+        chunks_to_use = [2]
+        file_paths = [f"{dataset_path}/recipies_dataset_tagged_chunk_{size}%.csv" for size in chunks_to_use]
+        file_paths = [f for f in file_paths if os.path.exists(f)]
+
+        if not file_paths:
+            print("ERROR: No dataset files found!")
+            print("Please ensure you have dataset files in the 'dataset' folder")
+            return False
+
+        df = recommender.load_dataset(file_paths)
+        recommender.build_index(index_path=index_path, df_path=df_path)
+        recommender.save_word2vec_model(word2vec_model_path)
+
+    # Carica il modello
+    print("Loading model...")
+    if not (recommender.load_model(index_path, df_path) and
+            recommender.load_word2vec_model(word2vec_model_path)):
+        print("ERROR: Failed to load model!")
+        return False
+
+    # Inizializza il gestore delle query utente
+    query_handler = UserQueryHandler(recommender)
+
+    # Test con ingredienti semplici
+    test_ingredients = ["milk", "flour", "chocolate"]
+
+    print(f"Testing with ingredients: {test_ingredients}")
+
+    try:
+        # Qui avviene la magia:
+        # 1. Utente inserisce ingredienti
+        # 2. Esegue embedding sull'input
+        # 3. Fa query al FAISS
+        # 4. Restituisce N risultati migliori
+        results = query_handler.process_user_ingredients(test_ingredients, n_results=3)
+
+        if results:
+            print("SUCCESS! System is working!")
+            print(f"Found {len(results)} recipe recommendations:")
+
+            for recipe in results:
+                print(f"  - {recipe['title']} (Score: {recipe['similarity_score']})")
+
+            return True
+        else:
+            print("No results found. This might indicate an issue.")
+            return False
+
+    except Exception as e:
+        print(f"ERROR during testing: {e}")
+        return False
+
+
 def test_recommender(recommender, test_cases_file=None):
     """
     Testa sistema raccomandazione con combinazioni ingredienti predefinite.
@@ -870,5 +942,8 @@ def main():
 
 
 # Punto di ingresso programma
+# if __name__ == "__main__":
+#     main()
+
 if __name__ == "__main__":
-    main()
+    quick_test()
