@@ -147,14 +147,19 @@ class CreateRecipeView(View):
 
         recipe = [{"ingredients": ingredients, "instructions": instructions}]
 
-        difficulty_predictions = predict_and_print(recipe, difficulty_model, difficulty_tokenizer, inverse_difficulty_map, "Difficulty")
+        difficulty_predictions = predict_and_print(recipe, difficulty_model, difficulty_tokenizer,
+                                                   inverse_difficulty_map, "Difficulty")
         time_predictions = predict_and_print(recipe, time_model, time_tokenizer, inverse_time_map, "Difficulty")
-        gluten_free_predictions = predict_and_print(recipe, gluten_free_model, gluten_free_tokenizer, inverse_gluten_free_map, "Gluten Free")
-        lactose_free_predictions = predict_and_print(recipe, lactose_free_model, lactose_free_tokenizer, inverse_lactose_free_map, "Lactose Free")
-        cooking_method_predictions = predict_and_print(recipe, cooking_method_model, cooking_method_tokenizer, inverse_cooking_method_map, "Method")
+        gluten_free_predictions = predict_and_print(recipe, gluten_free_model, gluten_free_tokenizer,
+                                                    inverse_gluten_free_map, "Gluten Free")
+        lactose_free_predictions = predict_and_print(recipe, lactose_free_model, lactose_free_tokenizer,
+                                                     inverse_lactose_free_map, "Lactose Free")
+        cooking_method_predictions = predict_and_print(recipe, cooking_method_model, cooking_method_tokenizer,
+                                                       inverse_cooking_method_map, "Method")
         price_predictions = predict_and_print(recipe, price_model, price_tokenizer, inverse_price_map, "Price")
         vegan_predictions = predict_and_print(recipe, vegan_model, vegan_tokenizer, inverse_vegan_map, "Vegan")
-        vegetarian_predictions = predict_and_print(recipe, vegetarian_model, vegetarian_tokenizer, inverse_vegetarian_map, "Vegetarian")
+        vegetarian_predictions = predict_and_print(recipe, vegetarian_model, vegetarian_tokenizer,
+                                                   inverse_vegetarian_map, "Vegetarian")
 
         RecipeTag.objects.create(recipe=recipe_obj, tag=Tag.objects.get(name=difficulty_predictions["predicted"], tag_type__name="Difficulty"))
         RecipeTag.objects.create(recipe=recipe_obj, tag=Tag.objects.get(name=time_predictions["predicted"].split('(')[0].strip(), tag_type__name="Preparation Time"))
@@ -165,8 +170,20 @@ class CreateRecipeView(View):
         RecipeTag.objects.create(recipe=recipe_obj, tag=Tag.objects.get(name="Yes" if vegan_predictions["predicted"] else "No", tag_type__name="Vegan"))
         RecipeTag.objects.create(recipe=recipe_obj, tag=Tag.objects.get(name="Yes" if vegetarian_predictions["predicted"] else "No", tag_type__name="Vegetarian"))
 
+        predictions = {"difficulty_predictions": difficulty_predictions,
+                       "time_predictions": time_predictions,
+                       "gluten_free_predictions": gluten_free_predictions,
+                       "lactose_free_predictions": lactose_free_predictions,
+                       "cooking_method_predictions": cooking_method_predictions,
+                       "price_predictions": price_predictions,
+                       "vegan_predictions": vegan_predictions,
+                       "vegetarian_predictions": vegetarian_predictions,
+                       }
+
+        map_icons(predictions)
+
         # Redirect user to the detail page of the newly created recipe
-        return render(request, "components/recipe_created_success.html", {"recipe": recipe})
+        return render(request, "components/recipe_created_success.html", {"recipe": recipe_obj, "predictions": predictions})
 
 
 def get_difficulty_tag(predicted_label):
@@ -191,7 +208,7 @@ def predict_and_print(recipes, model, tokenizer, inv_label_map, prediction_label
     probs_str = ", ".join([f"{inv_label_map[j]}: {preds[0][j] * 100:.2f}%" for j in range(len(preds[0]))])
     print(f"  {prediction_label} probabilities: {probs_str}\n")
 
-    return {"predicted": pred_labels[0], "probabilities": probs_str}
+    return {"predicted": pred_labels[0], "probabilities": probs_str, "prediction_label": prediction_label}
 
 
 def load_model_components(model_dir, model_name_prefix):
@@ -206,3 +223,54 @@ def load_model_components(model_dir, model_name_prefix):
     # Reverse dictionaries to decode predictions
     inv_label_map = {v: k for k, v in label_map.items()}
     return model, tokenizer, inv_label_map
+
+def map_icons(predictions):
+    ICON_MAPPING = {
+        "Cooking Method": {
+            "Fried": "fry.png",
+            "Baked": "bake.png",
+            "Grilled": "grill.png",
+            "Boiled": "boil.png",
+            "Blended": "blender.png",
+            "Microwaved": "blender.png",
+            "Pressure Cooked": "pressure_cooker.png",
+            "Steamed": "steam.png",
+            "Raw": "uncooked.png",
+        },
+        "Difficulty": {
+            "Easy": "difficulty.png",
+            "Medium": "difficulty.png",
+            "Hard": "difficulty.png"
+        },
+        "Preparation Time": {
+            "Fast": "time.png",
+            "Medium": "time.png",
+            "Slow": "time.png"
+        },
+        "Cost": {
+            "Cheap": "cost.png",
+            "Expensive": "cost.png",
+            "Medium": "cost.png"
+        },
+        "Vegan": {
+            True: "vegan.png",
+            False: "meat.png"
+        },
+        "Vegetarian": {
+            True: "vegetarian.png",
+            False: "meat.png"
+        },
+        "Lactose Free": {
+            True: "lactose-free.png",
+            False: "cheese.png"
+        },
+        "Gluten Free": {
+            True: "gluten-free.png",
+            False: "bread.png"
+        }
+    }
+
+    for pred in predictions.values():
+        label = pred["prediction_label"]
+        value = pred["predicted"]
+        pred["icon"] = ICON_MAPPING.get(label, {}).get(value, "hat.png")
