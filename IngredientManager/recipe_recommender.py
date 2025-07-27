@@ -704,6 +704,54 @@ class UserQueryHandler:
             print("-" * 60)
 
 
+def demonstrate_user_interaction():
+        """
+        Dimostra l'interazione utente con il sistema.
+        """
+        print("\n====== USER INTERACTION DEMO ======")
+
+        # Inizializza il sistema (usando il tuo codice esistente)
+        recommender = RecipeRecommender()
+
+        # Carica modello esistente (assumendo che esista)
+        index_path = "models/recipes_faiss.index"
+        df_path = "models/recipes_dataframe.csv"
+        word2vec_model_path = "models/word2vec_model.bin"
+
+        if (os.path.exists(index_path) and
+                os.path.exists(df_path) and
+                os.path.exists(word2vec_model_path)):
+
+            if (recommender.load_model(index_path, df_path) and
+                    recommender.load_word2vec_model(word2vec_model_path)):
+
+                # Inizializza gestore query utente
+                query_handler = UserQueryHandler(recommender)
+
+                # Esempi di query utente
+                user_queries = [
+                    "chicken, broccoli, rice",
+                    ["tomato", "basil", "mozzarella"],
+                    "pasta, garlic, olive oil, parmesan",
+                    ["beef", "onion", "potato"]
+                ]
+
+                for i, query in enumerate(user_queries, 1):
+                    print(f"\n--- Example Query {i} ---")
+
+                    # 1. Utente inserisce ingredienti
+                    # 2. Esegue embedding sull'input
+                    # 3. Fa query al FAISS
+                    # 4. Restituisce N risultati migliori
+                    results = query_handler.process_user_ingredients(query, n_results=3)
+
+                    # Mostra risultati
+                    query_handler.display_recommendations(results)
+
+        else:
+            print("Model files not found. Please run the main() function first to build the model.")
+
+
 def test_recommender(recommender, test_cases_file=None):
     """
     Testa sistema raccomandazione con combinazioni ingredienti predefinite.
