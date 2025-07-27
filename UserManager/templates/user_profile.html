@@ -70,13 +70,13 @@
 
     <!-- User Display Name Section -->
     <div class="text-center" role="region" aria-label="User information">
-        <h2 class="text-2xl font-semibold text-gray-900">{{ user.get_display_name|default:"Username" }}</h2>
+        <h2 class="text-2xl font-semibold text-gray-900">{{ user.username|default:"Username" }}</h2>
     </div>
 
     <!-- Published Recipes Count Display -->
     <div class="flex flex-col justify-center items-center" role="region" aria-label="Recipe statistics">
         <span class="text-3xl font-bold text-gray-900"
-              aria-label="Number of published recipes">{{ user.recipes.count|default:0 }}</span>
+              aria-label="Number of published recipes">{{ user.recipes.count|default:3 }}</span>
         <span class="text-gray-600">Published Recipes</span>
     </div>
 
@@ -156,7 +156,7 @@
                                 <p class="text-xs text-gray-600 mt-1">by Chef Maria</p>
                             </div>
                             <time class="text-xs text-gray-500 ml-2 flex-shrink-0"
-                                  datetime="2025-01-25">25/01/2025
+                                  datetime="2025-01-25">25/07/2025
                             </time>
                         </div>
                         <!-- Sample Recipe Item 2 -->
@@ -167,7 +167,7 @@
                                 <p class="text-xs text-gray-600 mt-1">by Chef Antonio</p>
                             </div>
                             <time class="text-xs text-gray-500 ml-2 flex-shrink-0"
-                                  datetime="2025-01-24">24/01/2025
+                                  datetime="2025-01-24">24/07/2025
                             </time>
                         </div>
                         <!-- Sample Recipe Item 3 -->
@@ -178,7 +178,7 @@
                                 <p class="text-xs text-gray-600 mt-1">by Chef Sophie</p>
                             </div>
                             <time class="text-xs text-gray-500 ml-2 flex-shrink-0"
-                                  datetime="2025-01-23">23/01/2025
+                                  datetime="2025-01-23">15/06/2025
                             </time>
                         </div>
                     </div>
@@ -213,13 +213,13 @@
                                            border-l-4 border-zinc-950 hover:bg-zinc-300 transition-colors duration-200">
                                     <div class="flex-1 min-w-0">
                                         <p class="text-sm text-gray-900">
-                                            <span class="font-medium text-green-900">John</span>
+                                            <span class="font-medium text-green-900">{{ user.username }}</span>
                                             <span class="text-gray-600"> published </span>
                                             <span class="font-medium">Chocolate Cake</span>
                                         </p>
                                     </div>
                                     <time class="text-xs text-gray-500 ml-2 flex-shrink-0"
-                                          datetime="2025-01-27">27/01/2025
+                                          datetime="2025-01-27">19/06/2025
                                     </time>
                                 </div>
                                 <!-- Sample Activity Item 2 -->
@@ -227,13 +227,13 @@
                                            border-l-4 border-zinc-950 hover:bg-zinc-300 transition-colors duration-200">
                                     <div class="flex-1 min-w-0">
                                         <p class="text-sm text-gray-900">
-                                            <span class="font-medium text-green-900">Sarah</span>
+                                            <span class="font-medium text-green-900">{{ user.username }}</span>
                                             <span class="text-gray-600"> published </span>
                                             <span class="font-medium">Pasta Bolognese</span>
                                         </p>
                                     </div>
                                     <time class="text-xs text-gray-500 ml-2 flex-shrink-0"
-                                          datetime="2025-01-26">26/01/2025
+                                          datetime="2025-01-26">26/06/2025
                                     </time>
                                 </div>
                                 <!-- Sample Activity Item 3 -->
@@ -241,13 +241,13 @@
                                            border-l-4 border-zinc-950 hover:bg-zinc-300 transition-colors duration-200">
                                     <div class="flex-1 min-w-0">
                                         <p class="text-sm text-gray-900">
-                                            <span class="font-medium text-green-900">Mike</span>
+                                            <span class="font-medium text-green-900">{{ user.username }}</span>
                                             <span class="text-gray-600"> published </span>
                                             <span class="font-medium">Caesar Salad</span>
                                         </p>
                                     </div>
                                     <time class="text-xs text-gray-500 ml-2 flex-shrink-0"
-                                          datetime="2025-01-25">25/01/2025
+                                          datetime="2025-01-25">30/06/2025
                                     </time>
                                 </div>
                             </div>
