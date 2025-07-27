@@ -304,6 +304,7 @@
                 </button>
             </div>
             <div id="ingredient-error" class="text-red-500 text-sm mb-1" aria-live="polite"></div>
+            <input type="hidden" name="ingredients_json" id="ingredients-json">
         </div>
 
         <!-- Row 6: Cooking steps -->
@@ -792,4 +793,28 @@
 
     </script>
 
+    <!-- javascr*pt to manage fancy ingredient components -->
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const form = document.querySelector("form"); // Adjust if needed
+        const ingredientsList = document.getElementById("ingredients-list");
+        const ingredientsJsonInput = document.getElementById("ingredients-json");
+
+        form.addEventListener("submit", () => {
+          const ingredients = [];
+
+          ingredientsList.querySelectorAll(".ingredient-row").forEach(row => {
+            const cells = row.querySelectorAll("div.text-sm");
+            if (cells.length === 3) {
+              const quantity = cells[0].textContent.trim();
+              const unit = cells[1].textContent.trim();
+              const name = cells[2].textContent.trim();
+              ingredients.push({ quantity, unit, name });
+            }
+          });
+
+          ingredientsJsonInput.value = JSON.stringify(ingredients);
+        });
+      });
+    </script>
 {% endblock %}

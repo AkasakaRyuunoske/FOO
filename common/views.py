@@ -1,3 +1,4 @@
+import json
 import random
 import os
 import pickle
@@ -97,7 +98,9 @@ class CreateRecipeView(View):
         instructions = request.POST.get('instructions')
         cooking_time = request.POST.get('cook_time_value')
         cooking_time_unit = request.POST.get('cook_time_unit')
+        ingredients_data = json.loads(request.POST.get("ingredients_json", "[]"))
 
+        print(f"ingredients data ==> {ingredients_data}")
         # Check if all required fields have values
         # all() returns True only if all items in the list are truthy (not empty)
         if not all([name, cooking_time, cooking_time_unit]):
@@ -111,7 +114,6 @@ class CreateRecipeView(View):
             Instructions=instructions,
         )
 
-        # TODO @alemassim0: Qui inserisci inferenza sul modello.
         BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         MODEL_DIR = os.path.join(BASE_DIR, 'TagManager/mvp_tagging/classifiers')
 
