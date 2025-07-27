@@ -866,6 +866,8 @@ def main():
 
     print("\n====== RECIPE RECOMMENDER COMPLETE ======")
 
+    demonstrate_user_interaction()
+
 
 # Punto di ingresso programma
 if __name__ == "__main__":
