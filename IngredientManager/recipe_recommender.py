@@ -557,6 +557,22 @@ class RecipeRecommender:
             return False
 
 
+class UserQueryHandler:
+    """
+    Gestore delle query utente per il sistema di raccomandazione ricette.
+    Integra perfettamente con il RecipeRecommender esistente.
+    """
+
+    def __init__(self, recommender):
+        """
+        Inizializza il gestore con un'istanza di RecipeRecommender.
+
+        Parametri:
+        - recommender: Istanza RecipeRecommender già inizializzata
+        """
+        self.recommender = recommender
+
+
 def test_recommender(recommender, test_cases_file=None):
     """
     Testa sistema raccomandazione con combinazioni ingredienti predefinite.
