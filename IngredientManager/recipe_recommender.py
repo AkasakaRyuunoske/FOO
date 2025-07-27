@@ -655,6 +655,31 @@ class UserQueryHandler:
             print(f"Error processing query: {e}")
             return []
 
+    def _format_results(self, results):
+        """
+        Formatta i risultati per una presentazione user-friendly.
+
+        Parametri:
+        - results: Lista risultati dal recommender
+
+        Restituisce:
+        - Lista formattata di raccomandazioni
+        """
+        formatted_results = []
+
+        for i, recipe in enumerate(results, 1):
+            formatted_recipe = {
+                'rank': i,
+                'title': recipe['title'],
+                'similarity_score': round(recipe['score'], 4),
+                'ingredients': recipe['ingredients'],
+                'ingredients_count': len(recipe['ingredients']),
+                'link': recipe['link']
+            }
+            formatted_results.append(formatted_recipe)
+
+        return formatted_results
+
 
 def test_recommender(recommender, test_cases_file=None):
     """
