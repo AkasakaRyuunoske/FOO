@@ -110,3 +110,19 @@ class CreateRecipeView(View):
         # Redirect user to the detail page of the newly created recipe
         # pk=r.pk passes the recipe's ID to the URL
         return redirect('recipe_detail', pk=r.pk)
+
+
+def random_recipe(request):
+    # pick one random id
+    all_ids = Recipe.objects.values_list('id', flat=True)
+    if not all_ids:
+        return render(request, 'components/empty_state.html', {
+            'message': "No recipes in the database yet."
+        })
+    rand_id = random.choice(list(all_ids))
+    recipe = Recipe.objects.get(pk=rand_id)
+    # render it inside the same grid wrapper
+    return render(request, 'components/recipes_list.html', {
+        'page_obj': [recipe],   # wrap single item in a list
+        'single_item': True,    # optional flag
+    })
