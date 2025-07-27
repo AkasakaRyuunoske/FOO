@@ -54,7 +54,7 @@ class RecipeRecommender:
 
         NER: Named Entity Recognition - contiene gli ingredienti estratti automaticamente
         """
-        print("\n=== LOADING DATASET ===")
+        print("\nLOADING DATASET")
 
         # Normalizza input: converte stringa singola in lista
         if isinstance(file_paths, str):
@@ -126,7 +126,7 @@ class RecipeRecommender:
             self.df.to_csv(output_path, index=False)
             print(f"Dataset saved in {time.time() - start_time:.2f}s")
 
-        print("=== DATASET LOADING COMPLETE ===\n")
+        print("DATASET LOADING COMPLETE\n")
         return self.df
 
     def _parse_ingredients(self, ner_string):
@@ -167,7 +167,7 @@ class RecipeRecommender:
 
         Embeddings: Rappresentazioni numeriche dense che catturano significato semantico
         """
-        print("\n=== CREATING EMBEDDINGS ===")
+        print("\nCREATING EMBEDDINGS")
 
         if self.df is None:
             print("No dataset loaded")
@@ -212,7 +212,7 @@ class RecipeRecommender:
             print(f"Generated {len(embeddings)} embeddings of dimension {embeddings.shape[1]}")
             print(f"Embedding completed in {total_time:.2f}s ({recipes_per_second:.1f} recipes/second)")
 
-        print("=== EMBEDDING CREATION COMPLETE ===\n")
+        print("EMBEDDING CREATION COMPLETE\n")
         return embeddings
 
     def build_index(self, embeddings=None, index_path=None, df_path=None):
@@ -232,7 +232,7 @@ class RecipeRecommender:
 
         IndexFlatL2: Tipo di indice FAISS che usa distanza euclidea (L2) per similarità
         """
-        print("\n=== BUILDING SEARCH INDEX ===")
+        print("\nBUILDING SEARCH INDEX")
 
         # Crea embeddings se non forniti esternamente
         if embeddings is None:
@@ -275,7 +275,7 @@ class RecipeRecommender:
             self.df.to_csv(df_path, index=False)
             print(f"DataFrame saved in {time.time() - start_time:.2f}s")
 
-        print("=== INDEX BUILDING COMPLETE ===\n")
+        print("INDEX BUILDING COMPLETE\n")
         return self.index
 
     def load_model(self, index_path, df_path):
@@ -292,7 +292,7 @@ class RecipeRecommender:
         3. Verifica consistenza dei dati caricati
         4. Gestisce errori di caricamento
         """
-        print("\n=== LOADING MODEL ===")
+        print("\nLOADING MODEL")
         try:
             # Carica indice FAISS da file binario
             print(f"Loading FAISS index from {index_path}...")
@@ -308,11 +308,11 @@ class RecipeRecommender:
             df_load_time = time.time() - start_time
             print(f"DataFrame loaded in {df_load_time:.2f}s with {len(self.df)} recipes")
 
-            print("=== MODEL LOADING COMPLETE ===\n")
+            print("MODEL LOADING COMPLETE\n")
             return True
         except Exception as e:
             print(f"Error loading model: {e}")
-            print("=== MODEL LOADING FAILED ===\n")
+            print("MODEL LOADING FAILED\n")
             return False
 
     def _get_ingredients_list(self, ner_string):
@@ -351,7 +351,7 @@ class RecipeRecommender:
 
         La ricerca trova ricette con ingredienti più simili semanticamente
         """
-        print("\n=== SEARCHING FOR RECIPES ===")
+        print("\nSEARCHING FOR RECIPES")
 
         # Verifica che componenti necessari siano inizializzati
         if self.index is None or self.df is None:
@@ -433,7 +433,7 @@ class RecipeRecommender:
                 })
 
         print(f"Formatted {len(results)} results in {time.time() - start_time:.4f}s")
-        print("=== SEARCH COMPLETE ===\n")
+        print("SEARCH COMPLETE\n")
         return results
 
     def _create_word2vec_embeddings(self):
@@ -624,7 +624,7 @@ class UserQueryHandler:
         Restituisce:
         - Lista di dizionari con ricette raccomandate
         """
-        print("\n=== PROCESSING USER QUERY ===")
+        print("\nPROCESSING USER QUERY")
 
         # 1. Normalizza input utente
         if isinstance(user_ingredients, str):
@@ -704,59 +704,11 @@ class UserQueryHandler:
             print("-" * 60)
 
 
-def demonstrate_user_interaction():
-        """
-        Dimostra l'interazione utente con il sistema.
-        """
-        print("\n====== USER INTERACTION DEMO ======")
-
-        # Inizializza il sistema (usando il tuo codice esistente)
-        recommender = RecipeRecommender()
-
-        # Carica modello esistente (assumendo che esista)
-        index_path = "models/recipes_faiss.index"
-        df_path = "models/recipes_dataframe.csv"
-        word2vec_model_path = "models/word2vec_model.bin"
-
-        if (os.path.exists(index_path) and
-                os.path.exists(df_path) and
-                os.path.exists(word2vec_model_path)):
-
-            if (recommender.load_model(index_path, df_path) and
-                    recommender.load_word2vec_model(word2vec_model_path)):
-
-                # Inizializza gestore query utente
-                query_handler = UserQueryHandler(recommender)
-
-                # Esempi di query utente
-                user_queries = [
-                    "chicken, broccoli, rice",
-                    ["tomato", "basil", "mozzarella"],
-                    "pasta, garlic, olive oil, parmesan",
-                    ["beef", "onion", "potato"]
-                ]
-
-                for i, query in enumerate(user_queries, 1):
-                    print(f"\n--- Example Query {i} ---")
-
-                    # 1. Utente inserisce ingredienti
-                    # 2. Esegue embedding sull'input
-                    # 3. Fa query al FAISS
-                    # 4. Restituisce N risultati migliori
-                    results = query_handler.process_user_ingredients(query, n_results=3)
-
-                    # Mostra risultati
-                    query_handler.display_recommendations(results)
-
-        else:
-            print("Model files not found. Please run the main() function first to build the model.")
-
-
 def quick_test():
     """
     Test rapido per verificare che il sistema funzioni.
     """
-    print("\n=== QUICK SYSTEM TEST ===")
+    print("\nQUICK SYSTEM TEST")
 
     # Inizializza il sistema
     recommender = RecipeRecommender()
@@ -824,6 +776,56 @@ def quick_test():
         return False
 
 
+def test_user_input():
+    """
+    Test interattivo per provare il sistema manualmente.
+    """
+    print("\nINTERACTIVE TEST")
+    print("This will test the exact workflow you requested:")
+    print("1. User inputs ingredients")
+    print("2. System performs embedding")
+    print("3. System queries FAISS")
+    print("4. System returns N best results")
+    print("-" * 50)
+
+    recommender = RecipeRecommender()
+    index_path = "models/recipes_faiss.index"
+    df_path = "models/recipes_dataframe.csv"
+    word2vec_model_path = "models/word2vec_model.bin"
+
+    if not (recommender.load_model(index_path, df_path) and
+            recommender.load_word2vec_model(word2vec_model_path)):
+        print("Model not found or failed to load!")
+        return
+
+    query_handler = UserQueryHandler(recommender)
+
+    test_cases = [
+        ["chicken", "rice", "vegetables"],
+        ["pasta", "tomato", "garlic"],
+        ["beef", "potato", "onion", "carrot"],
+        ["salmon", "lemon", "dill"],           # More specific
+        ["tuna", "olive_oil", "garlic"],       # Mediterranean style
+        ["cod_fillets", "lemon", "parsley"],   # Classic preparation
+        ["fish_fillets", "butter", "herbs"]    # General fish dish
+    ]
+
+    for i, ingredients in enumerate(test_cases, 1):
+        print(f"\nTEST {i}")
+        print(f"Input ingredients: {ingredients}")
+        results = query_handler.process_user_ingredients(ingredients, n_results=5)
+
+        if results:
+            print(f"SUCCESS! Found {len(results)} recommendations:")
+            for j, recipe in enumerate(results[:3], 1):
+                print(f"  {j}. {recipe['title']}")
+                print(f"     Score: {recipe['similarity_score']}")
+                print(f"     Ingredients: {', '.join(recipe['ingredients'][:4])}...")
+        else:
+            print("No results found")
+        print("-" * 30)
+
+
 def test_recommender(recommender, test_cases_file=None):
     """
     Testa sistema raccomandazione con combinazioni ingredienti predefinite.
@@ -842,7 +844,7 @@ def test_recommender(recommender, test_cases_file=None):
 
     Utile per validare qualità raccomandazioni e performance sistema
     """
-    print("\n=== TESTING RECOMMENDER ===")
+    print("\nTESTING RECOMMENDER")
 
     # Carica casi di test da file se disponibile
     if test_cases_file and os.path.exists(test_cases_file):
@@ -872,7 +874,7 @@ def test_recommender(recommender, test_cases_file=None):
             print(f"   Link: {recipe['link']}")
         print("-" * 50)
 
-    print("=== TESTING COMPLETE ===")
+    print("TESTING COMPLETE")
 
 
 def main():
@@ -888,7 +890,7 @@ def main():
 
     Gestisce automaticamente persistenza modelli per efficienza
     """
-    print("\n====== RECIPE RECOMMENDER SYSTEM ======\n")
+    print("\nRECIPE RECOMMENDER SYSTEM\n")
 
     # Crea directory necessarie se non esistenti
     os.makedirs("models", exist_ok=True)
@@ -936,14 +938,15 @@ def main():
         recommender.save_word2vec_model(word2vec_model_path)
         test_recommender(recommender, test_cases_file=test_cases_file)
 
-    print("\n====== RECIPE RECOMMENDER COMPLETE ======")
-
-    demonstrate_user_interaction()
+    print("\nRECIPE RECOMMENDER COMPLETE")
 
 
 # Punto di ingresso programma
-# if __name__ == "__main__":
-#     main()
-
 if __name__ == "__main__":
-    quick_test()
+    main()
+
+# if __name__ == "__main__":
+#     quick_test()
+
+# if __name__ == "__main__":
+#     test_user_input()
