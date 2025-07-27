@@ -1,1 +1,2 @@
 *.zip filter=lfs diff=lfs merge=lfs -text
+TagManager/mvp_tagging/description_generator/phi-2.Q5_K_M.gguf filter=lfs diff=lfs merge=lfs -text
