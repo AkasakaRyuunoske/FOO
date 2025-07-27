@@ -127,13 +127,35 @@ class CreateRecipeView(View):
         time_model, time_tokenizer, inverse_time_map = load_model_components(
             os.path.join(MODEL_DIR, "prep_time"), "prep_time_classifier")
 
+        gluten_free_model, gluten_free_tokenizer, inverse_gluten_free_map = load_model_components(
+            os.path.join(MODEL_DIR, "gluten_free"), "gluten_free_classifier")
+
+        lactose_free_model, lactose_free_tokenizer, inverse_lactose_free_map = load_model_components(
+            os.path.join(MODEL_DIR, "lactose_free"), "lactose_free_classifier")
+
+        cooking_method_model, cooking_method_tokenizer, inverse_cooking_method_map = load_model_components(
+            os.path.join(MODEL_DIR, "method"), "method_classifier")
+
+        price_model, price_tokenizer, inverse_price_map = load_model_components(
+            os.path.join(MODEL_DIR, "price"), "price_classifier")
+
+        vegan_model, vegan_tokenizer, inverse_vegan_map = load_model_components(
+            os.path.join(MODEL_DIR, "vegan"), "vegan_classifier")
+
+        vegetarian_model, vegetarian_tokenizer, inverse_vegetarian_map = load_model_components(
+            os.path.join(MODEL_DIR, "vegetarian"), "vegetarian_classifier")
+
         recipe = [{"ingredients": ingredients, "instructions": instructions}]
 
         difficulty_predictions = predict_and_print(recipe, difficulty_model, difficulty_tokenizer, inverse_difficulty_map, "Difficulty")
         time_predictions = predict_and_print(recipe, time_model, time_tokenizer, inverse_time_map, "Difficulty")
+        gluten_free_predictions = predict_and_print(recipe, gluten_free_model, gluten_free_tokenizer, inverse_gluten_free_map, "Gluten Free")
+        lactose_free_predictions = predict_and_print(recipe, lactose_free_model, lactose_free_tokenizer, inverse_lactose_free_map, "Lactose Free")
+        cooking_method_predictions = predict_and_print(recipe, cooking_method_model, cooking_method_tokenizer, inverse_cooking_method_map, "Method")
+        price_predictions = predict_and_print(recipe, price_model, price_tokenizer, inverse_price_map, "Price")
+        vegan_predictions = predict_and_print(recipe, vegan_model, vegan_tokenizer, inverse_vegan_map, "Vegan")
+        vegetarian_predictions = predict_and_print(recipe, vegetarian_model, vegetarian_tokenizer, inverse_vegetarian_map, "Vegetarian")
 
-        print(f"difficulty_predictions => {difficulty_predictions}")
-        print(f"time_predictions => {time_predictions}")
         # Redirect user to the detail page of the newly created recipe
         return render(request, "components/recipe_created_success.html", {"recipe": recipe})
 
