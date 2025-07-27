@@ -1,11 +1,17 @@
+import json
+import os
+import pickle
 import random
 
 from django.core.paginator import Paginator
 from django.http import HttpResponseBadRequest
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.views import View
+from tensorflow.keras.models import load_model
+from tensorflow.keras.preprocessing.sequence import pad_sequences
 
 from RecipeManager.models import Recipe
+from TagManager.models import Tag, RecipeTag
 
 
 def home(request):
@@ -78,7 +84,8 @@ class CreateRecipeView(View):
         Shows the empty recipe creation form to the user
         This is called when someone first visits the page
         """
-        return render(request, self.template_name)
+        tags = Tag.objects.all()
+        return render(request, self.template_name, context={"tags": tags})
 
     def post_recipe_form(self, request):
         """
@@ -88,25 +95,182 @@ class CreateRecipeView(View):
         # Extract data from the submitted form
         # request.POST.get() safely gets form field values
         name = request.POST.get('name')
-        desc = request.POST.get('description')
-        cook_val = request.POST.get('cook_time_value')
-        cook_unit = request.POST.get('cook_time_unit')
-        difficulty = request.POST.get('difficulty')
-        servings = request.POST.get('servings')
+        description = request.POST.get('description')  # TODO ricordare di aggiungere eventualmente
+        instructions = request.POST.get('instructions')
+        cooking_time = request.POST.get('cook_time_value')
+        cooking_time_unit = request.POST.get('cook_time_unit')
+        ingredients_data = json.loads(request.POST.get("ingredients_json"))
 
         # Check if all required fields have values
         # all() returns True only if all items in the list are truthy (not empty)
-        if not all([name, desc, cook_val, cook_unit, difficulty, servings]):
+        if not all([name, cooking_time, cooking_time_unit]):
             # Return error response if any field is missing
             return HttpResponseBadRequest("Missing required fields")
 
         # Create a new Recipe object in the database
         # Only saving name and instructions for now (other fields not included)
-        r = Recipe.objects.create(
+        recipe_obj = Recipe.objects.create(
             name=name,
-            instructions=desc,
+            Instructions=instructions,
         )
 
+        ingredients = []
+        for ingredient in ingredients_data:
+            ingredients.append(f"{ingredient['quantity']}{ingredient['unit']} {ingredient['name']}")
+
+        BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        MODEL_DIR = os.path.join(BASE_DIR, 'TagManager/mvp_tagging/classifiers')
+
+        difficulty_model, difficulty_tokenizer, inverse_difficulty_map = load_model_components(
+            os.path.join(MODEL_DIR, "difficulty"), "difficulty_classifier")
+
+        time_model, time_tokenizer, inverse_time_map = load_model_components(
+            os.path.join(MODEL_DIR, "prep_time"), "prep_time_classifier")
+
+        gluten_free_model, gluten_free_tokenizer, inverse_gluten_free_map = load_model_components(
+            os.path.join(MODEL_DIR, "gluten_free"), "gluten_free_classifier")
+
+        lactose_free_model, lactose_free_tokenizer, inverse_lactose_free_map = load_model_components(
+            os.path.join(MODEL_DIR, "lactose_free"), "lactose_free_classifier")
+
+        cooking_method_model, cooking_method_tokenizer, inverse_cooking_method_map = load_model_components(
+            os.path.join(MODEL_DIR, "method"), "method_classifier")
+
+        price_model, price_tokenizer, inverse_price_map = load_model_components(
+            os.path.join(MODEL_DIR, "price"), "price_classifier")
+
+        vegan_model, vegan_tokenizer, inverse_vegan_map = load_model_components(
+            os.path.join(MODEL_DIR, "vegan"), "vegan_classifier")
+
+        vegetarian_model, vegetarian_tokenizer, inverse_vegetarian_map = load_model_components(
+            os.path.join(MODEL_DIR, "vegetarian"), "vegetarian_classifier")
+
+        recipe = [{"ingredients": ingredients, "instructions": instructions}]
+
+        difficulty_predictions = predict_and_print(recipe, difficulty_model, difficulty_tokenizer,
+                                                   inverse_difficulty_map, "Difficulty")
+        time_predictions = predict_and_print(recipe, time_model, time_tokenizer, inverse_time_map, "Difficulty")
+        gluten_free_predictions = predict_and_print(recipe, gluten_free_model, gluten_free_tokenizer,
+                                                    inverse_gluten_free_map, "Gluten Free")
+        lactose_free_predictions = predict_and_print(recipe, lactose_free_model, lactose_free_tokenizer,
+                                                     inverse_lactose_free_map, "Lactose Free")
+        cooking_method_predictions = predict_and_print(recipe, cooking_method_model, cooking_method_tokenizer,
+                                                       inverse_cooking_method_map, "Method")
+        price_predictions = predict_and_print(recipe, price_model, price_tokenizer, inverse_price_map, "Price")
+        vegan_predictions = predict_and_print(recipe, vegan_model, vegan_tokenizer, inverse_vegan_map, "Vegan")
+        vegetarian_predictions = predict_and_print(recipe, vegetarian_model, vegetarian_tokenizer,
+                                                   inverse_vegetarian_map, "Vegetarian")
+
+        RecipeTag.objects.create(recipe=recipe_obj, tag=Tag.objects.get(name=difficulty_predictions["predicted"], tag_type__name="Difficulty"))
+        RecipeTag.objects.create(recipe=recipe_obj, tag=Tag.objects.get(name=time_predictions["predicted"].split('(')[0].strip(), tag_type__name="Preparation Time"))
+        RecipeTag.objects.create(recipe=recipe_obj, tag=Tag.objects.get(name="Yes" if gluten_free_predictions["predicted"] else "No", tag_type__name="Gluten Free"))
+        RecipeTag.objects.create(recipe=recipe_obj, tag=Tag.objects.get(name="Yes" if lactose_free_predictions["predicted"] else "No", tag_type__name="Lactose Free"))
+        RecipeTag.objects.create(recipe=recipe_obj, tag=Tag.objects.get(name=cooking_method_predictions["predicted"], tag_type__name="Cooking Method"))
+        RecipeTag.objects.create(recipe=recipe_obj, tag=Tag.objects.get(name=price_predictions["predicted"], tag_type__name="Cost"))
+        RecipeTag.objects.create(recipe=recipe_obj, tag=Tag.objects.get(name="Yes" if vegan_predictions["predicted"] else "No", tag_type__name="Vegan"))
+        RecipeTag.objects.create(recipe=recipe_obj, tag=Tag.objects.get(name="Yes" if vegetarian_predictions["predicted"] else "No", tag_type__name="Vegetarian"))
+
+        predictions = {"difficulty_predictions": difficulty_predictions,
+                       "time_predictions": time_predictions,
+                       "gluten_free_predictions": gluten_free_predictions,
+                       "lactose_free_predictions": lactose_free_predictions,
+                       "cooking_method_predictions": cooking_method_predictions,
+                       "price_predictions": price_predictions,
+                       "vegan_predictions": vegan_predictions,
+                       "vegetarian_predictions": vegetarian_predictions,
+                       }
+
+        map_icons(predictions)
+
         # Redirect user to the detail page of the newly created recipe
-        # pk=r.pk passes the recipe's ID to the URL
-        return redirect('recipe_detail', pk=r.pk)
+        return render(request, "components/recipe_created_success.html", {"recipe": recipe_obj, "predictions": predictions})
+
+
+def get_difficulty_tag(predicted_label):
+    return Tag.objects.filter(type='Difficulty', name__iexact=predicted_label).first()
+
+
+def predict_and_print(recipes, model, tokenizer, inv_label_map, prediction_label):
+    # Prepare input texts for models (ingredients + instructions)
+    texts = [" ".join(r["ingredients"]) + " " + r["instructions"] for r in recipes]
+
+    # Tokenize and padding
+    sequences = tokenizer.texts_to_sequences(texts)
+    padded = pad_sequences(sequences, maxlen=500, padding='post', truncating='post')
+
+    # Predicting with probabilities
+    preds = model.predict(padded)
+    pred_classes = preds.argmax(axis=1)
+    pred_labels = [inv_label_map[c] for c in pred_classes]
+
+    # Printing results
+    print(f"  Predicted {prediction_label}: {pred_labels[0]}")
+    probs_str = ", ".join([f"{inv_label_map[j]}: {preds[0][j] * 100:.2f}%" for j in range(len(preds[0]))])
+    print(f"  {prediction_label} probabilities: {probs_str}\n")
+
+    return {"predicted": pred_labels[0], "probabilities": probs_str, "prediction_label": prediction_label}
+
+
+def load_model_components(model_dir, model_name_prefix):
+    model = load_model(f"{model_dir}/{model_name_prefix}.h5")
+
+    with open(f"{model_dir}/{model_name_prefix}_tokenizer.pkl", "rb") as f:
+        tokenizer = pickle.load(f)
+
+    with open(f"{model_dir}/{model_name_prefix}_label_mapping.pkl", "rb") as f:
+        label_map = pickle.load(f)
+
+    # Reverse dictionaries to decode predictions
+    inv_label_map = {v: k for k, v in label_map.items()}
+    return model, tokenizer, inv_label_map
+
+def map_icons(predictions):
+    ICON_MAPPING = {
+        "Cooking Method": {
+            "Fried": "fry.png",
+            "Baked": "bake.png",
+            "Grilled": "grill.png",
+            "Boiled": "boil.png",
+            "Blended": "blender.png",
+            "Microwaved": "blender.png",
+            "Pressure Cooked": "pressure_cooker.png",
+            "Steamed": "steam.png",
+            "Raw": "uncooked.png",
+        },
+        "Difficulty": {
+            "Easy": "difficulty.png",
+            "Medium": "difficulty.png",
+            "Hard": "difficulty.png"
+        },
+        "Preparation Time": {
+            "Fast": "time.png",
+            "Medium": "time.png",
+            "Slow": "time.png"
+        },
+        "Cost": {
+            "Cheap": "cost.png",
+            "Expensive": "cost.png",
+            "Medium": "cost.png"
+        },
+        "Vegan": {
+            True: "vegan.png",
+            False: "meat.png"
+        },
+        "Vegetarian": {
+            True: "vegetarian.png",
+            False: "meat.png"
+        },
+        "Lactose Free": {
+            True: "lactose-free.png",
+            False: "cheese.png"
+        },
+        "Gluten Free": {
+            True: "gluten-free.png",
+            False: "bread.png"
+        }
+    }
+
+    for pred in predictions.values():
+        label = pred["prediction_label"]
+        value = pred["predicted"]
+        pred["icon"] = ICON_MAPPING.get(label, {}).get(value, "hat.png")

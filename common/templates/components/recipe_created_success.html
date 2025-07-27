@@ -1,0 +1,27 @@
+{% block content %}
+{% load static %}
+    <h1 class="text-lg font-semibold">Recipe {{ recipe.name }} created with Success! </h1>
+
+    <div>
+        <h2><strong>Model tag predictions of {{ recipe.name }}</strong></h2>
+        {% for key, prediction in predictions.items %}
+
+        <details>
+            <summary class="inline-flex items-center space-x-2 cursor-pointer">
+                <img src="{% static 'icons/' %}{{ prediction.icon }}" class="w-5 h-5" alt="{{ prediction.predicted }}">
+                {{ prediction.prediction_label }}: {{ prediction.predicted }}
+            </summary>
+            <p>{{ prediction.probabilities }}</p>
+        </details>
+        {% endfor %}
+    </div>
+
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-800">
+        <p>You may now close this dialog and create another recipe*</p>
+    </div>
+
+    <button class="px-4 py-2 text-white bg-green-500 rounded-lg hover:bg-green-700 cursor-pointer"
+            onclick="window.location.reload()">
+        <strong>Back to Discovery page</strong>
+    </button>
+{% endblock %}
