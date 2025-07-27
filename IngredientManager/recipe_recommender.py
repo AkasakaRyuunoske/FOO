@@ -572,6 +572,89 @@ class UserQueryHandler:
         """
         self.recommender = recommender
 
+    def process_user_ingredients_strict(self, user_ingredients, n_results=5):
+        """
+        Versione più rigorosa che privilegia match esatti degli ingredienti.
+        """
+        # Get more results initially
+        results = self.recommender.recommend(user_ingredients, k=n_results * 3)
+
+        # Re-score based on exact ingredient matches
+        scored_results = []
+        search_ingredients = [ing.lower().strip() for ing in user_ingredients]
+
+        for recipe in results:
+            recipe_ingredients = [ing.lower().strip() for ing in recipe['ingredients']]
+
+            # Count exact matches
+            exact_matches = 0
+            for search_ing in search_ingredients:
+                for recipe_ing in recipe_ingredients:
+                    if search_ing == recipe_ing or search_ing in recipe_ing:
+                        exact_matches += 1
+                        break
+
+            # Combine semantic score with exact match bonus
+            combined_score = recipe['score'] - (exact_matches * 2.0)  # Lower is better
+
+            scored_results.append({
+                **recipe,
+                'combined_score': combined_score,
+                'exact_matches': exact_matches
+            })
+
+        # Sort by combined score and return top N
+        scored_results.sort(key=lambda x: x['combined_score'])
+        return self._format_results(scored_results[:n_results])
+
+    def process_user_ingredients(self, user_ingredients, n_results=5):
+        """
+        Processa gli ingredienti inseriti dall'utente e restituisce raccomandazioni.
+
+        Parametri:
+        - user_ingredients: Lista o stringa di ingredienti dell'utente
+        - n_results: Numero di risultati da restituire (default: 5)
+
+        Processo:
+        1. Normalizza input utente
+        2. Esegue embedding sull'input
+        3. Fa query al FAISS
+        4. Restituisce N risultati migliori
+
+        Restituisce:
+        - Lista di dizionari con ricette raccomandate
+        """
+        print("\n=== PROCESSING USER QUERY ===")
+
+        # 1. Normalizza input utente
+        if isinstance(user_ingredients, str):
+            # Se stringa, divide per virgola e pulisce
+            ingredients_list = [ing.strip() for ing in user_ingredients.split(',') if ing.strip()]
+        else:
+            # Se già lista, usa direttamente
+            ingredients_list = user_ingredients
+
+        print(f"User ingredients: {', '.join(ingredients_list)}")
+        print(f"Requesting {n_results} recommendations")
+
+        # 2. Esegue embedding sull'input presentato
+        # 3. Fa query al FAISS
+        # 4. Restituisce N risultati migliori
+        # (Tutto questo è già implementato nel metodo recommend)
+        try:
+            results = self.recommender.recommend(ingredients_list, k=n_results)
+
+            if results:
+                print(f"Found {len(results)} matching recipes")
+                return self._format_results(results)
+            else:
+                print("No recipes found matching the ingredients")
+                return []
+
+        except Exception as e:
+            print(f"Error processing query: {e}")
+            return []
+
 
 def test_recommender(recommender, test_cases_file=None):
     """
