@@ -20,12 +20,9 @@ def get_recipes_by_tags(request):
     tag_string = request.GET.get("tags", "")
     tags = [t.strip() for t in tag_string.split(",") if t.strip()]
 
-    # Filtro solo se ci sono tag selezionati
     if tags:
-        # Trova gli ID dei Tag corrispondenti ai nomi
         tag_ids = Tag.objects.filter(name__in=tags).values_list("id", flat=True)
 
-        # Filtro le ricette che hanno almeno *tutti* i tag selezionati
         recipes = Recipe.objects.annotate(
             matched_tags=Count(
                 "recipetag", filter=Q(recipetag__tag_id__in=tag_ids), distinct=True

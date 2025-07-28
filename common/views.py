@@ -2,6 +2,7 @@ import json
 import os
 import pickle
 import random
+from collections import defaultdict
 
 from django.core.paginator import Paginator
 from django.http import HttpResponseBadRequest
@@ -12,6 +13,51 @@ from tensorflow.keras.preprocessing.sequence import pad_sequences
 
 from RecipeManager.models import Recipe
 from TagManager.models import Tag, RecipeTag
+
+ICON_MAPPING = {
+        "Cooking Method": {
+            "Fried": "fry.png",
+            "Baked": "bake.png",
+            "Grilled": "grill.png",
+            "Boiled": "boil.png",
+            "Blended": "blender.png",
+            "Microwaved": "blender.png",
+            "Pressure Cooked": "pressure_cooker.png",
+            "Steamed": "steam.png",
+            "Raw": "uncooked.png",
+        },
+        "Difficulty": {
+            "Easy": "difficulty.png",
+            "Medium": "difficulty.png",
+            "Hard": "difficulty.png"
+        },
+        "Preparation Time": {
+            "Fast": "time.png",
+            "Medium": "time.png",
+            "Slow": "time.png"
+        },
+        "Cost": {
+            "Cheap": "cost.png",
+            "Expensive": "cost.png",
+            "Medium": "cost.png"
+        },
+        "Vegan": {
+            True: "vegan.png",
+            False: "meat.png"
+        },
+        "Vegetarian": {
+            True: "vegetarian.png",
+            False: "meat.png"
+        },
+        "Lactose Free": {
+            True: "lactose-free.png",
+            False: "cheese.png"
+        },
+        "Gluten Free": {
+            True: "gluten-free.png",
+            False: "bread.png"
+        }
+    }
 
 
 def home(request):
@@ -71,10 +117,49 @@ def random_recipe(request):
     paginator = Paginator(recipes, per_page=1)
     page_obj = paginator.page(1)
 
+    recipe_tags = RecipeTag.objects.filter(recipe=recipe).select_related('tag')
+
+    EXCLUDED_TYPES = {"Cost", "Difficulty", "Preparation Time"}
+
+    display_tag_icon_pairs = {}
+    meta_tag_icon_pairs = {}
+
+    for rt in recipe_tags:
+        tag = rt.tag
+        tag_type_name = tag.tag_type.name
+        raw_tag_value = tag.name
+
+        tag_value = boolean_from_name(raw_tag_value)
+        if isinstance(tag_value, str):
+            tag_value = normalize_tag_value(tag_value)
+
+        icon = ICON_MAPPING.get(tag_type_name, {}).get(tag_value, "hat.png")
+
+        pair = {
+            "icon": icon,
+            "label": raw_tag_value
+        }
+
+        if tag_type_name in EXCLUDED_TYPES:
+            meta_tag_icon_pairs[tag_type_name] = pair
+        else:
+            display_tag_icon_pairs[tag_type_name] = pair
+
     return render(request, "components/recipe_cards.html", {
         'page_obj': page_obj,
+        "tag_icon_pairs": display_tag_icon_pairs,
+        "meta_tag_icon_pairs": meta_tag_icon_pairs
     })
 
+def normalize_tag_value(name):
+    return name.split("(")[0].strip()
+
+def boolean_from_name(name):
+    if name.strip().lower() == "yes":
+        return True
+    if name.strip().lower() == "no":
+        return False
+    return name
 
 class CreateRecipeView(View):
     # Template file that will be rendered when showing the form
