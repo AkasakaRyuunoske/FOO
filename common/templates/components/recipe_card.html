@@ -69,21 +69,32 @@
           <div class="flex flex-col gap-2" data-tags>
             <!-- Difficulty, Time and Cost Tags -->
             <div class="flex flex-wrap gap-x-2 gap-y-1">
+              {% for type, data in meta_tag_icon_pairs.items %}
+                <div class="flex items-center gap-1">
+                  <img src="{% static 'icons/' %}{{ data.icon }}" alt="{{ data.label }}" title="{{ type }}: {{ data.label }}" class="w-4 h-4">
+                  <span>{{ data.label }}</span>
+                </div>
+              {% empty %}
               <div class="flex items-center gap-1"><img src="{% static 'icons/difficulty.png' %}" class="w-4 h-4"><span>Easy</span></div>
               <div class="flex items-center gap-1"><img src="{% static 'icons/time.png' %}" class="w-4 h-4"><span>Medium</span></div>
               <div class="flex items-center gap-1"><img src="{% static 'icons/cost.png' %}" class="w-4 h-4"><span>Average</span></div>
+              {% endfor %}
             </div>
 
             <!-- General Tags -->
             <div class="flex items-center gap-2 flex-wrap">
               <span class="font-semibold">Tags:</span>
               <div class="flex flex-wrap gap-1">
+              {% for type, data in tag_icon_pairs.items %}
+                <img src="{% static 'icons/' %}{{ data.icon }}" alt="{{ data.label }}" title="{{ type }}: {{ data.label }}" class="w-4 h-4">
+
+                {% empty %}
                 <img src="{% static 'icons/boil.png' %}" class="w-4 h-4">
                 <img src="{% static 'icons/lactose-free.png' %}" class="w-4 h-4">
                 <img src="{% static 'icons/gluten-free.png' %}" class="w-4 h-4">
                 <img src="{% static 'icons/vegetarian.png' %}" class="w-4 h-4">
                 <img src="{% static 'icons/vegan.png' %}" class="w-4 h-4">
-                {{ tag }}
+              {% endfor %}
               </div>
             </div>
 
@@ -215,9 +226,10 @@
 
       <!-- Tags -->
       <div class="flex flex-wrap gap-2 mb-6">
-        <span class="px-3 py-1 border rounded-full text-sm">Vegan</span>
-        <span class="px-3 py-1 border rounded-full text-sm">Main Course</span>
-        <span class="px-3 py-1 border rounded-full text-sm">Grilled</span>
+        {% for type, data in tag_icon_pairs.items %}
+          <img src="{% static 'icons/' %}{{ data.icon }}" alt="{{ data.label }}" title="{{ type }}: {{ data.label }}" class="w-4 h-4">
+          <span class="px-3 py-1 border rounded-full text-sm">{{ data.label }}</span>
+        {% endfor %}
       </div>
     </div>
 
