@@ -66,6 +66,7 @@ class Command(BaseCommand):
                         ingredient_obj, _ = Ingredient.objects.get_or_create(name=ingredient)
                         RecipeIngredient.objects.create(recipe=recipe, ingredient=ingredient_obj)
 
+
                 except Exception as exception:
                     self.stderr.write(f"Skipping row due to error: {exception}")
                     continue
