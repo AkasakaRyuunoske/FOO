@@ -1,8 +1,10 @@
+import ast
 import csv
 import os
 from collections import defaultdict
 
-from RecipeManager.models import Recipe
+from IngredientManager.models import Ingredient
+from RecipeManager.models import Recipe, RecipeIngredient
 from TagManager.models import Tag
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -59,6 +61,10 @@ class Command(BaseCommand):
                     RecipeTag.objects.create(recipe=recipe, tag=tags["cost"][row["price_tag"].strip().lower()])
                     RecipeTag.objects.create(recipe=recipe, tag=tags["lactose free"]["yes" if row["LACTOSE_FREE"] == "true" else "no"])
                     RecipeTag.objects.create(recipe=recipe, tag=tags["gluten free"]["yes" if row["GLUTEN_FREE"] == "true" else "no"])
+
+                    for ingredient in ast.literal_eval(row["NER"]):
+                        ingredient_obj, _ = Ingredient.objects.get_or_create(name=ingredient)
+                        RecipeIngredient.objects.create(recipe=recipe, ingredient=ingredient_obj)
 
                 except Exception as exception:
                     self.stderr.write(f"Skipping row due to error: {exception}")
