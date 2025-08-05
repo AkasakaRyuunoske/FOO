@@ -2,59 +2,58 @@ import ast
 import json
 import os
 import time
+from abc import ABC, abstractmethod
+from typing import List, Any, Optional, Union
+
 import faiss
 import numpy as np
 import pandas as pd
 from gensim.models import Word2Vec
 
 
-class RecipeRecommender:
-    """
-    Sistema di raccomandazione per ricette basato su ingredienti.
-    Utilizza FAISS (Facebook AI Similarity Search) per la ricerca vettoriale efficiente
-    e Word2Vec per la rappresentazione semantica degli ingredienti.
+# Abstract Interfaces
+class DataLoaderInterface(ABC):
+    @abstractmethod
+    def load_dataset(self, file_paths: Union[str, List[str]], output_path: Optional[str] = None) -> pd.DataFrame:
+        pass
 
-    FAISS: Libreria ottimizzata per la ricerca di similarità in spazi vettoriali ad alta dimensione
-    Word2Vec: Modello di machine learning che rappresenta parole come vettori numerici densi
-    """
 
-    def __init__(self, model_name='word2vec'):
-        """
-        Inizializza il sistema di raccomandazione.
+class EmbeddingModelInterface(ABC):
+    @abstractmethod
+    def create_embeddings(self, df: pd.DataFrame) -> np.ndarray:
+        pass
 
-        Parametri:
-        - model_name: Tipo di modello da utilizzare ('word2vec' di default)
+    @abstractmethod
+    def encode_query(self, ingredients: List[str]) -> np.ndarray:
+        pass
 
-        Attributi della classe:
-        - model_type: Specifica il tipo di embedding utilizzato
-        - word2vec_model: Istanza del modello Word2Vec addestrato
-        - index: Indice FAISS per la ricerca vettoriale veloce
-        - df: DataFrame pandas contenente i dati delle ricette
-        """
-        self.model_type = 'word2vec'
-        self.word2vec_model = None  # Modello Word2Vec non ancora inizializzato
-        self.index = None  # Indice FAISS non ancora costruito
-        self.df = None  # Dataset non ancora caricato
 
-    def load_dataset(self, file_paths, output_path=None):
-        """
-        Carica e prepara il dataset da uno o più file CSV.
+class SearchIndexInterface(ABC):
+    @abstractmethod
+    def build_index(self, embeddings: np.ndarray) -> Any:
+        pass
 
-        Parametri:
-        - file_paths: Percorso singolo (stringa) o lista di percorsi ai file CSV
-        - output_path: Percorso opzionale dove salvare il dataset combinato
+    @abstractmethod
+    def search(self, query_vector: np.ndarray, k: int) -> tuple:
+        pass
 
-        Processo:
-        1. Converte percorso singolo in lista se necessario
-        2. Carica ogni file CSV mantenendo solo colonne essenziali (title, NER, link)
-        3. Rimuove righe con ingredienti mancanti (NER vuoto)
-        4. Combina tutti i DataFrame in uno unico
-        5. Elimina ricette duplicate basandosi su titolo e ingredienti
-        6. Salva il dataset combinato se richiesto
 
-        NER: Named Entity Recognition - contiene gli ingredienti estratti automaticamente
-        """
-        print("\n=== LOADING DATASET ===")
+class PersistenceInterface(ABC):
+    @abstractmethod
+    def save_model(self, model: Any, path: str) -> bool:
+        pass
+
+    @abstractmethod
+    def load_model(self, path: str) -> Any:
+        pass
+
+
+# Implementations
+class DataLoader(DataLoaderInterface):
+    """Handles all data loading and preprocessing operations."""
+
+    def load_dataset(self, file_paths: Union[str, List[str]], output_path: Optional[str] = None) -> pd.DataFrame:
+        print("\nLOADING DATASET")
 
         # Normalizza input: converte stringa singola in lista
         if isinstance(file_paths, str):
@@ -103,15 +102,15 @@ class RecipeRecommender:
         # Combina tutti i DataFrame in uno unico
         print("\nCombining datasets...")
         start_time = time.time()
-        self.df = pd.concat(dfs, ignore_index=True)
-        print(f"Combined {len(dfs)} files with {len(self.df)} total recipes in {time.time() - start_time:.2f}s")
+        combined_df = pd.concat(dfs, ignore_index=True)
+        print(f"Combined {len(dfs)} files with {len(combined_df)} total recipes in {time.time() - start_time:.2f}s")
 
         # Rimuove ricette duplicate basandosi su titolo e ingredienti
         print("\nRemoving duplicate recipes...")
         start_time = time.time()
-        before_count = len(self.df)
-        self.df.drop_duplicates(subset=["title", "NER"], inplace=True)
-        after_count = len(self.df)
+        before_count = len(combined_df)
+        combined_df.drop_duplicates(subset=["title", "NER"], inplace=True)
+        after_count = len(combined_df)
         duplicates_removed = before_count - after_count
 
         print(f"Removed {duplicates_removed} duplicates in {time.time() - start_time:.2f}s")
@@ -123,335 +122,27 @@ class RecipeRecommender:
             start_time = time.time()
             # Crea directory se non esiste
             os.makedirs(os.path.dirname(output_path) if os.path.dirname(output_path) else '.', exist_ok=True)
-            self.df.to_csv(output_path, index=False)
+            combined_df.to_csv(output_path, index=False)
             print(f"Dataset saved in {time.time() - start_time:.2f}s")
 
-        print("=== DATASET LOADING COMPLETE ===\n")
-        return self.df
+        print("DATASET LOADING COMPLETE\n")
+        return combined_df
 
-    def _parse_ingredients(self, ner_string):
-        """
-        Converte la stringa NER in una stringa di ingredienti separati da spazi.
 
-        Parametri:
-        - ner_string: Stringa contenente lista Python degli ingredienti
+class Word2VecEmbeddingModel(EmbeddingModelInterface):
+    """Handles Word2Vec embeddings creation and query encoding."""
 
-        Processo:
-        1. Verifica che l'input sia una stringa
-        2. Usa ast.literal_eval per convertire stringa in lista Python sicuramente
-        3. Unisce gli ingredienti con spazi per creare testo continuo
-        4. Gestisce errori di parsing restituendo stringa vuota
+    def __init__(self):
+        self.model = None
+        self.vector_size = 100
 
-        ast.literal_eval: Funzione sicura per valutare stringhe contenenti letterali Python
-        """
-        if isinstance(ner_string, str):
-            try:
-                # Converte stringa rappresentante lista Python in lista reale
-                ingredients_list = ast.literal_eval(ner_string)
-                # Unisce ingredienti con spazi per creare testo continuo
-                return ' '.join(ingredients_list)
-            except (ValueError, SyntaxError):
-                # Restituisce stringa vuota se parsing fallisce
-                return ''
-        return ''
-
-    def _create_embeddings(self):
-        """
-        Crea rappresentazioni vettoriali (embeddings) per tutte le ricette nel dataset.
-
-        Processo principale:
-        1. Verifica che il dataset sia caricato
-        2. Seleziona metodo di embedding (Word2Vec o SentenceTransformer)
-        3. Per Word2Vec: usa metodo specializzato _create_word2vec_embeddings
-        4. Per SentenceTransformer: processa ingredienti e genera embeddings
-
-        Embeddings: Rappresentazioni numeriche dense che catturano significato semantico
-        """
-        print("\n=== CREATING EMBEDDINGS ===")
-
-        if self.df is None:
-            print("No dataset loaded")
-            raise ValueError("No dataset loaded. Call load_dataset first.")
-
-        # Seleziona metodo di embedding basato su configurazione
-        if self.model_type == 'word2vec':
-            embeddings = self._create_word2vec_embeddings()
-        else:
-            # Metodo alternativo con SentenceTransformer (attualmente commentato)
-            print("Processing ingredient data...")
-            start_time = time.time()
-            # Converte liste ingredienti in testo continuo
-            self.df['ner_text'] = self.df['NER'].apply(self._parse_ingredients)
-            print(f"Processed ingredient data in {time.time() - start_time:.2f}s")
-
-            # Filtra ricette senza ingredienti validi
-            print("Filtering out recipes with empty ingredient lists...")
-            start_time = time.time()
-            before_count = len(self.df)
-            self.df = self.df[self.df['ner_text'].str.strip() != '']
-            after_count = len(self.df)
-
-            print(
-                f"Removed {before_count - after_count} recipes with empty ingredients in {time.time() - start_time:.2f}s")
-            print(f"Proceeding with {after_count} valid recipes")
-
-            # Genera embeddings usando SentenceTransformer
-            print(f"\nGenerating embeddings for {len(self.df)} recipes...")
-            print("(This is typically the most time-consuming step. Please wait...)")
-            start_time = time.time()
-
-            # Codifica tutti i testi degli ingredienti in vettori numerici
-            embeddings = self.model.encode(
-                self.df['ner_text'].tolist(),
-                show_progress_bar=True,
-                convert_to_numpy=True
-            )
-
-            total_time = time.time() - start_time
-            recipes_per_second = len(self.df) / total_time if total_time > 0 else 0
-            print(f"Generated {len(embeddings)} embeddings of dimension {embeddings.shape[1]}")
-            print(f"Embedding completed in {total_time:.2f}s ({recipes_per_second:.1f} recipes/second)")
-
-        print("=== EMBEDDING CREATION COMPLETE ===\n")
-        return embeddings
-
-    def build_index(self, embeddings=None, index_path=None, df_path=None):
-        """
-        Costruisce indice FAISS per ricerca vettoriale efficiente.
-
-        Parametri:
-        - embeddings: Vettori pre-calcolati (opzionale)
-        - index_path: Percorso dove salvare l'indice FAISS
-        - df_path: Percorso dove salvare il DataFrame
-
-        Processo:
-        1. Crea embeddings se non forniti
-        2. Inizializza indice FAISS con dimensione appropriata
-        3. Aggiunge tutti i vettori all'indice
-        4. Salva indice e DataFrame se richiesto
-
-        IndexFlatL2: Tipo di indice FAISS che usa distanza euclidea (L2) per similarità
-        """
-        print("\n=== BUILDING SEARCH INDEX ===")
-
-        # Crea embeddings se non forniti esternamente
-        if embeddings is None:
-            print("No pre-computed embeddings provided, creating embeddings...")
-            embeddings = self._create_embeddings()
-        else:
-            print(f"Using provided embeddings with shape {embeddings.shape}")
-
-        # Inizializza indice FAISS
-        print("\nInitializing FAISS index...")
-        start_time = time.time()
-        dimension = embeddings.shape[1]  # Dimensione dei vettori
-        # IndexFlatL2: indice che calcola distanza euclidea esatta
-        self.index = faiss.IndexFlatL2(dimension)
-        print(f"Created IndexFlatL2 with dimension {dimension} in {time.time() - start_time:.2f}s")
-
-        # Aggiunge tutti i vettori embedding all'indice
-        print(f"Adding {len(embeddings)} vectors to index...")
-        start_time = time.time()
-        self.index.add(embeddings)
-        add_time = time.time() - start_time
-        vectors_per_second = len(embeddings) / add_time if add_time > 0 else 0
-
-        print(f"Added vectors in {add_time:.2f}s ({vectors_per_second:.1f} vectors/second)")
-        print(f"Index now contains {self.index.ntotal} vectors")
-
-        # Salva indice FAISS su disco se richiesto
-        if index_path:
-            print(f"\nSaving FAISS index to {index_path}...")
-            start_time = time.time()
-            os.makedirs(os.path.dirname(index_path) if os.path.dirname(index_path) else '.', exist_ok=True)
-            faiss.write_index(self.index, index_path)
-            print(f"Index saved in {time.time() - start_time:.2f}s")
-
-        # Salva DataFrame se richiesto
-        if df_path and self.df is not None:
-            print(f"Saving DataFrame to {df_path}...")
-            start_time = time.time()
-            os.makedirs(os.path.dirname(df_path) if os.path.dirname(df_path) else '.', exist_ok=True)
-            self.df.to_csv(df_path, index=False)
-            print(f"DataFrame saved in {time.time() - start_time:.2f}s")
-
-        print("=== INDEX BUILDING COMPLETE ===\n")
-        return self.index
-
-    def load_model(self, index_path, df_path):
-        """
-        Carica indice FAISS e DataFrame esistenti da disco.
-
-        Parametri:
-        - index_path: Percorso dell'indice FAISS salvato
-        - df_path: Percorso del DataFrame salvato
-
-        Processo:
-        1. Carica indice FAISS binario
-        2. Carica DataFrame CSV
-        3. Verifica consistenza dei dati caricati
-        4. Gestisce errori di caricamento
-        """
-        print("\n=== LOADING MODEL ===")
-        try:
-            # Carica indice FAISS da file binario
-            print(f"Loading FAISS index from {index_path}...")
-            start_time = time.time()
-            self.index = faiss.read_index(index_path)
-            index_load_time = time.time() - start_time
-            print(f"Index loaded in {index_load_time:.2f}s with {self.index.ntotal} vectors")
-
-            # Carica DataFrame da file CSV
-            print(f"Loading DataFrame from {df_path}...")
-            start_time = time.time()
-            self.df = pd.read_csv(df_path)
-            df_load_time = time.time() - start_time
-            print(f"DataFrame loaded in {df_load_time:.2f}s with {len(self.df)} recipes")
-
-            print("=== MODEL LOADING COMPLETE ===\n")
-            return True
-        except Exception as e:
-            print(f"Error loading model: {e}")
-            print("=== MODEL LOADING FAILED ===\n")
-            return False
-
-    def _get_ingredients_list(self, ner_string):
-        """
-        Converte stringa NER in lista Python di ingredienti.
-
-        Parametri:
-        - ner_string: Stringa contenente rappresentazione lista ingredienti
-
-        Restituisce:
-        - Lista di stringhe rappresentanti ingredienti individuali
-        - Lista vuota se conversione fallisce
-        """
-        if isinstance(ner_string, str):
-            try:
-                # Converte stringa in lista Python usando valutazione sicura
-                return ast.literal_eval(ner_string)
-            except (ValueError, SyntaxError):
-                # Restituisce lista vuota se parsing fallisce
-                return []
-        return []
-
-    def recommend(self, ingredients, k=10):
-        """
-        Raccomanda ricette basate su lista di ingredienti forniti.
-
-        Parametri:
-        - ingredients: Lista di ingredienti di input
-        - k: Numero di raccomandazioni da restituire
-
-        Processo:
-        1. Verifica che modello sia inizializzato
-        2. Converte ingredienti input in vettore query
-        3. Esegue ricerca similarità usando FAISS
-        4. Formatta e restituisce risultati ordinati per similarità
-
-        La ricerca trova ricette con ingredienti più simili semanticamente
-        """
-        print("\n=== SEARCHING FOR RECIPES ===")
-
-        # Verifica che componenti necessari siano inizializzati
-        if self.index is None or self.df is None:
-            print("Model not built or loaded yet")
-            raise ValueError("Model not built or loaded yet")
-
-        print(f"Searching with ingredients: {', '.join(ingredients)}")
-
-        if self.model_type == 'word2vec':
-            # Processo specifico per Word2Vec
-            if self.word2vec_model is None:
-                raise ValueError("Word2Vec model not trained")
-
-            # Normalizza ingredienti input per matching con vocabolario
-            clean_ingredients = [ing.strip().lower().replace(' ', '_')
-                                 for ing in ingredients]
-
-            vectors = []
-            found_ingredients = []
-
-            # Trova vettori per ingredienti presenti nel vocabolario Word2Vec
-            for ingredient in clean_ingredients:
-                if ingredient in self.word2vec_model.wv:
-                    vectors.append(self.word2vec_model.wv[ingredient])
-                    found_ingredients.append(ingredient)
-
-            if not vectors:
-                print("No matching ingredients found in vocabulary")
-                return []
-
-            print(f"Found {len(found_ingredients)} ingredients in vocabulary: {found_ingredients}")
-
-            # Crea vettore query come media dei vettori ingredienti
-            query_vector = np.mean(vectors, axis=0).reshape(1, -1).astype('float32')
-
-        else:
-            # Processo per SentenceTransformer (metodo alternativo)
-            print("Converting ingredients to embedding...")
-            start_time = time.time()
-            query_text = ' '.join(ingredients)
-            query_vector = self.model.encode([query_text], convert_to_numpy=True)
-            print(f"Created query embedding in {time.time() - start_time:.4f}s")
-
-        # Esegue ricerca dei k vicini più simili
-        k = min(k, len(self.df))  # Limita k al numero massimo di ricette disponibili
-        print(f"Searching for top {k} matches among {self.index.ntotal} recipes...")
-        start_time = time.time()
-
-        # FAISS restituisce distanze e indici delle ricette più simili
-        distances, indices = self.index.search(query_vector, k=k)
-        search_time = time.time() - start_time
-        print(f"Search completed in {search_time:.4f}s")
-
-        # Formatta risultati in struttura leggibile
-        print("Formatting results...")
-        start_time = time.time()
-        results = []
-
-        for i, idx in enumerate(indices[0]):
-            if idx < len(self.df):
-                row = self.df.iloc[idx]
-
-                # Gestisce ingredienti basandosi su tipo di modello
-                if self.model_type == 'word2vec':
-                    try:
-                        ingredients_list = ast.literal_eval(row['NER'])
-                    except (ValueError, SyntaxError):
-                        # Fallback: split per virgola se parsing fallisce
-                        ingredients_list = row['NER'].split(',') if isinstance(row['NER'], str) else []
-                else:
-                    ingredients_list = self._get_ingredients_list(row['NER'])
-
-                # Crea dizionario risultato con informazioni complete
-                results.append({
-                    'score': float(distances[0][i]),  # Punteggio di similarità
-                    'title': row['title'],  # Nome ricetta
-                    'ingredients': ingredients_list,  # Lista ingredienti
-                    'link': row['link'] if 'link' in self.df.columns else 'No link available'  # URL ricetta
-                })
-
-        print(f"Formatted {len(results)} results in {time.time() - start_time:.4f}s")
-        print("=== SEARCH COMPLETE ===\n")
-        return results
-
-    def _create_word2vec_embeddings(self):
+    def create_embeddings(self, df: pd.DataFrame) -> np.ndarray:
         """
         Crea embeddings usando modello Word2Vec addestrato su ingredienti.
-
-        Processo dettagliato:
-        1. Estrae e pulisce liste ingredienti da tutte le ricette
-        2. Addestra modello Word2Vec su corpus ingredienti
-        3. Crea vettori ricetta come media vettori ingredienti componenti
-        4. Filtra dataset mantenendo solo ricette con ingredienti validi
-
-        Word2Vec apprende rappresentazioni semantiche dove ingredienti simili
-        hanno vettori vicini nello spazio multidimensionale
         """
         print("Creating Word2Vec embeddings...")
 
-        if self.df is None:
+        if df is None:
             raise ValueError("No dataset loaded. Call load_dataset first.")
 
         # Prepara corpus per addestramento Word2Vec
@@ -459,7 +150,7 @@ class RecipeRecommender:
         valid_indices = []  # Indici ricette con ingredienti validi
 
         # Processa ogni ricetta nel dataset
-        for idx, ner_string in enumerate(self.df['NER']):
+        for idx, ner_string in enumerate(df['NER']):
             try:
                 # Converte stringa NER in lista ingredienti
                 ingredients = ast.literal_eval(ner_string)
@@ -487,7 +178,7 @@ class RecipeRecommender:
 
         # Addestra modello Word2Vec sul corpus ingredienti
         print("Training Word2Vec model...")
-        self.word2vec_model = Word2Vec(
+        self.model = Word2Vec(
             sentences=ingredients_lists,  # Corpus di addestramento
             vector_size=100,  # Dimensione vettori embedding
             window=5,  # Contesto: parole considerate attorno a target
@@ -496,10 +187,11 @@ class RecipeRecommender:
             epochs=10  # Numero iterazioni addestramento
         )
 
-        print(f"Word2Vec model trained with vocabulary size: {len(self.word2vec_model.wv)}")
+        print(f"Word2Vec model trained with vocabulary size: {len(self.model.wv)}")
 
-        # Filtra DataFrame mantenendo solo ricette valide
-        self.df = self.df.iloc[valid_indices].reset_index(drop=True)
+        # Update df to only include valid recipes (modify in place)
+        df.drop(df.index[~df.index.isin(valid_indices)], inplace=True)
+        df.reset_index(drop=True, inplace=True)
 
         # Crea vettori ricetta come media vettori ingredienti
         print("Creating recipe vectors...")
@@ -510,8 +202,8 @@ class RecipeRecommender:
 
             # Raccoglie vettori per ingredienti presenti in vocabolario
             for ingredient in ingredients_list:
-                if ingredient in self.word2vec_model.wv:
-                    vectors.append(self.word2vec_model.wv[ingredient])
+                if ingredient in self.model.wv:
+                    vectors.append(self.model.wv[ingredient])
 
             if vectors:
                 # Media aritmetica dei vettori ingredienti
@@ -524,37 +216,618 @@ class RecipeRecommender:
         print(f"Created {len(recipe_vectors)} recipe vectors")
         return np.array(recipe_vectors).astype('float32')
 
-    def save_word2vec_model(self, model_path):
-        """
-        Salva modello Word2Vec addestrato su disco.
+    def encode_query(self, ingredients: List[str]) -> np.ndarray:
+        if self.model is None:
+            raise ValueError("Word2Vec model not trained")
 
-        Parametri:
-        - model_path: Percorso file dove salvare modello
+        # Normalizza ingredienti input per matching con vocabolario
+        clean_ingredients = [ing.strip().lower().replace(' ', '_')
+                             for ing in ingredients]
 
-        Permette riutilizzo modello senza ri-addestramento
-        """
-        if self.word2vec_model:
-            self.word2vec_model.save(model_path)
+        vectors = []
+        found_ingredients = []
+
+        # Trova vettori per ingredienti presenti nel vocabolario Word2Vec
+        for ingredient in clean_ingredients:
+            if ingredient in self.model.wv:
+                vectors.append(self.model.wv[ingredient])
+                found_ingredients.append(ingredient)
+
+        if not vectors:
+            print("No matching ingredients found in vocabulary")
+            raise ValueError("No matching ingredients found in vocabulary")
+
+        print(f"Found {len(found_ingredients)} ingredients in vocabulary: {found_ingredients}")
+
+        # Crea vettore query come media dei vettori ingredienti
+        query_vector = np.mean(vectors, axis=0).reshape(1, -1).astype('float32')
+        return query_vector
+
+    def save_model(self, model_path: str):
+        """Salva modello Word2Vec addestrato su disco."""
+        if self.model:
+            self.model.save(model_path)
             print(f"Word2Vec model saved to {model_path}")
 
-    def load_word2vec_model(self, model_path):
-        """
-        Carica modello Word2Vec precedentemente salvato.
-
-        Parametri:
-        - model_path: Percorso file modello salvato
-
-        Restituisce:
-        - True se caricamento riuscito, False altrimenti
-        """
+    def load_model(self, model_path: str) -> bool:
+        """Carica modello Word2Vec precedentemente salvato."""
         try:
-            self.word2vec_model = Word2Vec.load(model_path)
-            self.model_type = 'word2vec'
+            self.model = Word2Vec.load(model_path)
             print(f"Word2Vec model loaded from {model_path}")
             return True
         except Exception as e:
             print(f"Error loading Word2Vec model: {e}")
             return False
+
+
+class FAISSSearchIndex(SearchIndexInterface):
+    """Handles FAISS index operations."""
+
+    def __init__(self):
+        self.index = None
+
+    def build_index(self, embeddings: np.ndarray) -> faiss.IndexFlatL2:
+        print("\nBUILDING SEARCH INDEX")
+
+        print("\nInitializing FAISS index...")
+        start_time = time.time()
+        dimension = embeddings.shape[1]  # Dimensione dei vettori
+        # IndexFlatL2: indice che calcola distanza euclidea esatta
+        self.index = faiss.IndexFlatL2(dimension)
+        print(f"Created IndexFlatL2 with dimension {dimension} in {time.time() - start_time:.2f}s")
+
+        # Aggiunge tutti i vettori embedding all'indice
+        print(f"Adding {len(embeddings)} vectors to index...")
+        start_time = time.time()
+        self.index.add(embeddings)
+        add_time = time.time() - start_time
+        vectors_per_second = len(embeddings) / add_time if add_time > 0 else 0
+
+        print(f"Added vectors in {add_time:.2f}s ({vectors_per_second:.1f} vectors/second)")
+        print(f"Index now contains {self.index.ntotal} vectors")
+        print("INDEX BUILDING COMPLETE\n")
+
+        return self.index
+
+    def search(self, query_vector: np.ndarray, k: int) -> tuple:
+        if self.index is None:
+            raise ValueError("Index not built")
+
+        # Esegue ricerca dei k vicini più simili
+        print(f"Searching for top {k} matches among {self.index.ntotal} recipes...")
+        start_time = time.time()
+
+        # FAISS restituisce distanze e indici delle ricette più simili
+        distances, indices = self.index.search(query_vector, k=k)
+        search_time = time.time() - start_time
+        print(f"Search completed in {search_time:.4f}s")
+
+        return distances, indices
+
+
+class ModelPersistence(PersistenceInterface):
+    """Handles saving and loading of models and data."""
+
+    def save_model(self, model: Any, path: str) -> bool:
+        try:
+            start_time = time.time()
+            os.makedirs(os.path.dirname(path) if os.path.dirname(path) else '.', exist_ok=True)
+
+            if isinstance(model, faiss.IndexFlatL2):
+                faiss.write_index(model, path)
+                print(f"FAISS index saved to {path} in {time.time() - start_time:.2f}s")
+            elif isinstance(model, Word2Vec):
+                model.save(path)
+                print(f"Word2Vec model saved to {path} in {time.time() - start_time:.2f}s")
+            elif isinstance(model, pd.DataFrame):
+                model.to_csv(path, index=False)
+                print(f"DataFrame saved to {path} in {time.time() - start_time:.2f}s")
+            else:
+                raise ValueError(f"Unsupported model type: {type(model)}")
+
+            return True
+        except Exception as e:
+            print(f"Error saving model: {e}")
+            return False
+
+    def load_model(self, path: str) -> Any:
+        try:
+            start_time = time.time()
+            if path.endswith('.index'):
+                model = faiss.read_index(path)
+                print(f"FAISS index loaded from {path} in {time.time() - start_time:.2f}s with {model.ntotal} vectors")
+            elif path.endswith('.bin'):
+                model = Word2Vec.load(path)
+                print(f"Word2Vec model loaded from {path} in {time.time() - start_time:.2f}s")
+            elif path.endswith('.csv'):
+                model = pd.read_csv(path)
+                print(f"DataFrame loaded from {path} in {time.time() - start_time:.2f}s with {len(model)} recipes")
+            else:
+                raise ValueError(f"Unsupported file type: {path}")
+            return model
+        except Exception as e:
+            print(f"Error loading model from {path}: {e}")
+            return None
+
+
+# Main Class
+class RecipeRecommender:
+    """
+    Sistema di raccomandazione per ricette basato su ingredienti.
+    Utilizza FAISS (Facebook AI Similarity Search) per la ricerca vettoriale efficiente
+    e Word2Vec per la rappresentazione semantica degli ingredienti.
+
+    FAISS: Libreria ottimizzata per la ricerca di similarità in spazi vettoriali ad alta dimensione
+    Word2Vec: Modello di machine learning che rappresenta parole come vettori numerici densi
+    """
+
+    def __init__(self,
+                 model_name='word2vec',
+                 data_loader: DataLoaderInterface = None,
+                 embedding_model: EmbeddingModelInterface = None,
+                 search_index: SearchIndexInterface = None,
+                 persistence: PersistenceInterface = None):
+        """
+        Inizializza il sistema di raccomandazione.
+
+        Parametri:
+        - model_name: Tipo di modello da utilizzare ('word2vec' di default)
+
+        Attributi della classe:
+        - model_type: Specifica il tipo di embedding utilizzato
+        - word2vec_model: Istanza del modello Word2Vec addestrato
+        - index: Indice FAISS per la ricerca vettoriale veloce
+        - df: DataFrame pandas contenente i dati delle ricette
+        """
+        self.model_type = 'word2vec'
+
+        # Dependency Injection with defaults
+        self.data_loader = data_loader or DataLoader()
+        self.embedding_model = embedding_model or Word2VecEmbeddingModel()
+        self.search_index = search_index or FAISSSearchIndex()
+        self.persistence = persistence or ModelPersistence()
+
+        # Backward compatibility attributes
+        self.word2vec_model = None  # Will point to embedding_model.model
+        self.index = None  # Will point to search_index.index
+        self.df = None  # Dataset
+
+    def load_dataset(self, file_paths: Union[str, List[str]], output_path: Optional[str] = None) -> pd.DataFrame:
+        """
+        Carica e prepara il dataset da uno o più file CSV.
+        """
+        self.df = self.data_loader.load_dataset(file_paths, output_path)
+        return self.df
+
+    def _parse_ingredients(self, ner_string):
+        """
+        Converte la stringa NER in una stringa di ingredienti separati da spazi.
+        """
+        if isinstance(ner_string, str):
+            try:
+                # Converte stringa rappresentante lista Python in lista reale
+                ingredients_list = ast.literal_eval(ner_string)
+                # Unisce ingredienti con spazi per creare testo continuo
+                return ' '.join(ingredients_list)
+            except (ValueError, SyntaxError):
+                # Restituisce stringa vuota se parsing fallisce
+                return ''
+        return ''
+
+    def _create_embeddings(self):
+        """
+        Crea rappresentazioni vettoriali (embeddings) per tutte le ricette nel dataset.
+        """
+        print("\nCREATING EMBEDDINGS")
+
+        if self.df is None:
+            print("No dataset loaded")
+            raise ValueError("No dataset loaded. Call load_dataset first.")
+
+        embeddings = self.embedding_model.create_embeddings(self.df)
+        self.word2vec_model = self.embedding_model.model  # Backward compatibility
+
+        print("EMBEDDING CREATION COMPLETE\n")
+        return embeddings
+
+    def build_index(self, embeddings=None, index_path=None, df_path=None):
+        """
+        Costruisce indice FAISS per ricerca vettoriale efficiente.
+        """
+        print("\nBUILDING SEARCH INDEX")
+
+        # Crea embeddings se non forniti esternamente
+        if embeddings is None:
+            print("No pre-computed embeddings provided, creating embeddings...")
+            embeddings = self._create_embeddings()
+        else:
+            print(f"Using provided embeddings with shape {embeddings.shape}")
+
+        # Build the index
+        self.index = self.search_index.build_index(embeddings)
+
+        # Salva indice FAISS su disco se richiesto
+        if index_path:
+            print(f"\nSaving FAISS index to {index_path}...")
+            self.persistence.save_model(self.index, index_path)
+
+        # Salva DataFrame se richiesto
+        if df_path and self.df is not None:
+            print(f"Saving DataFrame to {df_path}...")
+            self.persistence.save_model(self.df, df_path)
+
+        return self.index
+
+    def load_model(self, index_path, df_path):
+        """
+        Carica indice FAISS e DataFrame esistenti da disco.
+        """
+        print("\nLOADING MODEL")
+        try:
+            # Carica indice FAISS da file binario
+            print(f"Loading FAISS index from {index_path}...")
+            self.index = self.persistence.load_model(index_path)
+            if self.index is None:
+                print("MODEL LOADING FAILED\n")
+                return False
+            self.search_index.index = self.index
+
+            # Carica DataFrame da file CSV
+            print(f"Loading DataFrame from {df_path}...")
+            self.df = self.persistence.load_model(df_path)
+            if self.df is None:
+                print("MODEL LOADING FAILED\n")
+                return False
+
+            print("MODEL LOADING COMPLETE\n")
+            return True
+        except Exception as e:
+            print(f"Error loading model: {e}")
+            print("MODEL LOADING FAILED\n")
+            return False
+
+    def _get_ingredients_list(self, ner_string):
+        """
+        Converte stringa NER in lista Python di ingredienti.
+        """
+        if isinstance(ner_string, str):
+            try:
+                # Converte stringa in lista Python usando valutazione sicura
+                return ast.literal_eval(ner_string)
+            except (ValueError, SyntaxError):
+                # Restituisce lista vuota se parsing fallisce
+                return []
+        return []
+
+    def recommend(self, ingredients, k=10):
+        """
+        Raccomanda ricette basate su lista di ingredienti forniti.
+        """
+        print("\nSEARCHING FOR RECIPES")
+
+        # Verifica che componenti necessari siano inizializzati
+        if self.search_index.index is None or self.df is None:
+            print("Model not built or loaded yet")
+            raise ValueError("Model not built or loaded yet")
+
+        print(f"Searching with ingredients: {', '.join(ingredients)}")
+
+        try:
+            # Converte ingredienti input in vettore query
+            query_vector = self.embedding_model.encode_query(ingredients)
+
+            # Esegue ricerca dei k vicini più simili
+            k = min(k, len(self.df))  # Limita k al numero massimo di ricette disponibili
+            distances, indices = self.search_index.search(query_vector, k=k)
+
+            # Formatta risultati in struttura leggibile
+            print("Formatting results...")
+            start_time = time.time()
+            results = []
+
+            for i, idx in enumerate(indices[0]):
+                if idx < len(self.df):
+                    row = self.df.iloc[idx]
+
+                    # Gestisce ingredienti
+                    try:
+                        ingredients_list = ast.literal_eval(row['NER'])
+                    except (ValueError, SyntaxError):
+                        # Fallback: split per virgola se parsing fallisce
+                        ingredients_list = row['NER'].split(',') if isinstance(row['NER'], str) else []
+
+                    # Crea dizionario risultato con informazioni complete
+                    results.append({
+                        'score': float(distances[0][i]),  # Punteggio di similarità
+                        'title': row['title'],  # Nome ricetta
+                        'ingredients': ingredients_list,  # Lista ingredienti
+                        'link': row['link'] if 'link' in self.df.columns else 'No link available'  # URL ricetta
+                    })
+
+            print(f"Formatted {len(results)} results in {time.time() - start_time:.4f}s")
+            print("SEARCH COMPLETE\n")
+            return results
+
+        except Exception as e:
+            print(f"Error during recommendation: {e}")
+            return []
+
+    def save_word2vec_model(self, model_path):
+        """
+        Salva modello Word2Vec addestrato su disco.
+        """
+        if hasattr(self.embedding_model, 'model') and self.embedding_model.model:
+            self.embedding_model.save_model(model_path)
+
+    def load_word2vec_model(self, model_path):
+        """
+        Carica modello Word2Vec precedentemente salvato.
+        """
+        result = self.embedding_model.load_model(model_path)
+        if result:
+            self.word2vec_model = self.embedding_model.model  # Backward compatibility
+        return result
+
+
+class UserQueryHandler:
+    """
+    Gestore delle query utente per il sistema di raccomandazione ricette.
+    Integra perfettamente con il RecipeRecommender esistente.
+    """
+
+    def __init__(self, recommender):
+        """
+        Inizializza il gestore con un'istanza di RecipeRecommender.
+
+        Parametri:
+        - recommender: Istanza RecipeRecommender già inizializzata
+        """
+        self.recommender = recommender
+
+    def process_user_ingredients_strict(self, user_ingredients, n_results=5):
+        """
+        Versione più rigorosa che privilegia match esatti degli ingredienti.
+        """
+        # Get more results initially
+        results = self.recommender.recommend(user_ingredients, k=n_results * 3)
+
+        # Re-score based on exact ingredient matches
+        scored_results = []
+        search_ingredients = [ing.lower().strip() for ing in user_ingredients]
+
+        for recipe in results:
+            recipe_ingredients = [ing.lower().strip() for ing in recipe['ingredients']]
+
+            # Count exact matches
+            exact_matches = 0
+            for search_ing in search_ingredients:
+                for recipe_ing in recipe_ingredients:
+                    if search_ing == recipe_ing or search_ing in recipe_ing:
+                        exact_matches += 1
+                        break
+
+            # Combine semantic score with exact match bonus
+            combined_score = recipe['score'] - (exact_matches * 2.0)  # Lower is better
+
+            scored_results.append({
+                **recipe,
+                'combined_score': combined_score,
+                'exact_matches': exact_matches
+            })
+
+        # Sort by combined score and return top N
+        scored_results.sort(key=lambda x: x['combined_score'])
+        return self._format_results(scored_results[:n_results])
+
+    def process_user_ingredients(self, user_ingredients, n_results=5):
+        """
+        Processa gli ingredienti inseriti dall'utente e restituisce raccomandazioni.
+
+        Parametri:
+        - user_ingredients: Lista o stringa di ingredienti dell'utente
+        - n_results: Numero di risultati da restituire (default: 5)
+
+        Processo:
+        1. Normalizza input utente
+        2. Esegue embedding sull'input
+        3. Fa query al FAISS
+        4. Restituisce N risultati migliori
+
+        Restituisce:
+        - Lista di dizionari con ricette raccomandate
+        """
+        print("\nPROCESSING USER QUERY")
+
+        # 1. Normalizza input utente
+        if isinstance(user_ingredients, str):
+            # Se stringa, divide per virgola e pulisce
+            ingredients_list = [ing.strip() for ing in user_ingredients.split(',') if ing.strip()]
+        else:
+            # Se già lista, usa direttamente
+            ingredients_list = user_ingredients
+
+        print(f"User ingredients: {', '.join(ingredients_list)}")
+        print(f"Requesting {n_results} recommendations")
+
+        try:
+            results = self.recommender.recommend(ingredients_list, k=n_results)
+
+            if results:
+                print(f"Found {len(results)} matching recipes")
+                return self._format_results(results)
+            else:
+                print("No recipes found matching the ingredients")
+                return []
+
+        except Exception as e:
+            print(f"Error processing query: {e}")
+            return []
+
+    def _format_results(self, results):
+        """
+        Formatta i risultati per una presentazione user-friendly.
+
+        Parametri:
+        - results: Lista risultati dal recommender
+
+        Restituisce:
+        - Lista formattata di raccomandazioni
+        """
+        formatted_results = []
+
+        for i, recipe in enumerate(results, 1):
+            formatted_recipe = {
+                'rank': i,
+                'title': recipe['title'],
+                'similarity_score': round(recipe['score'], 4),
+                'ingredients': recipe['ingredients'],
+                'ingredients_count': len(recipe['ingredients']),
+                'link': recipe['link']
+            }
+            formatted_results.append(formatted_recipe)
+
+        return formatted_results
+
+    def display_recommendations(self, results):
+        """
+        Mostra le raccomandazioni in formato leggibile.
+
+        Parametri:
+        - results: Lista risultati formattati
+        """
+        if not results:
+            print("No recommendations to display.")
+            return
+
+        print(f"\n=== TOP {len(results)} RECIPE RECOMMENDATIONS ===")
+        print("-" * 60)
+
+        for recipe in results:
+            print(f"{recipe['rank']}. {recipe['title']}")
+            print(f"   Similarity Score: {recipe['similarity_score']}")
+            print(f"   Ingredients ({recipe['ingredients_count']}): {', '.join(recipe['ingredients'][:5])}")
+            if len(recipe['ingredients']) > 5:
+                print(f"   ... and {len(recipe['ingredients']) - 5} more")
+            print(f"   Link: {recipe['link']}")
+            print("-" * 60)
+
+
+def quick_test():
+    """
+    Test rapido per verificare che il sistema funzioni.
+    """
+    print("\nQUICK SYSTEM TEST")
+
+    # Inizializza il sistema
+    recommender = RecipeRecommender()
+
+    # Percorsi dei file del modello
+    index_path = "models/recipes_faiss.index"
+    df_path = "models/recipes_dataframe.csv"
+    word2vec_model_path = "models/word2vec_model.bin"
+
+    # Verifica se i file del modello esistono
+    if not all(os.path.exists(path) for path in [index_path, df_path, word2vec_model_path]):
+        print("Model files not found. Building model first...")
+        # Usa il codice esistente per costruire il modello
+        dataset_path = "dataset"
+        chunks_to_use = [2]
+        file_paths = [f"{dataset_path}/recipies_dataset_tagged_chunk_{size}%.csv" for size in chunks_to_use]
+        file_paths = [f for f in file_paths if os.path.exists(f)]
+
+        if not file_paths:
+            print("ERROR: No dataset files found!")
+            print("Please ensure you have dataset files in the 'dataset' folder")
+            return False
+
+        df = recommender.load_dataset(file_paths)
+        recommender.build_index(index_path=index_path, df_path=df_path)
+        recommender.save_word2vec_model(word2vec_model_path)
+
+    # Carica il modello
+    print("Loading model...")
+    if not (recommender.load_model(index_path, df_path) and
+            recommender.load_word2vec_model(word2vec_model_path)):
+        print("ERROR: Failed to load model!")
+        return False
+
+    # Inizializza il gestore delle query utente
+    query_handler = UserQueryHandler(recommender)
+
+    # Test con ingredienti semplici
+    test_ingredients = ["milk", "flour", "chocolate"]
+
+    print(f"Testing with ingredients: {test_ingredients}")
+
+    try:
+
+        results = query_handler.process_user_ingredients(test_ingredients, n_results=3)
+
+        if results:
+            print("SUCCESS! System is working!")
+            print(f"Found {len(results)} recipe recommendations:")
+
+            for recipe in results:
+                print(f"  - {recipe['title']} (Score: {recipe['similarity_score']})")
+
+            return True
+        else:
+            print("No results found. This might indicate an issue.")
+            return False
+
+    except Exception as e:
+        print(f"ERROR during testing: {e}")
+        return False
+
+
+def test_user_input():
+    """
+    Test interattivo per provare il sistema manualmente.
+    """
+    print("\nINTERACTIVE TEST")
+    print("This will test the exact workflow you requested:")
+    print("1. User inputs ingredients")
+    print("2. System performs embedding")
+    print("3. System queries FAISS")
+    print("4. System returns N best results")
+    print("-" * 50)
+
+    recommender = RecipeRecommender()
+    index_path = "models/recipes_faiss.index"
+    df_path = "models/recipes_dataframe.csv"
+    word2vec_model_path = "models/word2vec_model.bin"
+
+    if not (recommender.load_model(index_path, df_path) and
+            recommender.load_word2vec_model(word2vec_model_path)):
+        print("Model not found or failed to load!")
+        return
+
+    query_handler = UserQueryHandler(recommender)
+
+    test_cases = [
+        ["chicken", "rice", "vegetables"],
+        ["pasta", "tomato", "garlic"],
+        ["beef", "potato", "onion", "carrot"],
+        ["salmon", "lemon", "dill"],  # More specific
+        ["tuna", "olive_oil", "garlic"],  # Mediterranean style
+        ["cod_fillets", "lemon", "parsley"],  # Classic preparation
+        ["fish_fillets", "butter", "herbs"]  # General fish dish
+    ]
+
+    for i, ingredients in enumerate(test_cases, 1):
+        print(f"\nTEST {i}")
+        print(f"Input ingredients: {ingredients}")
+        results = query_handler.process_user_ingredients(ingredients, n_results=5)
+
+        if results:
+            print(f"SUCCESS! Found {len(results)} recommendations:")
+            for j, recipe in enumerate(results[:3], 1):
+                print(f"  {j}. {recipe['title']}")
+                print(f"     Score: {recipe['similarity_score']}")
+                print(f"     Ingredients: {', '.join(recipe['ingredients'][:4])}...")
+        else:
+            print("No results found")
+        print("-" * 30)
 
 
 def test_recommender(recommender, test_cases_file=None):
@@ -575,7 +848,7 @@ def test_recommender(recommender, test_cases_file=None):
 
     Utile per validare qualità raccomandazioni e performance sistema
     """
-    print("\n=== TESTING RECOMMENDER ===")
+    print("\nTESTING RECOMMENDER")
 
     # Carica casi di test da file se disponibile
     if test_cases_file and os.path.exists(test_cases_file):
@@ -605,12 +878,12 @@ def test_recommender(recommender, test_cases_file=None):
             print(f"   Link: {recipe['link']}")
         print("-" * 50)
 
-    print("=== TESTING COMPLETE ===")
+    print("TESTING COMPLETE")
 
 
 def main():
     """
-    Funzione principale che orchestraa intero workflow del sistema.
+    Funzione principale che orchestra l'intero workflow del sistema.
 
     Workflow completo:
     1. Configura directory e percorsi file
@@ -621,7 +894,7 @@ def main():
 
     Gestisce automaticamente persistenza modelli per efficienza
     """
-    print("\n====== RECIPE RECOMMENDER SYSTEM ======\n")
+    print("\nRECIPE RECOMMENDER SYSTEM\n")
 
     # Crea directory necessarie se non esistenti
     os.makedirs("models", exist_ok=True)
@@ -636,7 +909,7 @@ def main():
 
     # Specifica chunk dataset da utilizzare (2% in questo caso)
     chunks_to_use = [2]
-    file_paths = [f"{dataset_path}/recipies_dataset_tagged_chunk_{size}%" for size in chunks_to_use]
+    file_paths = [f"{dataset_path}/recipies_dataset_tagged_chunk_{size}%.csv" for size in chunks_to_use]
     # Filtra solo file esistenti
     file_paths = [f for f in file_paths if os.path.exists(f)]
 
@@ -669,9 +942,16 @@ def main():
         recommender.save_word2vec_model(word2vec_model_path)
         test_recommender(recommender, test_cases_file=test_cases_file)
 
-    print("\n====== RECIPE RECOMMENDER COMPLETE ======")
+    print("\nRECIPE RECOMMENDER COMPLETE")
 
 
 # Punto di ingresso programma
+# if __name__ == "__main__":
+#     main()
+
+# Uncomment one of these to run different tests:
+# if __name__ == "__main__":
+#     quick_test()
+
 if __name__ == "__main__":
-    main()
+    test_user_input()
