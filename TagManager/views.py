@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 from RecipeManager.models import Recipe
 from django.core.paginator import Paginator
 from django.db.models import Count, Q
@@ -6,14 +8,20 @@ from django.shortcuts import render
 from TagManager.models import Tag
 
 
-def get_tags(request):
-    result = ["Fast", "Slow", "Average", "Overnight",
-              "Cheap", "Average", "Expensive", "Rich",
-              "Vegan", "Vegetarian",
-              "Boiled", "Grilled", "Backed", "Boiled",
-              "Easy", "Medium", "Hard", "Chef"]
+def build_tag_mapping():
+    tags_by_type_and_name = defaultdict(dict)
 
-    return render(request, "components/tags_list.html", {"tags": result})
+    for tag in Tag.objects.select_related("tag_type").filter(tag_type__isnull=False):
+        tag_type_name = tag.tag_type.name.strip().lower()
+        tag_name = tag.name.strip().lower()
+        tags_by_type_and_name[tag_type_name][tag_name] = tag
+
+    return tags_by_type_and_name
+
+
+def get_tags(request):
+    tags_by_type_and_name = dict(build_tag_mapping())
+    return render(request, "components/tags_list.html", {"tags_by_type_and_name": tags_by_type_and_name})
 
 
 def get_recipes_by_tags(request):
