@@ -203,7 +203,7 @@ class CreateRecipeView(View):
 
         # Check if all required fields have values
         # all() returns True only if all items in the list are truthy (not empty)
-        if not all([name, cooking_time, cooking_time_unit]):
+        if not all([name, cooking_time_unit]):
             # Return error response if any field is missing
             return HttpResponseBadRequest("Missing required fields")
 
