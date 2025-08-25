@@ -75,9 +75,6 @@
                   <span>{{ data.label }}</span>
                 </div>
               {% empty %}
-              <div class="flex items-center gap-1"><img src="{% static 'icons/difficulty.png' %}" class="w-4 h-4"><span>Easy</span></div>
-              <div class="flex items-center gap-1"><img src="{% static 'icons/time.png' %}" class="w-4 h-4"><span>Medium</span></div>
-              <div class="flex items-center gap-1"><img src="{% static 'icons/cost.png' %}" class="w-4 h-4"><span>Average</span></div>
               {% endfor %}
             </div>
 
@@ -89,11 +86,6 @@
                 <img src="{% static 'icons/' %}{{ data.icon }}" alt="{{ data.label }}" title="{{ type }}: {{ data.label }}" class="w-4 h-4">
 
                 {% empty %}
-                <img src="{% static 'icons/boil.png' %}" class="w-4 h-4">
-                <img src="{% static 'icons/lactose-free.png' %}" class="w-4 h-4">
-                <img src="{% static 'icons/gluten-free.png' %}" class="w-4 h-4">
-                <img src="{% static 'icons/vegetarian.png' %}" class="w-4 h-4">
-                <img src="{% static 'icons/vegan.png' %}" class="w-4 h-4">
               {% endfor %}
               </div>
             </div>

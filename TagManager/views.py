@@ -7,6 +7,8 @@ from django.shortcuts import render
 
 from TagManager.models import Tag
 
+from FOO.common.views import ICON_MAPPING, normalize_tag_value, boolean_from_name, EXCLUDED_TYPES
+
 
 def build_tag_mapping():
     tags_by_type_and_name = defaultdict(dict)
@@ -44,9 +46,38 @@ def get_recipes_by_tags(request):
     paginator = Paginator(recipes, 12)
     page_obj = paginator.get_page(page_number)
 
+    # Costruzione mappe: recipe_id -> dict di coppie {tag_type: {icon,label}}
+    tag_pairs_by_recipe = {}
+    meta_pairs_by_recipe = {}
+
+    for recipe in page_obj.object_list:
+        display_pairs = {}
+        meta_pairs = {}
+
+        for rt in recipe.recipe_tags.all():
+            tag = rt.tag
+            tag_type_name = tag.tag_type.name
+            raw_tag_value = tag.name
+
+            tag_value = boolean_from_name(raw_tag_value)
+            if isinstance(tag_value, str):
+                tag_value = normalize_tag_value(tag_value)
+
+            icon = ICON_MAPPING.get(tag_type_name, {}).get(tag_value, "hat.png")
+            pair = {"icon": icon, "label": raw_tag_value}
+
+            if tag_type_name in EXCLUDED_TYPES:
+                meta_pairs[tag_type_name] = pair
+            else:
+                display_pairs[tag_type_name] = pair
+
+        tag_pairs_by_recipe[recipe.id] = display_pairs
+        meta_pairs_by_recipe[recipe.id] = meta_pairs
+
     return render(request, "components/recipe_cards.html", {
-        "tags": tags,
         "page_obj": page_obj,
+        "tag_pairs_by_recipe": tag_pairs_by_recipe,
+        "meta_pairs_by_recipe": meta_pairs_by_recipe,
     })
 
 

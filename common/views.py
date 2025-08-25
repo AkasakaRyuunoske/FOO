@@ -57,6 +57,7 @@ ICON_MAPPING = {
         False: "bread.png"
     }
 }
+EXCLUDED_TYPES = {"Cost", "Difficulty", "Preparation Time"}
 
 
 def home(request):
@@ -86,14 +87,48 @@ def recipe_list(request):
     recipes_list = Recipe.objects.all()
     paginator = Paginator(recipes_list, 10)
 
+    # Paginazione
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
 
-    return render(request, "recipes/recipe_list.html", {"page_obj": page_obj})
+    # Costruzione mappe: recipe_id -> dict di coppie {tag_type: {icon,label}}
+    tag_pairs_by_recipe = {}
+    meta_pairs_by_recipe = {}
+
+    for recipe in page_obj.object_list:
+        display_pairs = {}
+        meta_pairs = {}
+
+        for rt in recipe.recipe_tags.all():
+            tag = rt.tag
+            tag_type_name = tag.tag_type.name
+            raw_tag_value = tag.name
+
+            tag_value = boolean_from_name(raw_tag_value)
+            if isinstance(tag_value, str):
+                tag_value = normalize_tag_value(tag_value)
+
+            icon = ICON_MAPPING.get(tag_type_name, {}).get(tag_value, "hat.png")
+            pair = {"icon": icon, "label": raw_tag_value}
+
+            if tag_type_name in EXCLUDED_TYPES:
+                meta_pairs[tag_type_name] = pair
+            else:
+                display_pairs[tag_type_name] = pair
+
+        tag_pairs_by_recipe[recipe.id] = display_pairs
+        meta_pairs_by_recipe[recipe.id] = meta_pairs
+
+    return render(request, "discover.html", {
+        "page_obj": page_obj,
+        "tag_pairs_by_recipe": tag_pairs_by_recipe,
+        "meta_pairs_by_recipe": meta_pairs_by_recipe,
+    })
 
 
 def discover(request):
-    recipes = Recipe.objects.prefetch_related(
+    # Prefetch tag e tag_type in un’unica query aggiuntiva
+    recipes_qs = Recipe.objects.prefetch_related(
         Prefetch(
             "recipe_tags",
             queryset=RecipeTag.objects.select_related("tag", "tag__tag_type")
@@ -102,11 +137,41 @@ def discover(request):
 
     # Paginazione
     page_number = request.GET.get("page", 1)
-    paginator = Paginator(recipes, 12)
+    paginator = Paginator(recipes_qs, 12)
     page_obj = paginator.get_page(page_number)
+
+    # Costruzione mappe: recipe_id -> dict di coppie {tag_type: {icon,label}}
+    tag_pairs_by_recipe = {}
+    meta_pairs_by_recipe = {}
+
+    for recipe in page_obj.object_list:
+        display_pairs = {}
+        meta_pairs = {}
+
+        for rt in recipe.recipe_tags.all():
+            tag = rt.tag
+            tag_type_name = tag.tag_type.name
+            raw_tag_value = tag.name
+
+            tag_value = boolean_from_name(raw_tag_value)
+            if isinstance(tag_value, str):
+                tag_value = normalize_tag_value(tag_value)
+
+            icon = ICON_MAPPING.get(tag_type_name, {}).get(tag_value, "hat.png")
+            pair = {"icon": icon, "label": raw_tag_value}
+
+            if tag_type_name in EXCLUDED_TYPES:
+                meta_pairs[tag_type_name] = pair
+            else:
+                display_pairs[tag_type_name] = pair
+
+        tag_pairs_by_recipe[recipe.id] = display_pairs
+        meta_pairs_by_recipe[recipe.id] = meta_pairs
 
     return render(request, "discover.html", {
         "page_obj": page_obj,
+        "tag_pairs_by_recipe": tag_pairs_by_recipe,
+        "meta_pairs_by_recipe": meta_pairs_by_recipe,
     })
 
 
