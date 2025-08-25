@@ -1,8 +1,9 @@
+{% load dict_extras %}
 <div class="space-y-4">
   <ul class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
     {% for recipe in page_obj %}
       <li>
-        {% include "components/recipe_card.html" with recipe=recipe %}
+        {% include "components/recipe_card.html" with recipe=recipe tag_icon_pairs=tag_pairs_by_recipe|get_item:recipe.id meta_tag_icon_pairs=meta_pairs_by_recipe|get_item:recipe.id show_description_inline=show_description_inline %}
       </li>
     {% empty %}
       <li>No recipes found.</li>
