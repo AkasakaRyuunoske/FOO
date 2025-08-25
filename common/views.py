@@ -31,14 +31,18 @@ ICON_MAPPING = {
         "Hard": "difficulty.png"
     },
     "Preparation Time": {
+        "Very Fast": "time.png",
         "Fast": "time.png",
         "Medium": "time.png",
-        "Slow": "time.png"
+        "Slow": "time.png",
+        "Very Slow": "time.png",
     },
     "Cost": {
+        "Very Cheap": "cost.png",
         "Cheap": "cost.png",
+        "Medium": "cost.png",
         "Expensive": "cost.png",
-        "Medium": "cost.png"
+        "Rich": "cost.png",
     },
     "Vegan": {
         True: "vegan.png",

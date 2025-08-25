@@ -7,7 +7,7 @@ from django.shortcuts import render
 
 from TagManager.models import Tag
 
-from FOO.common.views import ICON_MAPPING, normalize_tag_value, boolean_from_name, EXCLUDED_TYPES
+from common.views import ICON_MAPPING, normalize_tag_value, boolean_from_name, EXCLUDED_TYPES
 
 
 def build_tag_mapping():
@@ -35,7 +35,7 @@ def get_recipes_by_tags(request):
 
         recipes = Recipe.objects.annotate(
             matched_tags=Count(
-                "recipetag", filter=Q(recipetag__tag_id__in=tag_ids), distinct=True
+                "recipe_tags", filter=Q(recipe_tags__tag_id__in=tag_ids), distinct=True
             )
         ).filter(matched_tags=len(tags))
     else:
