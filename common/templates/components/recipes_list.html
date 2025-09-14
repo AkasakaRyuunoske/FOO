@@ -12,15 +12,15 @@
 
   <div class="pagination flex justify-between items-center mt-4">
     {% if page_obj.has_previous %}
-      <a class="px-3 py-1 border rounded cursor-pointer hover:bg-gray-200" href="?page={{ page_obj.previous_page_number }}">« Previous</a>
+      <a class="px-3 py-1 border border-black rounded cursor-pointer hover:bg-gray-200" href="?page={{ page_obj.previous_page_number }}">« Previous</a>
     {% else %}
       <span></span>
     {% endif %}
 
-    <span class="px-3 py-1 border rounded bg-gray-200">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+    <span class="px-3 py-1 border border-black rounded">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
 
     {% if page_obj.has_next %}
-      <a class="px-3 py-1 border rounded cursor-pointer hover:bg-gray-200" href="?page={{ page_obj.next_page_number }}">Next »</a>
+      <a class="px-3 py-1 border border-black rounded cursor-pointer hover:bg-gray-200" href="?page={{ page_obj.next_page_number }}">Next »</a>
     {% else %}
       <span></span>
     {% endif %}
