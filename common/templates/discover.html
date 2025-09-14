@@ -13,16 +13,16 @@
                 </div>
 
                 <div class="relative">
-                    <input
-                        type="text"
-                        name="search_term"
-                        placeholder="Search tag..."
-                        class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        hx-get="/tag/search_tags/"
-                        hx-trigger="keyup changed delay:300ms"
-                        hx-target="#available_tags"
-                        hx-swap="outerHTML"
-                    />
+                        <input
+                          type="text"
+                          name="search_term"
+                          placeholder="Search tag..."
+                          class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          hx-get="/ingredient/search_ingredients/"
+                          hx-trigger="keyup changed delay:300ms"
+                          hx-target="#available_ingredients"
+                          hx-swap="outerHTML"
+                        />
                 </div>
 
                 <!-- Spinner element (initially hidden) -->
@@ -56,7 +56,9 @@
                         hx-indicator="#spinner"
                         class="relative col-span-2 overflow-auto max-h-[25rem]"
                 >
-                    Loading content...
+                    <div id="available_ingredients" class="space-y-4">
+                        Loading content...
+                    </div>
                 </div>
             </div>
 
