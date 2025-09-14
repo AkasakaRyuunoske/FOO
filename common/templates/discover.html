@@ -4,7 +4,7 @@
 
     <!-- Grid with 2 columns and 4 rows in the first column -->
     <div id="main-grid" class="grid grid-cols-[3fr_auto_3fr] gap-1" style="font-family:'Inclusive Sans',sans-serif;">
-        <div id="first-column" class="border-2 border-black rounded-md grid grid-rows-4 gap-2">
+        <div id="first-column" class="border border-black rounded-md grid grid-rows-4 gap-2">
 
             <!-- ingredients -->
             <div class="p-4 grid grid-cols-2 grid-rows-2">
@@ -17,7 +17,7 @@
                           type="text"
                           name="search_term"
                           placeholder="Search ingredient..."
-                          class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          class="w-full p-2 border border-black rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                           hx-get="/ingredient/search_ingredients/"
                           hx-trigger="keyup changed delay:300ms"
                           hx-target="#available_ingredients"
@@ -74,7 +74,7 @@
                           type="text"
                           name="search_term"
                           placeholder="Search tag..."
-                          class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          class="w-full p-2 border border-black rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                           hx-get="/tag/search_tags/"
                           hx-trigger="keyup changed delay:300ms"
                           hx-target="#available_tags"
@@ -177,14 +177,14 @@
           cardsWrapper.classList.remove('hidden');
         }
       "
-                    class="w-6 h-full rounded-sm text-black hover:bg-gray-200 border-none shadow-none bg-gray-100"
+                    class="w-6 h-full rounded text-black hover:bg-gray-200 border border-black"
             >
                 <span id="toggle-icon">&lt;&lt;</span>
             </button>
         </div>
 
         <!-- Second Column -->
-        <div id="recipe-card-grid" class="relative p-4 w-full grid gap-2" data-show-inline="false">
+        <div id="recipe-card-grid" class="relative w-full grid gap-2" data-show-inline="false">
 
             <div id="cards-wrapper" hx-get="/tag/get_recipes_by_tags" hx-trigger="load" hx-swap="innerHTML">
                 {% include "components/discover_recipe_list_wrapper.html" %}
