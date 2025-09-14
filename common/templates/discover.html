@@ -13,7 +13,16 @@
                 </div>
 
                 <div class="relative">
-                    {% include "components/searchbar.html" with input_name="search_term" placeholder="Search ingredient..." action="/search/" %}
+                    <input
+                        type="text"
+                        name="search_term"
+                        placeholder="Search tag..."
+                        class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        hx-get="/tag/search_tags/"
+                        hx-trigger="keyup changed delay:300ms"
+                        hx-target="#available_tags"
+                        hx-swap="outerHTML"
+                    />
                 </div>
 
                 <!-- Spinner element (initially hidden) -->
@@ -45,7 +54,7 @@
                         hx-target="this"
                         hx-swap="innerHTML"
                         hx-indicator="#spinner"
-                        class="relative col-span-2"
+                        class="relative col-span-2 overflow-auto max-h-[25rem]"
                 >
                     Loading content...
                 </div>
@@ -59,7 +68,16 @@
 
                 <div class="relative">
                     <form method="get" class="w-full max-w-md mx-auto">
-                        {% include "components/searchbar.html" with input_name="search_term" placeholder="Search tag..." action=search_tags %}
+                        <input
+                          type="text"
+                          name="search_term"
+                          placeholder="Search tag..."
+                          class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          hx-get="/tag/search_tags/"
+                          hx-trigger="keyup changed delay:300ms"
+                          hx-target="#available_tags"
+                          hx-swap="outerHTML"
+                        />
                     </form>
                 </div>
 
@@ -82,7 +100,11 @@
                         hx-indicator="#spinner"
                         class="relative col-span-2"
                 >
-                    Loading content...
+                    <div id="available_tags_wrapper">
+                      <div id="available_tags" class="space-y-4">
+                        Loading tags...
+                      </div>
+                    </div>
                 </div>
             </div>
 

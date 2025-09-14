@@ -1,5 +1,6 @@
 from collections import defaultdict
 
+from IngredientManager.models import Ingredient
 from RecipeManager.models import Recipe
 from django.core.paginator import Paginator
 from django.db.models import Count, Q
@@ -82,31 +83,28 @@ def get_recipes_by_tags(request):
 
 
 def search_tags(request):
-    all_tags = [
-        "Fast", "Slow", "Average", "Overnight",
-        "Cheap", "Average", "Expensive", "Rich",
-        "Vegan", "Vegetarian",
-        "Boiled", "Grilled", "Backed", "Boiled",
-        "Easy", "Medium", "Hard", "Chef"
-    ]
+    search_term = request.GET.get("search_term", "").strip().lower()
 
-    query = request.GET.get("q", "").strip().lower()
-    filtered = []
+    tags_by_type_and_name = defaultdict(dict)
 
-    if query:
-        filtered = [tag for tag in all_tags if query in tag.lower()]
-    else:
-        filtered = all_tags
+    for tag in Tag.objects.select_related("tag_type").filter(tag_type__isnull=False):
+        tag_type_name = tag.tag_type.name.strip().lower()
+        tag_name = tag.name.strip().lower()
 
-    print(f"Filtered ==> {filtered}")
-    return render(request, "components/tag_results.html", {"tags": filtered})
+        # Se è vuoto, mostra tutti i tag. Altrimenti, solo quelli che contengono il termine
+        if not search_term or search_term in tag_name:
+            tags_by_type_and_name[tag_type_name][tag_name] = tag
 
+    # Rimuovi categorie senza tag visibili
+    tags_by_type_and_name = {
+        k: v for k, v in tags_by_type_and_name.items() if v
+    }
+
+    return render(request, "components/tags_list.html", {
+        "tags_by_type_and_name": tags_by_type_and_name
+    })
 
 def get_ingredients(request):
-    result = ["Fast", "Slow", "Average", "Overnight",
-              "Cheap", "Average", "Expensive", "Rich",
-              "Vegan", "Vegetarian",
-              "Boiled", "Grilled", "Backed", "Boiled",
-              "Easy", "Medium", "Hard", "Chef"]
+    result = list(Ingredient.objects.all())
 
     return render(request, "components/ingredients_list.html", {"ingredients": result})
