@@ -1,7 +1,11 @@
 {% load static %}
 {% comment %} components/recipe_card.html {% endcomment %}
 
-<div onclick="openModal()" class="bg-white p-1.5 rounded-md shadow-lg transition duration-200 hover:shadow-xl hover:scale-105 max-w-[380px] mx-auto w-full {% if show_description_inline %}p-2{% else %}aspect-square{% endif %}"> <!-- External Padding -->
+<div onclick="openModal()"
+     hx-get="{% url 'load_recipe_modal' recipe.id %}"
+     hx-target="#recipe-modal-content"
+     hx-swap="innerHTML"
+     class="bg-white p-1.5 rounded-md shadow-lg transition duration-200 hover:shadow-xl hover:scale-105 max-w-[380px] mx-auto w-full {% if show_description_inline %}p-2{% else %}aspect-square{% endif %}"> <!-- External Padding -->
   <div class="border-2 border-black p-2 bg-white w-full flex flex-col justify-between group relative rounded min-w-0 min-h-0 min-h-[280px] transition-all duration-300 ease-in-out overflow-visible">    <!-- Black line inside square -->
 
     <!-- Bookmark on the right with a transition on hover -->
@@ -131,114 +135,14 @@
 </div>
 
 
-<!-- MODAL BACKDROP -->
 <div id="recipe-modal" class="fixed inset-0 bg-black bg-opacity-0 flex items-center justify-center z-50 pointer-events-none opacity-0 transition-opacity duration-300"
   onclick="handleBackdropClick(event)">
   <!-- MODAL CONTENT -->
-  <div id="recipe-modal-content" class="border-2 border-black bg-white max-w-2xl w-full overflow-y-auto rounded-lg shadow-xl p-6 transform transition-all duration-300 scale-95 opacity-0" style="font-family: 'Inclusive Sans', sans-serif;">
-
-    <!-- HEADER: Title and Close Button -->
-    <div class="flex justify-between items-center mb-4">
-      <h2 class="text-2xl font-semibold">{{ recipe.name }}</h2>
-
-      <div class="absolute top-2 right-2 flex items-center gap-2 z-50">
-        <!-- Bookmark Toggle Button -->
-        <button
-          class="bookmark-btn aspect-square w-16 mt-1"
-          onclick="toggleBookmark({{ recipe.id }})"
-          aria-label="Toggle bookmark"
-        >
-          <img
-            id="bookmark-icon-{{ recipe.id }}"
-            src="{% static 'icons/bookmark-white.png' %}"
-            class="w-full h-full transition duration-150"
-            alt="Bookmark"
-          >
-        </button>
-
-        <!-- Close Button -->
-        <button onclick="closeModal()" class="text-gray-600 text-sm hover:text-black">✕</button>
-      </div>
-    </div>
-
-    <!-- Image -->
-    <div class="w-full md:w-4/5 border rounded mb-4 overflow-hidden mx-auto">
-      <img src="https://d2sj0xby2hzqoy.cloudfront.net/kenwood_italy/attachments/data/000/008/122/medium/parmigiana-di-melanzane.jpg" alt="Melanzane alla Parmigiana" class="h-auto object-contain border border-gray-300 rounded">
-    </div>
-
-    <div id="tab-description" class="tab-content text-sm leading-relaxed">
-      <!-- Author -->
-      <div class="flex items-center justify-between mb-2 gap-2">
-        <div class="flex items-center gap-2">
-          <img src="{% static 'icons/hat.png' %}" class="w-6 h-6" alt="">
-          <div>
-            <p class="text-sm">Recipe by</p>
-            <p class="font-semibold text-base">System</p>
-          </div>
-        </div>
-
-        <div class="rating-stars flex justify-center space-x-1 text-base sm:text-lg lg:text-2xl mt-auto pr-5 min-h-[1.5rem] shrink-0">
-          <button class="text-yellow-500 hover:scale-125 hover:shadow-sm transition-transform duration-150 p-0.5">★</button>
-          <button class="text-yellow-500 hover:scale-125 hover:shadow-sm transition-transform duration-150 p-0.5">★</button>
-          <button class="text-yellow-500 hover:scale-125 hover:shadow-sm transition-transform duration-150 p-0.5">★</button>
-          <button class="text-yellow-500 hover:scale-125 hover:shadow-sm transition-transform duration-150 p-0.5">★</button>
-          <button class="text-black hover:scale-125 hover:shadow-sm transition-transform duration-150 p-0.5">★</button>
-        </div>
-      </div>
-
-      <!-- Short Description -->
-      <p class="text-sm text-gray-700 mb-4">
-        A rich and creamy dish with garlic and Parmesan cheese. This comforting dish is perfect for a cozy dinner.
-      </p>
-
-      <!-- Info Row -->
-      <div class="flex text-sm mb-4">
-        {% for type, data in meta_tag_icon_pairs.items %}
-          <div class="flex-1 flex flex-col items-start gap-1">
-            <div class="flex items-center gap-1">
-              <img src="{% static 'icons/' %}{{ data.icon }}" class="w-6 h-6">
-              <span>{{ type }}</span>
-            </div>
-            <p class="text-gray-700 font-medium">{{ data.label }}</p>
-          </div>
-        {% endfor %}
-      </div>
-
-      <!-- Tags -->
-      <div class="flex flex-wrap gap-2 mb-6">
-        {% for type, data in tag_icon_pairs.items %}
-          <div class="flex items-center gap-1 px-3 py-1 border rounded-full text-sm">
-            <img src="{% static 'icons/' %}{{ data.icon }}" alt="{{ data.label }}" title="{{ type }}: {{ data.label }}" class="w-4 h-4">
-            <span>{{ data.label }}</span>
-          </div>
-        {% empty %}
-          <p class="text-gray-500 text-sm">No tags</p>
-        {% endfor %}
-      </div>
-    </div>
-
-    <!-- Ingredients -->
-    <div id="tab-ingredients" class="tab-content hidden text-md leading-relaxed pb-4  text-gray-700">
-      <h2 class="text-xl font-semibold pb-2 text-black">Ingredients</h2>
-      {% for link in recipe.ingredient_links.all %}
-        <p>{{ link.ingredient.name }}</p>
-      {% empty %}
-        <p class="text-gray-500">No ingredients</p>
-      {% endfor %}
-    </div>
-
-    <div id="tab-instructions" class="tab-content hidden text-md leading-relaxed pb-4 text-gray-700">
-      <h2 class="text-xl font-semibold pb-2 text-black">Instructions</h2>
-      <p>{{ recipe.Instructions|linebreaks }}</p>
-    </div>
-
-    <!-- Tabs -->
-    <div id="tab-buttons" class="flex gap-6 border-b mb-4 text-sm font-medium">
-      <button class="pb-1 text-gray-500 border-b-2 border-transparent" onclick="showTab('description', this)">Description</button>
-      <button class="pb-1 text-gray-500 border-b-2 border-transparent" onclick="showTab('ingredients', this)">Ingredients</button>
-      <button class="pb-1 text-gray-500 border-b-2 border-transparent" onclick="showTab('instructions', this)">Instructions</button>
-    </div>
-
+  <div id="recipe-modal-content"
+       class="border-2 border-black bg-white max-w-2xl w-full overflow-y-auto rounded-lg shadow-xl p-6 transform transition-all duration-300 scale-95 opacity-0"
+       style="font-family: 'Inclusive Sans', sans-serif;">
+    <!-- Il contenuto verrà caricato dinamicamente -->
+    <div class="text-center text-gray-400">Caricamento...</div>
   </div>
 </div>
 

@@ -8,7 +8,7 @@ from TagManager.models import Tag, RecipeTag
 from django.core.paginator import Paginator
 from django.db.models import Prefetch
 from django.http import HttpResponseBadRequest
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.views import View
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.sequence import pad_sequences
@@ -268,6 +268,40 @@ def boolean_from_name(name):
         return False
     return name
 
+def load_recipe_modal(request, recipe_id):
+    recipe = get_object_or_404(
+        Recipe.objects.prefetch_related(
+            "ingredient_links__ingredient", "recipe_tags__tag__tag_type"
+        ),
+        id=recipe_id
+    )
+
+    # Costruzione tag icon pairs
+    display_pairs = {}
+    meta_pairs = {}
+
+    for rt in recipe.recipe_tags.all():
+        tag = rt.tag
+        tag_type_name = tag.tag_type.name
+        raw_tag_value = tag.name
+
+        tag_value = boolean_from_name(raw_tag_value)
+        if isinstance(tag_value, str):
+            tag_value = normalize_tag_value(tag_value)
+
+        icon = ICON_MAPPING.get(tag_type_name, {}).get(tag_value, "hat.png")
+        pair = {"icon": icon, "label": raw_tag_value}
+
+        if tag_type_name in EXCLUDED_TYPES:
+            meta_pairs[tag_type_name] = pair
+        else:
+            display_pairs[tag_type_name] = pair
+
+    return render(request, "components/recipe_modal.html", {
+        "recipe": recipe,
+        "tag_icon_pairs": display_pairs,
+        "meta_tag_icon_pairs": meta_pairs
+    })
 
 class CreateRecipeView(View):
     # Template file that will be rendered when showing the form
