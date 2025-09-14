@@ -1,10 +1,11 @@
 import ast
 import csv
 import os
+import random
 from collections import defaultdict
 
 from IngredientManager.models import Ingredient
-from RecipeManager.models import Recipe, RecipeIngredient
+from RecipeManager.models import Recipe, RecipeIngredient, Rating
 from TagManager.models import Tag
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -36,7 +37,11 @@ class Command(BaseCommand):
 
         csv_path = os.path.join(settings.BASE_DIR, "TagManager", "mvp_tagging", "full_tagged_dataset_10%.csv")
 
+        User = get_user_model()
+
         self.create_default_user()
+        user = User.objects.get(username="System")
+
         tags = build_tag_mapping()
 
         with open(csv_path, "r", encoding="utf-8") as f:
@@ -51,6 +56,9 @@ class Command(BaseCommand):
                         name=row["TITLE"],
                         Instructions=row["DIRECTIONS"],
                     )
+
+                    Rating.objects.get_or_create(stars=random.randint(0, 5), user=user, recipe=recipe)
+
                     count += 1
 
                     RecipeTag.objects.create(recipe=recipe, tag=tags["difficulty"][row["DIFFICULTY"].strip().lower()])

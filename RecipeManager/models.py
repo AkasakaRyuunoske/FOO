@@ -18,7 +18,7 @@ class Recipe(models.Model):
 
 class Rating(models.Model):
     id = models.AutoField(primary_key=True)
-    stars = models.IntegerField(null=False, unique=True)
+    stars = models.IntegerField(null=False, unique=False)
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,  # points at CustomUser model
         on_delete=models.CASCADE, db_column='user_id', related_name='ratings')
