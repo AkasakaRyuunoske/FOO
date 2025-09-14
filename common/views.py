@@ -67,28 +67,30 @@ EXCLUDED_TYPES = {"Cost", "Difficulty", "Preparation Time"}
 
 
 def home(request):
-    # if user realoads without page param, generate new random recipes
     if "page" not in request.GET and "random_recipe_ids" in request.session:
         del request.session["random_recipe_ids"]
 
-    # Step 1: Generate and persist random IDs
     if "random_recipe_ids" not in request.session:
         all_ids = list(Recipe.objects.values_list("id", flat=True))
         random_ids = random.sample(all_ids, min(60, len(all_ids)))
         request.session["random_recipe_ids"] = random_ids
 
-    # Step 2: Retrieve recipes from session
     recipe_ids = request.session["random_recipe_ids"]
-    recipes_list = Recipe.objects.filter(id__in=recipe_ids)
+    recipes_qs = Recipe.objects.filter(id__in=recipe_ids).prefetch_related(
+        Prefetch(
+            "recipe_tags",
+            queryset=RecipeTag.objects.select_related("tag", "tag__tag_type")
+        ),
+        "ratings"
+    )
 
-    # Step 3: Pagination
-    paginator = Paginator(recipes_list, 10)
+    paginator = Paginator(recipes_qs, 10)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
 
-    # Costruzione mappe: recipe_id -> dict di coppie {tag_type: {icon,label}}
     tag_pairs_by_recipe = {}
     meta_pairs_by_recipe = {}
+    rating_by_recipe = {}
 
     for recipe in page_obj.object_list:
         display_pairs = {}
@@ -114,10 +116,14 @@ def home(request):
         tag_pairs_by_recipe[recipe.id] = display_pairs
         meta_pairs_by_recipe[recipe.id] = meta_pairs
 
+        rating = recipe.ratings.first()
+        rating_by_recipe[recipe.id] = rating.stars if rating else 0
+
     return render(request, "home.html", {
         "page_obj": page_obj,
         "tag_pairs_by_recipe": tag_pairs_by_recipe,
         "meta_pairs_by_recipe": meta_pairs_by_recipe,
+        "rating_by_recipe": rating_by_recipe,
     })
 
 
@@ -164,9 +170,6 @@ def recipe_list(request):
 
         rating = recipe.ratings.first()
         rating_by_recipe[recipe.id] = rating.stars if rating else 0
-
-        print(f"rating_by_recipe ==> {rating_by_recipe}")
-        print(f"tag_pairs_by_recipe ==> {tag_pairs_by_recipe}")
 
     return render(request, "discover.html", {
         "page_obj": page_obj,
@@ -223,8 +226,6 @@ def discover(request):
         rating = recipe.ratings.first()
         rating_by_recipe[recipe.id] = rating.stars if rating else 0
 
-        print(f"rating_by_recipe ==> {rating_by_recipe}")
-        print(f"tag_pairs_by_recipe ==> {tag_pairs_by_recipe}")
     return render(request, "discover.html", {
         "page_obj": page_obj,
         "tag_pairs_by_recipe": tag_pairs_by_recipe,
@@ -234,24 +235,30 @@ def discover(request):
 
 
 def random_recipe(request):
-    all_ids = Recipe.objects.values_list('id', flat=True)
+    all_ids = list(Recipe.objects.values_list("id", flat=True))
+    rand_id = random.choice(all_ids)
 
-    rand_id = random.choice(list(all_ids))
-    recipe = Recipe.objects.get(pk=rand_id)
+    recipe = Recipe.objects.prefetch_related(
+        Prefetch(
+            "recipe_tags",
+            queryset=RecipeTag.objects.select_related("tag", "tag__tag_type")
+        ),
+        "ratings"
+    ).get(pk=rand_id)
 
-    recipes = [recipe]
-
-    paginator = Paginator(recipes, per_page=1)
+    # Paginazione fittizia con una sola ricetta
+    paginator = Paginator([recipe], per_page=1)
     page_obj = paginator.page(1)
 
-    recipe_tags = RecipeTag.objects.filter(recipe=recipe).select_related('tag')
+    # Costruzione mappe come nelle altre view
+    tag_pairs_by_recipe = {}
+    meta_pairs_by_recipe = {}
+    rating_by_recipe = {}
 
-    EXCLUDED_TYPES = {"Cost", "Difficulty", "Preparation Time"}
+    display_pairs = {}
+    meta_pairs = {}
 
-    display_tag_icon_pairs = {}
-    meta_tag_icon_pairs = {}
-
-    for rt in recipe_tags:
+    for rt in recipe.recipe_tags.all():
         tag = rt.tag
         tag_type_name = tag.tag_type.name
         raw_tag_value = tag.name
@@ -261,23 +268,25 @@ def random_recipe(request):
             tag_value = normalize_tag_value(tag_value)
 
         icon = ICON_MAPPING.get(tag_type_name, {}).get(tag_value, "hat.png")
-
-        pair = {
-            "icon": icon,
-            "label": raw_tag_value
-        }
+        pair = {"icon": icon, "label": raw_tag_value}
 
         if tag_type_name in EXCLUDED_TYPES:
-            meta_tag_icon_pairs[tag_type_name] = pair
+            meta_pairs[tag_type_name] = pair
         else:
-            display_tag_icon_pairs[tag_type_name] = pair
+            display_pairs[tag_type_name] = pair
+
+    tag_pairs_by_recipe[recipe.id] = display_pairs
+    meta_pairs_by_recipe[recipe.id] = meta_pairs
+
+    rating = recipe.ratings.first()
+    rating_by_recipe[recipe.id] = rating.stars if rating else 0
 
     return render(request, "components/recipe_cards.html", {
-        'page_obj': page_obj,
-        "tag_icon_pairs": display_tag_icon_pairs,
-        "meta_tag_icon_pairs": meta_tag_icon_pairs
+        "page_obj": page_obj,
+        "tag_pairs_by_recipe": tag_pairs_by_recipe,
+        "meta_pairs_by_recipe": meta_pairs_by_recipe,
+        "rating_by_recipe": rating_by_recipe,
     })
-
 
 def normalize_tag_value(name):
     return name.split("(")[0].strip()
