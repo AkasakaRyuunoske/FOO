@@ -2,7 +2,7 @@
 
 <div class="grid sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 auto-rows-min gap-2" id="recipe-cards">
   {% for recipe in page_obj %}
-    {% include "components/recipe_card.html" with recipe=recipe tag_icon_pairs=tag_pairs_by_recipe|get_item:recipe.id meta_tag_icon_pairs=meta_pairs_by_recipe|get_item:recipe.id show_description_inline=show_description_inline %}
+    {% include "components/recipe_card.html" with recipe=recipe tag_icon_pairs=tag_pairs_by_recipe|get_item:recipe.id meta_tag_icon_pairs=meta_pairs_by_recipe|get_item:recipe.id show_description_inline=show_description_inline rating_value=rating_by_recipe|get_item:recipe.id %}
   {% empty %}
     <p>Nessuna ricetta trovata.</p>
   {% endfor %}

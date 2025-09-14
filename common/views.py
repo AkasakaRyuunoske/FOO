@@ -122,16 +122,21 @@ def home(request):
 
 
 def recipe_list(request):
-    recipes_list = Recipe.objects.all()
-    paginator = Paginator(recipes_list, 10)
+    recipes_qs = list(Recipe.objects.all().prefetch_related(
+        Prefetch(
+            "recipe_tags",
+            queryset=RecipeTag.objects.select_related("tag", "tag__tag_type")
+        ),
+        "ratings"
+    ))
 
-    # Paginazione
-    page_number = request.GET.get("page")
+    paginator = Paginator(recipes_qs, 10)
+    page_number = request.GET.get("page", 1)
     page_obj = paginator.get_page(page_number)
 
-    # Costruzione mappe: recipe_id -> dict di coppie {tag_type: {icon,label}}
     tag_pairs_by_recipe = {}
     meta_pairs_by_recipe = {}
+    rating_by_recipe = {}
 
     for recipe in page_obj.object_list:
         display_pairs = {}
@@ -157,12 +162,18 @@ def recipe_list(request):
         tag_pairs_by_recipe[recipe.id] = display_pairs
         meta_pairs_by_recipe[recipe.id] = meta_pairs
 
+        rating = recipe.ratings.first()
+        rating_by_recipe[recipe.id] = rating.stars if rating else 0
+
+        print(f"rating_by_recipe ==> {rating_by_recipe}")
+        print(f"tag_pairs_by_recipe ==> {tag_pairs_by_recipe}")
+
     return render(request, "discover.html", {
         "page_obj": page_obj,
         "tag_pairs_by_recipe": tag_pairs_by_recipe,
         "meta_pairs_by_recipe": meta_pairs_by_recipe,
+        "rating_by_recipe": rating_by_recipe,
     })
-
 
 def discover(request):
     # Prefetch tag e tag_type in un’unica query aggiuntiva
@@ -170,7 +181,8 @@ def discover(request):
         Prefetch(
             "recipe_tags",
             queryset=RecipeTag.objects.select_related("tag", "tag__tag_type")
-        )
+        ),
+        "ratings"
     )
 
     # Paginazione
@@ -182,6 +194,8 @@ def discover(request):
     tag_pairs_by_recipe = {}
     meta_pairs_by_recipe = {}
 
+    rating_by_recipe = {}
+
     for recipe in page_obj.object_list:
         display_pairs = {}
         meta_pairs = {}
@@ -206,10 +220,16 @@ def discover(request):
         tag_pairs_by_recipe[recipe.id] = display_pairs
         meta_pairs_by_recipe[recipe.id] = meta_pairs
 
+        rating = recipe.ratings.first()
+        rating_by_recipe[recipe.id] = rating.stars if rating else 0
+
+        print(f"rating_by_recipe ==> {rating_by_recipe}")
+        print(f"tag_pairs_by_recipe ==> {tag_pairs_by_recipe}")
     return render(request, "discover.html", {
         "page_obj": page_obj,
         "tag_pairs_by_recipe": tag_pairs_by_recipe,
         "meta_pairs_by_recipe": meta_pairs_by_recipe,
+        "rating_by_recipe": rating_by_recipe,
     })
 
 
@@ -312,9 +332,13 @@ def load_recipe_modal(request, recipe_id):
         else:
             display_pairs[tag_type_name] = pair
 
+    rating = recipe.ratings.first()
+    rating_value = rating.stars if rating else 0
+
     return render(request, "components/recipe_modal.html", {
         "recipe": recipe,
         "steps": parse_instruction_steps(recipe.Instructions),
+        "rating_value": rating_value,
         "tag_icon_pairs": display_pairs,
         "meta_tag_icon_pairs": meta_pairs
     })

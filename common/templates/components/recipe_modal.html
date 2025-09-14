@@ -41,13 +41,18 @@
           </div>
         </div>
 
-        <div class="rating-stars flex justify-center space-x-1 text-base sm:text-lg lg:text-2xl mt-auto pr-5 min-h-[1.5rem] shrink-0">
-          <button class="text-yellow-500 hover:scale-125 hover:shadow-sm transition-transform duration-150 p-0.5">★</button>
-          <button class="text-yellow-500 hover:scale-125 hover:shadow-sm transition-transform duration-150 p-0.5">★</button>
-          <button class="text-yellow-500 hover:scale-125 hover:shadow-sm transition-transform duration-150 p-0.5">★</button>
-          <button class="text-yellow-500 hover:scale-125 hover:shadow-sm transition-transform duration-150 p-0.5">★</button>
-          <button class="text-black hover:scale-125 hover:shadow-sm transition-transform duration-150 p-0.5">★</button>
+        <div class="flex justify-center space-x-1 text-lg text-yellow-500 mb-4">
+          {% for i in "12345" %}
+            {% if forloop.counter <= rating_value %}
+              <span>★</span>
+            {% else %}
+              <span class="text-black">★</span>
+            {% endif %}
+          {% endfor %}
         </div>
+        <p class="text-center text-sm text-gray-500">
+          Rating: {{ rating_value }}/5
+        </p>
       </div>
 
       <!-- Short Description -->

@@ -1,10 +1,10 @@
 from django.core.paginator import Paginator
-from django.db.models import Count, Q
+from django.db.models import Count, Q, Prefetch
 from django.shortcuts import render
 
 from IngredientManager.models import Ingredient
 from RecipeManager.models import Recipe
-from TagManager.models import Tag
+from TagManager.models import Tag, RecipeTag
 from common.views import EXCLUDED_TYPES, ICON_MAPPING, normalize_tag_value, boolean_from_name
 
 
@@ -32,7 +32,13 @@ def get_recipes_by_ingredients(request):
     ingredient_names = [i.strip().lower() for i in ingredient_string.split(",") if i.strip()]
     tag_names = [t.strip() for t in tag_string.split(",") if t.strip()]
 
-    recipes = Recipe.objects.all()
+    recipes = Recipe.objects.prefetch_related(
+        Prefetch(
+            "recipe_tags",
+            queryset=RecipeTag.objects.select_related("tag", "tag__tag_type")
+        ),
+        "ratings"
+    ).all()
 
     # Filtro per ingredienti
     if ingredient_names:
@@ -43,6 +49,7 @@ def get_recipes_by_ingredients(request):
                 "page_obj": Paginator(Recipe.objects.none(), 12).get_page(1),
                 "tag_pairs_by_recipe": {},
                 "meta_pairs_by_recipe": {},
+                "rating_by_recipe": {},
             })
 
         recipes = recipes.filter(
@@ -76,6 +83,8 @@ def get_recipes_by_ingredients(request):
     tag_pairs_by_recipe = {}
     meta_pairs_by_recipe = {}
 
+    rating_by_recipe = {}
+
     for recipe in page_obj.object_list:
         display_pairs = {}
         meta_pairs = {}
@@ -100,8 +109,12 @@ def get_recipes_by_ingredients(request):
         tag_pairs_by_recipe[recipe.id] = display_pairs
         meta_pairs_by_recipe[recipe.id] = meta_pairs
 
+        rating = recipe.ratings.first()
+        rating_by_recipe[recipe.id] = rating.stars if rating else 0
+
     return render(request, "components/recipe_cards.html", {
         "page_obj": page_obj,
         "tag_pairs_by_recipe": tag_pairs_by_recipe,
         "meta_pairs_by_recipe": meta_pairs_by_recipe,
+        "rating_by_recipe": rating_by_recipe,
     })
