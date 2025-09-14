@@ -25,8 +25,8 @@ urlpatterns = [
     path('users/', include('UserManager.urls')),
     path('discover/', views.discover, name='discover'),
     path('', include("common.urls")),
-    # path('recipe/', include('RecipeManager.urls')),
+    path('recipe/', include('RecipeManager.urls')),
     path('tag/', include('TagManager.urls')),
-    # path('ingredient/', include('IngredientManager.urls')),
+    path('ingredient/', include('IngredientManager.urls')),
     # path('activity/', include('UserActivityManager.urls')),
 ]

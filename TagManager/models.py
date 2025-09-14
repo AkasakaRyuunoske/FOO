@@ -23,7 +23,7 @@ class Tag(models.Model):
 
 class RecipeTag(models.Model):
     tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, related_name="recipe_tags")
 
     def __str__(self):
         return f"{self.recipe} - {self.tag}"

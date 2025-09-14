@@ -18,7 +18,7 @@
                 >
                     <!-- Placeholder content -->
                     <div id="photo-placeholder" class="flex flex-col items-center text-gray-500">
-                        <span class="font-medium">Add recipe photo</span>
+                        <span class="font-medium">Add recipe photo <span class="text-gray-400">(optional)</span></span>
                         <span class="material-symbols-outlined text-3xl mt-1">
                             add_a_photo
                         </span>
@@ -64,7 +64,7 @@
 
         <!-- Row 3: Description -->
         <div class="space-y-1">
-            <label for="description" class="block text-sm font-medium">Description</label>
+            <label for="description" class="block text-sm font-medium">Description <span class="text-gray-500">(optional)</span></label>
             <textarea
                     name="description"
                     id="description"
@@ -73,24 +73,24 @@
                     pattern="^[A-Za-z0-9\s\.,!?;:()\-_'" &@#$%*+=\[\]{}|\\/]{1,500}$"
                     title="Must contain only letters, numbers, spaces, and common symbols (1–500 characters)."
                     class="w-full border border-gray-300 rounded px-3 py-2   resize-y min-h-20"
-                    placeholder="(optional) Provide a short description for your recipe..."
+                    placeholder="Provide a short description for your recipe..."
             ></textarea>
         </div>
 
         <!-- Row 4: Cooking Time -->
         <div class="space-y-1">
-            <label class="block text-sm font-medium">Cooking Time</label>
+            <label class="block text-sm font-medium">Cooking Time <span class="text-gray-500">(optional)</span></label>
             <div class="flex space-x-4">
                 <input
                         type="number"
                         name="cook_time_value"
                         min="0"
-                        required
                         oninput="this.value = Math.max(0, this.value)"
                         class="w-24 border border-gray-300 rounded px-2 py-2"
                         title="Must contain only positive numbers"
+                        placeholder="15"
                 />
-                <select name="cook_time_unit" required
+                <select name="cook_time_unit"
                         class="w-32 border border-gray-300 rounded px-3 py-2 cursor-pointer appearance-none"
                         title="Select if number represents minutes or hours"
                 >
@@ -124,7 +124,7 @@
                 <input
                         type="number"
                         id="new-qty"
-                        placeholder="Qty*"
+                        placeholder="2"
                         min="0"
                         step="0.01"
                         oninput="this.value = Math.max(0, this.value)"
@@ -134,7 +134,7 @@
                     <input
                             type="text"
                             id="new-unit"
-                            placeholder="Search units..."
+                            placeholder="Teaspoon (tsp)"
                             autocomplete="off"
                             oninput="this.value = this.value.replace(/[^A-Za-z\s]/g, '')"
                             class="w-full border border-gray-300 rounded px-3 py-1"
@@ -292,7 +292,7 @@
                 <input
                         type="text"
                         id="new-ingredient"
-                        placeholder="Search ingredient…"
+                        placeholder="Salt"
                         oninput="this.value = this.value.replace(/[^A-Za-z\s]/g, '')"
                         class="col-span-3 border border-gray-300 rounded px-3 py-1"
                 />
@@ -478,7 +478,7 @@
             }
 
             validateName(name) {
-                if (!name || name.trim() === '') throw new Error('Please fill in all three fields before adding.');
+                if (!name || name.trim() === '') throw new Error("Please fill in 'ingredient' field before adding.");
                 return name.trim();
             }
 
