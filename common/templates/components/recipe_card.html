@@ -6,8 +6,8 @@
      hx-get="{% url 'load_recipe_modal' recipe.id %}"
      hx-target="#recipe-modal-content"
      hx-swap="innerHTML"
-     class="bg-white p-1.5 rounded-md shadow-lg transition duration-200 hover:shadow-xl hover:scale-105 max-w-[380px] mx-auto w-full {% if show_description_inline %}p-2{% else %}aspect-square{% endif %}"> <!-- External Padding -->
-  <div class="border-2 border-black p-2 bg-white w-full flex flex-col justify-between group relative rounded min-w-0 min-h-0 min-h-[280px] transition-all duration-300 ease-in-out overflow-visible">    <!-- Black line inside square -->
+     class="bg-white rounded-md shadow-lg transition duration-200 hover:shadow-xl hover:scale-105 max-w-[380px] mx-auto w-full {% if show_description_inline %}p-2{% else %}{% endif %}"> <!-- External Padding -->
+  <div class="border border-black p-2 bg-white w-full flex flex-col justify-between group relative rounded min-w-0 min-h-0 min-h-[280px] transition-all duration-300 ease-in-out overflow-visible">    <!-- Black line inside square -->
 
     <!-- Bookmark on the right with a transition on hover -->
     <button class="bookmark-btn absolute top-3 right-1 aspect-square w-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10" aria-label="Toggle bookmark" type="button">
@@ -111,7 +111,12 @@
             <h2 class="text-center font-bold mb-2 text-sm sm:text-base break-words">
                {{ recipe.name }}
             </h2>
-            <p>{{ recipe.Instructions|truncatechars:310 }}</p>
+            <div class="instructions-block">
+  <div class="instructions-preview text-xs text-gray-800 whitespace-pre-wrap"
+       data-raw='{{ recipe.Instructions|escapejs }}'>
+    {{ recipe.Instructions|default:"No instructions available."|truncatechars:310 }}
+  </div>
+</div>
             <div class="flex justify-center space-x-1 text-sm text-yellow-500 mt-1">
               {% for i in "12345" %}
                 {% if forloop.counter <= rating_value %}
@@ -325,4 +330,168 @@
       showTab('description', defaultBtn);
     }
   });
+</script>
+
+<script>
+/**
+ * InstructionParser
+ * - Responsible for converting a raw string into a cleaned array of steps.
+ * - Does not interact with the DOM.
+ */
+class InstructionParser {
+  constructor() {
+    // regex reused across methods
+    this.unicodeRegex = /\\u([\da-fA-F]{4})/g;
+    this.quotedRegex = /"([^"]*)"|'([^']*)'/g;
+  }
+
+  decodeUnicodeEscapes(s) {
+    if (!s) return s;
+    return s.replace(this.unicodeRegex, (_, hex) =>
+      String.fromCharCode(parseInt(hex, 16))
+    );
+  }
+
+  unescapeCommonSequences(s) {
+    return s
+      .replace(/\\r\\n/g, '\n')
+      .replace(/\\n/g, '\n')
+      .replace(/\\t/g, '\t')
+      .replace(/\\\\/g, '\\');
+  }
+
+  // Normalize and remove stray leading/trailing wrappers
+  normalizeRaw(raw) {
+    if (!raw) return '';
+    let text = String(raw);
+    // decode repeatedly in case of double-encoding
+    let prev;
+    do {
+      prev = text;
+      text = this.decodeUnicodeEscapes(text);
+      text = this.unescapeCommonSequences(text);
+    } while (text !== prev && this.unicodeRegex.test(text));
+
+    // remove a leading "1. " or similar and outer brackets if present
+    text = text.replace(/^\s*\d+\.\s*/, '').trim();
+    text = text.replace(/^\s*\[\s*/, '').replace(/\s*\]\s*$/, '').trim();
+
+    return text;
+  }
+
+  tryParseJson(text) {
+    try {
+      const parsed = JSON.parse(text);
+      if (Array.isArray(parsed)) return parsed;
+    } catch (e) {
+      // ignore parse errors
+    }
+    return null;
+  }
+
+  extractQuoted(text) {
+    const items = [];
+    let m;
+    while ((m = this.quotedRegex.exec(text)) !== null) {
+      const val = (m[1] !== undefined ? m[1] : m[2]).trim();
+      if (val) items.push(val);
+    }
+    return items.length ? items : null;
+  }
+
+  fallbackSplit(text) {
+    if (text.includes('\n')) return text.split(/\r?\n/);
+    if (text.includes(',')) return text.split(',');
+    return [text];
+  }
+
+  cleanSteps(items) {
+    return items
+      .map(s => String(s).replace(/^\s*\d+\.\s*/, '').trim())
+      .filter(Boolean);
+  }
+
+  /**
+   * parse(raw) -> returns cleaned array of steps
+   */
+  parse(raw) {
+    const normalized = this.normalizeRaw(raw);
+    if (!normalized) return [];
+
+    // 1) try JSON array
+    let steps = this.tryParseJson(normalized) || [];
+
+    // 2) try quoted substrings
+    if (steps.length === 0) {
+      const quoted = this.extractQuoted(normalized);
+      if (quoted) steps = quoted;
+    }
+
+    // 3) fallback splitting
+    if (steps.length === 0) {
+      steps = this.fallbackSplit(normalized);
+    }
+
+    // 4) clean & return
+    return this.cleanSteps(steps);
+  }
+}
+
+/**
+ * InstructionsRenderer
+ * - Responsible for creating DOM nodes from parsed steps.
+ * - Uses textContent (safe) and Tailwind-compatible classes.
+ */
+class InstructionsRenderer {
+  renderInto(container, steps) {
+    if (!container) return;
+
+    // if no steps, show a harmless fallback paragraph
+    if (!steps || steps.length === 0) {
+      const p = document.createElement('p');
+      p.className = 'text-xs text-gray-500';
+      p.textContent = 'No instructions available.';
+      container.replaceWith(p);
+      return;
+    }
+
+    if (steps.length === 1) {
+      // single step -> preserve break formatting
+      const div = document.createElement('div');
+      div.className = 'text-xs text-gray-800 whitespace-pre-wrap';
+      div.textContent = steps[0];
+      container.replaceWith(div);
+      return;
+    }
+
+    // multiple steps -> ordered list
+    const ol = document.createElement('ol');
+    ol.className = 'list-decimal list-inside text-xs space-y-1';
+    steps.forEach(s => {
+      const li = document.createElement('li');
+      li.className = 'leading-snug text-xs';
+      li.textContent = s;
+      ol.appendChild(li);
+    });
+
+    container.replaceWith(ol);
+  }
+}
+
+/**
+ * Controller: wires parser + renderer and applies to matching DOM elements.
+ * - Minimal DOM work here.
+ */
+document.addEventListener('DOMContentLoaded', () => {
+  const parser = new InstructionParser();
+  const renderer = new InstructionsRenderer();
+
+  document.querySelectorAll('.instructions-preview[data-raw]').forEach(el => {
+    const raw = el.getAttribute('data-raw') || '';
+    if (!raw) return;
+
+    const steps = parser.parse(raw);
+    renderer.renderInto(el, steps);
+  });
+});
 </script>
