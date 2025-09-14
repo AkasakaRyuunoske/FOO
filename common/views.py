@@ -2,9 +2,8 @@ import json
 import os
 import pickle
 import random
+import re
 
-from RecipeManager.models import Recipe
-from TagManager.models import Tag, RecipeTag
 from django.core.paginator import Paginator
 from django.db.models import Prefetch
 from django.http import HttpResponseBadRequest
@@ -12,6 +11,9 @@ from django.shortcuts import render, get_object_or_404
 from django.views import View
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.sequence import pad_sequences
+
+from RecipeManager.models import Recipe
+from TagManager.models import Tag, RecipeTag
 
 ICON_MAPPING = {
     "Cooking Method": {
@@ -268,6 +270,19 @@ def boolean_from_name(name):
         return False
     return name
 
+def parse_instruction_steps(instructions_raw):
+    if not instructions_raw:
+        return []
+
+    try:
+        parsed = json.loads(instructions_raw)
+        if isinstance(parsed, list):
+            return [s.strip() for s in parsed if isinstance(s, str) and s.strip()]
+    except json.JSONDecodeError:
+        pass
+
+    return re.split(r'(?<=[.?!])\s+(?=[A-Z])', instructions_raw.strip())
+
 def load_recipe_modal(request, recipe_id):
     recipe = get_object_or_404(
         Recipe.objects.prefetch_related(
@@ -299,6 +314,7 @@ def load_recipe_modal(request, recipe_id):
 
     return render(request, "components/recipe_modal.html", {
         "recipe": recipe,
+        "steps": parse_instruction_steps(recipe.Instructions),
         "tag_icon_pairs": display_pairs,
         "meta_tag_icon_pairs": meta_pairs
     })

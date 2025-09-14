@@ -81,25 +81,31 @@
       </div>
     </div>
 
-    <!-- Ingredients -->
-    <div id="tab-ingredients" class="tab-content hidden text-md leading-relaxed pb-4  text-gray-700 overflow-auto max-h-[15rem]">
-      <h2 class="text-xl font-semibold pb-2 text-black">Ingredients</h2>
-      {% for link in recipe.ingredient_links.all %}
-        <p>{{ link.ingredient.name }}</p>
-      {% empty %}
-        <p class="text-gray-500">No ingredients</p>
-      {% endfor %}
-    </div>
-
-    <div id="tab-instructions" class="tab-content hidden text-md leading-relaxed pb-4 text-gray-700 overflow-auto max-h-[15rem]">
-      <h2 class="text-xl font-semibold pb-2 text-black">Instructions</h2>
-      <p>{{ recipe.Instructions|linebreaks }}</p>
-    </div>
-
     <!-- Tabs -->
     <div id="tab-buttons" class="flex gap-6 border-b mb-4 text-sm font-medium">
       <button class="pb-1 text-gray-500 border-b-2 border-transparent" onclick="showTab('description', this)">Description</button>
       <button class="pb-1 text-gray-500 border-b-2 border-transparent" onclick="showTab('ingredients', this)">Ingredients</button>
       <button class="pb-1 text-gray-500 border-b-2 border-transparent" onclick="showTab('instructions', this)">Instructions</button>
+    </div>
+
+    <!-- Ingredients -->
+    <div id="tab-ingredients" class="tab-content hidden text-md leading-relaxed pb-4  text-gray-700 overflow-auto max-h-[15rem]">
+      <h2 class="text-xl font-semibold pb-2 text-black">Ingredients</h2>
+      <ol class="list-decimal pl-7 text-gray-800">
+      {% for link in recipe.ingredient_links.all %}
+        <li>{{ link.ingredient.name }}</li>
+      {% empty %}
+        <li class="text-gray-500">No ingredients</li>
+      {% endfor %}
+      </ol>
+    </div>
+
+    <div id="tab-instructions" class="tab-content hidden text-md leading-relaxed pb-4 text-gray-700 overflow-auto max-h-[15rem]">
+      <h2 class="text-xl font-semibold pb-2 text-black">Instructions</h2>
+      <ol class="list-decimal pl-7 text-gray-800">
+        {% for step in steps %}
+          <li>{{ step }}</li>
+        {% endfor %}
+      </ol>
     </div>
 
