@@ -28,26 +28,53 @@ def get_tags(request):
 
 
 def get_recipes_by_tags(request):
+    ingredient_string = request.GET.get("ingredients", "")
     tag_string = request.GET.get("tags", "")
-    tags = [t.strip() for t in tag_string.split(",") if t.strip()]
 
-    if tags:
-        tag_ids = Tag.objects.filter(name__in=tags).values_list("id", flat=True)
+    ingredient_names = [i.strip().lower() for i in ingredient_string.split(",") if i.strip()]
+    tag_names = [t.strip() for t in tag_string.split(",") if t.strip()]
 
-        recipes = Recipe.objects.annotate(
-            matched_tags=Count(
-                "recipe_tags", filter=Q(recipe_tags__tag_id__in=tag_ids), distinct=True
+    recipes = Recipe.objects.all()
+
+    # Filtro per ingredienti
+    if ingredient_names:
+        ingredients = Ingredient.objects.filter(name__in=ingredient_names)
+
+        if ingredients.count() != len(ingredient_names):
+            return render(request, "components/recipe_cards.html", {
+                "page_obj": Paginator(Recipe.objects.none(), 12).get_page(1),
+                "tag_pairs_by_recipe": {},
+                "meta_pairs_by_recipe": {},
+            })
+
+        recipes = recipes.filter(
+            ingredient_links__ingredient__in=ingredients
+        ).annotate(
+            matched_ingredients=Count(
+                "ingredient_links",
+                filter=Q(ingredient_links__ingredient__in=ingredients),
+                distinct=True,
             )
-        ).filter(matched_tags=len(tags))
-    else:
-        recipes = Recipe.objects.all()
+        ).filter(matched_ingredients=len(ingredient_names))
+
+    # Filtro per tag
+    if tag_names:
+        tag_ids = Tag.objects.filter(name__in=tag_names).values_list("id", flat=True)
+
+        recipes = recipes.annotate(
+            matched_tags=Count(
+                "recipe_tags",
+                filter=Q(recipe_tags__tag_id__in=tag_ids),
+                distinct=True,
+            )
+        ).filter(matched_tags=len(tag_ids))
 
     # Paginazione
     page_number = request.GET.get("page", 1)
     paginator = Paginator(recipes, 12)
     page_obj = paginator.get_page(page_number)
 
-    # Costruzione mappe: recipe_id -> dict di coppie {tag_type: {icon,label}}
+    # Tag associati
     tag_pairs_by_recipe = {}
     meta_pairs_by_recipe = {}
 
@@ -80,7 +107,6 @@ def get_recipes_by_tags(request):
         "tag_pairs_by_recipe": tag_pairs_by_recipe,
         "meta_pairs_by_recipe": meta_pairs_by_recipe,
     })
-
 
 def search_tags(request):
     search_term = request.GET.get("search_term", "").strip().lower()

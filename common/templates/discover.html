@@ -16,7 +16,7 @@
                         <input
                           type="text"
                           name="search_term"
-                          placeholder="Search tag..."
+                          placeholder="Search ingredient..."
                           class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                           hx-get="/ingredient/search_ingredients/"
                           hx-trigger="keyup changed delay:300ms"
@@ -234,42 +234,39 @@
                     // Comportamento di rimozione
                     tag.querySelector("button").onclick = () => {
                         tag.remove();
-                        updateRecipes();  // aggiorna la lista dopo la rimozione
+                        updateRecipesCombined();  // aggiorna la lista dopo la rimozione
                     };
 
                     selectedContainer.appendChild(tag);
-                    updateRecipes();  // aggiorna la lista dopo l’aggiunta
+                    updateRecipesCombined();  // aggiorna la lista dopo l’aggiunta
                 };
             });
         }
 
-        function bindClickableIngredients() {
-            const selectedContainer = document.getElementById("selected-ingredients");
-            if (!selectedContainer) return;
+        function updateRecipesCombined() {
+        const tagsContainer = document.getElementById("selected-tags");
+        const ingredientsContainer = document.getElementById("selected-ingredients");
+        const resultsContainer = document.getElementById("cards-wrapper");
 
-            document.querySelectorAll(".clickable-ingredient").forEach(ingredientEl => {
-                ingredientEl.onclick = () => {
-                    const ingredientName = ingredientEl.dataset.ingredient;
+        if (!resultsContainer) return;
 
-                    const exists = [...selectedContainer.children].some(ing =>
-                        ing.querySelector("span")?.textContent === ingredientName
-                    );
-                    if (exists) return;
+        const tags = [...(tagsContainer?.querySelectorAll("span") ?? [])]
+            .map(span => span.textContent.trim())
+            .join(",");
 
-                    const ing = document.createElement("div");
-                    ing.className = "flex items-center border border-black rounded-full px-3 py-1 text-sm";
+        const ingredients = [...(ingredientsContainer?.querySelectorAll("span") ?? [])]
+            .map(span => span.textContent.trim())
+            .join(",");
 
-                    ing.innerHTML = `
-        <span class="mr-2">${ingredientName}</span>
-        <button type="button" class="text-black hover:text-red-500">&times;</button>
-      `;
+        const params = new URLSearchParams();
+        if (tags) params.append("tags", tags);
+        if (ingredients) params.append("ingredients", ingredients);
 
-                    ing.querySelector("button").onclick = () => ing.remove();
-
-                    selectedContainer.appendChild(ing);
-                };
-            });
-        }
+        htmx.ajax('GET', `/ingredient/get_recipes_by_ingredients/?${params.toString()}`, {
+            target: resultsContainer,
+            swap: 'innerHTML'
+        });
+    }
 
 
         // Execute at initial loading
@@ -284,7 +281,6 @@
             bindClickableIngredients();
         });
 
-
         function updateSelectedTagsInput(form) {
             const selectedContainer = document.getElementById("selected-tags");
             const tags = Array.from(selectedContainer.querySelectorAll("span"))
@@ -292,6 +288,52 @@
             const input = form.querySelector("input[name='tags']");
             input.value = tags.join(",");
         }
+
+    function bindClickableIngredients() {
+    const selectedContainer = document.getElementById("selected-ingredients");
+    const resultsContainer = document.getElementById("cards-wrapper");
+
+    if (!selectedContainer || !resultsContainer) return;
+
+    function updateRecipes() {
+        const ingredients = [...selectedContainer.querySelectorAll("span")]
+            .map(span => span.textContent.trim())
+            .join(",");
+
+        htmx.ajax('GET', `/ingredient/get_recipes_by_ingredients/?ingredients=${encodeURIComponent(ingredients)}`, {
+            target: resultsContainer,
+            swap: 'innerHTML'
+        });
+    }
+
+    document.querySelectorAll(".clickable-ingredient").forEach(ingredientEl => {
+        ingredientEl.onclick = () => {
+            const ingredientName = ingredientEl.dataset.ingredient;
+
+            const exists = [...selectedContainer.children].some(item =>
+                item.querySelector("span")?.textContent === ingredientName
+            );
+            if (exists) return;
+
+            const ingredient = document.createElement("div");
+            ingredient.className = "flex items-center border border-black rounded-full px-3 py-1 text-sm";
+
+            ingredient.innerHTML = `
+              <span class="mr-2">${ingredientName}</span>
+              <button type="button" class="text-black hover:text-red-500">&times;</button>
+            `;
+
+            ingredient.querySelector("button").onclick = () => {
+                ingredient.remove();
+                updateRecipesCombined();
+            };
+
+            selectedContainer.appendChild(ingredient);
+            updateRecipesCombined();
+        };
+    });
+
+}
 
     </script>
 {% endblock %}
