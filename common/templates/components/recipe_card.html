@@ -139,7 +139,7 @@
 
     <!-- HEADER: Title and Close Button -->
     <div class="flex justify-between items-center mb-4">
-      <h2 class="text-2xl font-semibold">Melanzane alla Parmigiana</h2>
+      <h2 class="text-2xl font-semibold">{{ recipe.name }}</h2>
 
       <div class="absolute top-2 right-2 flex items-center gap-2 z-50">
         <!-- Bookmark Toggle Button -->
@@ -173,7 +173,7 @@
           <img src="{% static 'icons/hat.png' %}" class="w-6 h-6" alt="">
           <div>
             <p class="text-sm">Recipe by</p>
-            <p class="font-semibold text-base">Name Person</p>
+            <p class="font-semibold text-base">System</p>
           </div>
         </div>
 
@@ -193,34 +193,26 @@
 
       <!-- Info Row -->
       <div class="flex text-sm mb-4">
-        <div class="flex-1 flex flex-col items-start gap-1">
-          <div class="flex items-center gap-1">
-            <img src="{% static 'icons/difficulty.png' %}" class="w-6 h-6">
-            <span>Difficulty</span>
+        {% for type, data in meta_tag_icon_pairs.items %}
+          <div class="flex-1 flex flex-col items-start gap-1">
+            <div class="flex items-center gap-1">
+              <img src="{% static 'icons/' %}{{ data.icon }}" class="w-6 h-6">
+              <span>{{ type }}</span>
+            </div>
+            <p class="text-gray-700 font-medium">{{ data.label }}</p>
           </div>
-          <p class="text-gray-700 font-medium">Easy</p>
-        </div>
-        <div class="flex-1 flex flex-col items-start gap-1">
-          <div class="flex items-center gap-1">
-            <img src="{% static 'icons/time.png' %}" class="w-6 h-6">
-            <span>Cooking Time</span>
-          </div>
-          <p class="text-gray-700 font-medium">30 minutes</p>
-        </div>
-        <div class="flex-1 flex flex-col items-start gap-1">
-          <div class="flex items-center gap-1">
-            <img src="{% static 'icons/cost.png' %}" class="w-6 h-6">
-            <span>Cost per Serving</span>
-          </div>
-          <p class="text-gray-700 font-medium">Low</p>
-        </div>
+        {% endfor %}
       </div>
 
       <!-- Tags -->
       <div class="flex flex-wrap gap-2 mb-6">
         {% for type, data in tag_icon_pairs.items %}
-          <img src="{% static 'icons/' %}{{ data.icon }}" alt="{{ data.label }}" title="{{ type }}: {{ data.label }}" class="w-4 h-4">
-          <span class="px-3 py-1 border rounded-full text-sm">{{ data.label }}</span>
+          <div class="flex items-center gap-1 px-3 py-1 border rounded-full text-sm">
+            <img src="{% static 'icons/' %}{{ data.icon }}" alt="{{ data.label }}" title="{{ type }}: {{ data.label }}" class="w-4 h-4">
+            <span>{{ data.label }}</span>
+          </div>
+        {% empty %}
+          <p class="text-gray-500 text-sm">No tags</p>
         {% endfor %}
       </div>
     </div>
@@ -228,20 +220,16 @@
     <!-- Ingredients -->
     <div id="tab-ingredients" class="tab-content hidden text-md leading-relaxed pb-4  text-gray-700">
       <h2 class="text-xl font-semibold pb-2 text-black">Ingredients</h2>
-      <p>4 cups Rice</p>
-      <p>10 cloves Garlic</p>
-      <p>2 piece Onion</p>
-      <p>6 tablespoon Butter</p>
-      <p>6 tablespoon Olive Oil</p>
+      {% for link in recipe.ingredient_links.all %}
+        <p>{{ link.ingredient.name }}</p>
+      {% empty %}
+        <p class="text-gray-500">No ingredients</p>
+      {% endfor %}
     </div>
 
     <div id="tab-instructions" class="tab-content hidden text-md leading-relaxed pb-4 text-gray-700">
       <h2 class="text-xl font-semibold pb-2 text-black">Instructions</h2>
-      <p>1. Wash and slice the vegetables.</p>
-      <p>2. Preheat the oven to 180°C.</p>
-      <p>3. Layer the ingredients in a baking dish.</p>
-      <p>4. Bake for 30 minutes or until golden brown.</p>
-      <p>5. Let it rest and serve warm.</p>
+      <p>{{ recipe.Instructions|linebreaks }}</p>
     </div>
 
     <!-- Tabs -->
