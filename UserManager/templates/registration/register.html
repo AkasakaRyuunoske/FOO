@@ -2,37 +2,53 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Registration FOO</title>
+    <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="{% static 'UserManager/form.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Inclusive+Sans&display=swap" rel="stylesheet">
+    <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body>
-    <main class="display-center">
-        <h1>FOO</h1>
+<main class="display-center">
+    <a href="/"
+       class="flex items-center space-x-2 focus:outline-none cursor-pointer">
+            <span class="material-symbols-outlined text-3xl">
+                chef_hat
+            </span>
+        <span class="text-xl font-semibold">FOO</span>
+    </a>
+
+    <div>
+        <h2>Sign Up</h2>
+
+        <form method="post" action="{% url 'register' %}">
+            {% csrf_token %}
+
+            <label for="{{ form.username.id_for_label }}">Username</label>
+            {{ form.username }}
+
+            <label for="{{ form.password1.id_for_label }}">Password</label>
+            {{ form.password1 }}
+
+            <label for="{{ form.password2.id_for_label }}">Confirm Password</label>
+            {{ form.password2 }}
+
+            <input type="submit" value="Sign up">
+        </form>
 
         <div>
-            <h2>Sign Up</h2>
-
-            <form method="post" action="{% url 'register' %}">
-                {% csrf_token %}
-
-                <label for="{{ form.username.id_for_label }}">Username</label>
-                {{ form.username }}
-
-                <label for="{{ form.password1.id_for_label }}">Password</label>
-                {{ form.password1 }}
-
-                <label for="{{ form.password2.id_for_label }}">Confirm Password</label>
-                {{ form.password2 }}
-
-                <input type="submit" value="Sign up">
-            </form>
+            <p>Already have an account?</p>
+            <a href="/users/login" class="underline">Log In</a>
         </div>
+    </div>
 
-        <div>
-            <p>Terms of UsePrivacy Policy</p>
-            <p>This site is protected by reCAPTCHA Enterprise. Google's Privacy Policy and Terms of Service apply.</p>
-        </div>
-    </main>
+    <div>
+        <p>Terms of UsePrivacy Policy</p>
+        <p>This site is protected by reCAPTCHA Enterprise. Google's Privacy Policy and Terms of Service apply.</p>
+    </div>
+</main>
 </body>
 </html>
