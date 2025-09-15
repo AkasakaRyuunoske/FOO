@@ -1,340 +1,385 @@
 {% block content %}
     <div id="new-recipe-modal-body">
         <form
-            id="new-recipe-form"
-            hx-post="{% url 'new_recipe' %}"
-            hx-swap="#new-recipe-modal-body"
-            autocomplete="off"
-            class="w-full max-w-2xl my-5 bg-white border border-gray-200 rounded-lg shadow p-6 space-y-8 mx-auto"
-    >
-        {% csrf_token %}
-        <!-- Row 1: Title + Photo upload -->
-        <div class="space-y-4">
-            <h1 class="text-3xl font-bold">Create New Recipe</h1>
-            <label for="photo-upload" class="block">
-                <div
-                        id="photo-preview"
-                        class="relative h-48 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center hover:border-gray-400 cursor-pointer overflow-hidden"
-                >
-                    <!-- Placeholder content -->
-                    <div id="photo-placeholder" class="flex flex-col items-center text-gray-500">
-                        <span class="font-medium">Add recipe photo <span class="text-gray-400">(optional)</span></span>
-                        <span class="material-symbols-outlined text-3xl mt-1">
+                id="new-recipe-form"
+                hx-post="{% url 'new_recipe' %}"
+                hx-swap="#new-recipe-modal-body"
+                autocomplete="off"
+                class="w-full max-w-2xl my-5 bg-white border border-gray-200 rounded-lg shadow p-6 space-y-8 mx-auto"
+        >
+            {% csrf_token %}
+            <!-- Row 1: Title + Photo upload -->
+            <div class="space-y-4">
+                <h1 class="text-3xl font-bold">Create New Recipe</h1>
+                <label for="photo-upload" class="block">
+                    <div
+                            id="photo-preview"
+                            class="relative h-48 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center hover:border-gray-400 cursor-pointer overflow-hidden"
+                    >
+                        <!-- Placeholder content -->
+                        <div id="photo-placeholder" class="flex flex-col items-center text-gray-500">
+                            <span class="font-medium">Add recipe photo</span>
+                            <span class="text-gray-400">(Optional)</span>
+                            <span class="material-symbols-outlined text-3xl mt-1">
                             add_a_photo
                         </span>
+                        </div>
+
+                        <!-- Delete button, hidden until an image is loaded -->
+                        <button
+                                id="remove-photo-btn"
+                                type="button"
+                                class="hidden absolute top-0 right-2 focus:outline-none cursor-pointer text-red-500 hover:text-red-800 py-2"
+                                aria-label="Remove photo"
+                        >
+                            <span class="material-symbols-outlined">close</span>
+                        </button>
                     </div>
 
-                    <!-- Delete button, hidden until an image is loaded -->
-                    <button
-                            id="remove-photo-btn"
-                            type="button"
-                            class="hidden absolute top-0 right-2 focus:outline-none cursor-pointer text-red-500 hover:text-red-800 py-2"
-                            aria-label="Remove photo"
-                    >
-                        <span class="material-symbols-outlined">close</span>
-                    </button>
-                </div>
-
-                <input
-                        type="file"
-                        name="photo"
-                        id="photo-upload"
-                        accept="image/*"
-                        class="hidden"
-                />
-
-            </label>
-        </div>
-
-        <!-- Row 2: Recipe Name -->
-        <div class="space-y-1">
-            <label for="name" class="block text-sm font-medium">Recipe Name</label>
-            <input
-                    type="text"
-                    name="name"
-                    id="name"
-                    required
-                    maxlength="70"
-                    pattern="^[A-Za-z ]{1,70}$"
-                    title="Must contain only letters and spaces (1–70 characters)."
-                    class="w-full border border-gray-300 rounded px-3 py-2"
-                    placeholder="Pizza 'Kansas'"
-            />
-        </div>
-
-        <!-- Row 3: Description -->
-        <div class="space-y-1">
-            <label for="description" class="block text-sm font-medium">Description <span class="text-gray-500">(optional)</span></label>
-            <textarea
-                    name="description"
-                    id="description"
-                    rows="4"
-                    maxlength="500"
-                    pattern="^[A-Za-z0-9\s\.,!?;:()\-_'" &@#$%*+=\[\]{}|\\/]{1,500}$"
-                    title="Must contain only letters, numbers, spaces, and common symbols (1–500 characters)."
-                    class="w-full border border-gray-300 rounded px-3 py-2   resize-y min-h-20"
-                    placeholder="Provide a short description for your recipe..."
-            ></textarea>
-        </div>
-
-        <!-- Row 4: Cooking Time -->
-        <div class="space-y-1">
-            <label class="block text-sm font-medium">Cooking Time <span class="text-gray-500">(optional)</span></label>
-            <div class="flex space-x-4">
-                <input
-                        type="number"
-                        name="cook_time_value"
-                        min="0"
-                        oninput="this.value = Math.max(0, this.value)"
-                        class="w-24 border border-gray-300 rounded px-2 py-2"
-                        title="Must contain only positive numbers"
-                        placeholder="15"
-                />
-                <select name="cook_time_unit"
-                        class="w-32 border border-gray-300 rounded px-3 py-2 cursor-pointer appearance-none"
-                        title="Select if number represents minutes or hours"
-                >
-                    <option value="minutes">minutes</option>
-                    <option value="hours">hours</option>
-                </select>
-            </div>
-        </div>
-
-        <!-- Row 5: Ingredients -->
-        <div class="space-y-2">
-            <h2 class="text-lg font-semibold">Ingredients</h2>
-
-            <!-- User guidance message -->
-            <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-800">
-                <p><strong>Note:</strong> For measurements like "to taste", "as needed", etc., enter <strong>0</strong>
-                    in the quantity field. Quantity cannot be left blank.</p>
-            </div>
-
-            <!-- Header for existing ingredients -->
-            <div class="grid grid-cols-7 gap-4 font-medium text-gray-700 border-b pb-2">
-                <div>Qty</div>
-                <div class="col-span-2">Unit</div>
-                <div class="col-span-3">Ingredient</div>
-                <div></div>
-            </div>
-            <div id="ingredients-list" class="space-y-2 "></div>
-
-            <!-- Add new ingredient row -->
-            <div class="grid grid-cols-7 gap-4 items-center">
-                <input
-                        type="number"
-                        id="new-qty"
-                        placeholder="2"
-                        min="0"
-                        step="0.01"
-                        oninput="this.value = Math.max(0, this.value)"
-                        class="border border-gray-300 rounded px-2 py-1"
-                />
-                <div class="col-span-2 relative">
                     <input
-                            type="text"
-                            id="new-unit"
-                            placeholder="Teaspoon (tsp)"
-                            autocomplete="off"
-                            oninput="this.value = this.value.replace(/[^A-Za-z\s]/g, '')"
-                            class="w-full border border-gray-300 rounded px-3 py-1"
+                            type="file"
+                            name="photo"
+                            id="photo-upload"
+                            accept="image/*"
+                            class="hidden"
                     />
-                    <div id="unit-dropdown"
-                         class="absolute z-10 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-52 max-w-60 overflow-y-auto hidden">
-                        <!-- Volume Measurements -->
-                        <div class="px-3 py-2 bg-gray-100 font-semibold text-sm text-gray-700">Volume Measurements</div>
-                        <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="tsp">Teaspoon
-                            (tsp)
-                        </div>
-                        <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="tbsp">Tablespoon
-                            (tbsp)
-                        </div>
-                        <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="fl oz">Fluid
-                            ounce
-                            (fl oz)
-                        </div>
-                        <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="c">Cup (c)</div>
-                        <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="pt">Pint (pt)
-                        </div>
-                        <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="qt">Quart (qt)
-                        </div>
-                        <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="gal">Gallon
-                            (gal)
-                        </div>
-                        <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="ml">Milliliter
-                            (ml)
-                        </div>
-                        <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="cl">Centiliter
-                            (cl)
-                        </div>
-                        <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="dl">Deciliter
-                            (dl)
-                        </div>
-                        <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="l">Liter (l)
-                        </div>
-                        <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="drop">Drop</div>
-                        <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="dash">Dash</div>
-                        <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="pinch">Pinch
-                        </div>
-                        <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="splash">Splash
-                        </div>
-                        <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="glug">Glug</div>
 
-                        <!-- Weight Measurements -->
-                        <div class="px-3 py-2 bg-gray-100 font-semibold text-sm text-gray-700">Weight Measurements</div>
-                        <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="oz">Ounce (oz)
-                        </div>
-                        <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="lb">Pound (lb)
-                        </div>
-                        <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="g">Gram (g)
-                        </div>
-                        <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="kg">Kilogram
-                            (kg)
-                        </div>
-                        <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="mg">Milligram
-                            (mg)
-                        </div>
+                </label>
+            </div>
 
-                        <!-- Length/Size Measurements -->
-                        <div class="px-3 py-2 bg-gray-100 font-semibold text-sm text-gray-700">Length/Size Measurements
-                        </div>
-                        <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="in">Inch (in)
-                        </div>
-                        <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="cm">Centimeter
-                            (cm)
-                        </div>
-
-                        <!-- Cooking-Specific Terms -->
-                        <div class="px-3 py-2 bg-gray-100 font-semibold text-sm text-gray-700">Cooking-Specific Terms
-                        </div>
-                        <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="to taste"
-                             data-auto-zero="true">To taste (enter 0 for qty)
-                        </div>
-                        <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="handful">Handful
-                        </div>
-                        <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="sprig">Sprig
-                        </div>
-                        <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="bunch">Bunch
-                        </div>
-                        <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="clove">Clove
-                        </div>
-                        <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="head">Head</div>
-                        <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="slice">Slice
-                        </div>
-                        <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="wedge">Wedge
-                        </div>
-                        <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="stalk">Stalk
-                        </div>
-                        <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="leaf">Leaf</div>
-                        <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="leaves">Leaves
-                        </div>
-                        <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="scoop">Scoop
-                        </div>
-                        <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="stick">Stick
-                        </div>
-                        <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="strip">Strip
-                        </div>
-                        <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="piece">Piece
-                        </div>
-                        <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="cube">Cube</div>
-
-                        <!-- Approximate Measures -->
-                        <div class="px-3 py-2 bg-gray-100 font-semibold text-sm text-gray-700">Approximate Measures
-                        </div>
-                        <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="small">Small
-                        </div>
-                        <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="medium">Medium
-                        </div>
-                        <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="large">Large
-                        </div>
-                        <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="heaping">Heaping
-                        </div>
-                        <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="level">Level
-                        </div>
-                        <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="rounded">Rounded
-                        </div>
-                        <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="scant">Scant
-                        </div>
-
-                        <!-- Traditional/Regional Measures -->
-                        <div class="px-3 py-2 bg-gray-100 font-semibold text-sm text-gray-700">Traditional/Regional
-                            Measures
-                        </div>
-                        <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="jigger">Jigger
-                        </div>
-                        <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="shot">Shot</div>
-                        <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="peck">Peck</div>
-                        <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="bushel">Bushel
-                        </div>
-                        <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="gill">Gill</div>
-                        <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="dram">Dram</div>
-
-                        <!-- Non-Specific Terms -->
-                        <div class="px-3 py-2 bg-gray-100 font-semibold text-sm text-gray-700">Non-Specific Terms</div>
-                        <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="as needed"
-                             data-auto-zero="true">As needed (enter 0 for qty)
-                        </div>
-                        <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="for garnish"
-                             data-auto-zero="true">For garnish (enter 0 for qty)
-                        </div>
-                        <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="for serving"
-                             data-auto-zero="true">For serving (enter 0 for qty)
-                        </div>
-                        <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="optional"
-                             data-auto-zero="true">Optional (enter 0 for qty)
-                        </div>
-                        <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="to preference"
-                             data-auto-zero="true">To preference (enter 0 for qty)
-                        </div>
-                    </div>
-                </div>
-
+            <!-- Row 2: Recipe Name -->
+            <div class="space-y-1">
+                <label for="name" class="block text-sm font-medium">Recipe Name</label>
                 <input
                         type="text"
-                        id="new-ingredient"
-                        placeholder="Salt"
-                        oninput="this.value = this.value.replace(/[^A-Za-z\s]/g, '')"
-                        class="col-span-3 border border-gray-300 rounded px-3 py-1"
+                        name="name"
+                        id="name"
+                        required
+                        maxlength="70"
+                        pattern="^[A-Za-z ]{1,70}$"
+                        title="Must contain only letters and spaces (1–70 characters)."
+                        class="w-full border border-gray-300 rounded px-3 py-2"
+                        placeholder="Pizza Capricciosa"
                 />
-                <button type="button" id="add-ingredient-btn"
-                        class="text-green-400 hover:text-green-600 flex items-center justify-center">
+            </div>
+
+            <!-- Row 3: Description -->
+            <div class="space-y-1">
+                <label for="description" class="block text-sm font-medium">Description <span class="text-gray-500">(optional)</span></label>
+                <textarea
+                        name="description"
+                        id="description"
+                        rows="4"
+                        maxlength="500"
+                        pattern="^[A-Za-z0-9\s\.,!?;:()\-_'" &@#$%*+=\[\]{}|\\/]{1,500}$"
+                        title="Must contain only letters, numbers, spaces, and common symbols (1–500 characters)."
+                        class="w-full border border-gray-300 rounded px-3 py-2   resize-y min-h-20"
+                        placeholder="Capricciosa: tomato base and mozzarella topped with mushrooms, artichokes, ham and olives. Bake 8–10 min at high temperature. Finish with olive oil and oregano."
+                ></textarea>
+            </div>
+
+            <!-- Row 4: Cooking Time -->
+            <div class="space-y-1">
+                <label class="block text-sm font-medium">Cooking Time <span
+                        class="text-gray-500">(optional)</span></label>
+                <div class="flex space-x-4">
+                    <input
+                            type="number"
+                            name="cook_time_value"
+                            min="0"
+                            oninput="this.value = Math.max(0, this.value)"
+                            class="w-24 border border-gray-300 rounded px-2 py-2"
+                            title="Must contain only positive numbers"
+                            placeholder="20"
+                    />
+                    <select name="cook_time_unit"
+                            class="w-32 border border-gray-300 rounded px-3 py-2 cursor-pointer appearance-none"
+                            title="Select if number represents minutes or hours"
+                    >
+                        <option value="minutes">minutes</option>
+                        <option value="hours">hours</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Row 5: Ingredients -->
+            <div class="space-y-2">
+                <h2 class="text-lg font-semibold">Ingredients</h2>
+
+                <!-- User guidance message -->
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-800">
+                    <p><strong>Note:</strong> For measurements like "to taste", "as needed", etc., enter
+                        <strong>0</strong>
+                        in the quantity field. Quantity cannot be left blank.</p>
+                </div>
+
+                <!-- Header for existing ingredients -->
+                <div class="grid grid-cols-7 gap-4 font-medium text-gray-700 border-b pb-2">
+                    <div>Qty</div>
+                    <div class="col-span-2">Unit</div>
+                    <div class="col-span-3">Ingredient</div>
+                    <div></div>
+                </div>
+                <div id="ingredients-list" class="space-y-2 "></div>
+
+                <!-- Add new ingredient row -->
+                <div class="grid grid-cols-7 gap-4 items-center">
+                    <input
+                            type="number"
+                            id="new-qty"
+                            placeholder="100"
+                            min="0"
+                            step="0.01"
+                            oninput="this.value = Math.max(0, this.value)"
+                            class="border border-gray-300 rounded px-2 py-1"
+                    />
+                    <div class="col-span-2 relative">
+                        <input
+                                type="text"
+                                id="new-unit"
+                                placeholder="Gram (g)"
+                                autocomplete="off"
+                                oninput="this.value = this.value.replace(/[^A-Za-z\s]/g, '')"
+                                class="w-full border border-gray-300 rounded px-3 py-1"
+                        />
+                        <div id="unit-dropdown"
+                             class="absolute z-10 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-52 max-w-60 overflow-y-auto hidden">
+                            <!-- Volume Measurements -->
+                            <div class="px-3 py-2 bg-gray-100 font-semibold text-sm text-gray-700">Volume Measurements
+                            </div>
+                            <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="tsp">
+                                Teaspoon
+                                (tsp)
+                            </div>
+                            <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="tbsp">
+                                Tablespoon
+                                (tbsp)
+                            </div>
+                            <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="fl oz">Fluid
+                                ounce
+                                (fl oz)
+                            </div>
+                            <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="c">Cup (c)
+                            </div>
+                            <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="pt">Pint
+                                (pt)
+                            </div>
+                            <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="qt">Quart
+                                (qt)
+                            </div>
+                            <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="gal">Gallon
+                                (gal)
+                            </div>
+                            <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="ml">
+                                Milliliter
+                                (ml)
+                            </div>
+                            <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="cl">
+                                Centiliter
+                                (cl)
+                            </div>
+                            <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="dl">
+                                Deciliter
+                                (dl)
+                            </div>
+                            <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="l">Liter (l)
+                            </div>
+                            <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="drop">Drop
+                            </div>
+                            <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="dash">Dash
+                            </div>
+                            <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="pinch">Pinch
+                            </div>
+                            <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="splash">
+                                Splash
+                            </div>
+                            <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="glug">Glug
+                            </div>
+
+                            <!-- Weight Measurements -->
+                            <div class="px-3 py-2 bg-gray-100 font-semibold text-sm text-gray-700">Weight Measurements
+                            </div>
+                            <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="oz">Ounce
+                                (oz)
+                            </div>
+                            <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="lb">Pound
+                                (lb)
+                            </div>
+                            <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="g">Gram (g)
+                            </div>
+                            <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="kg">Kilogram
+                                (kg)
+                            </div>
+                            <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="mg">
+                                Milligram
+                                (mg)
+                            </div>
+
+                            <!-- Length/Size Measurements -->
+                            <div class="px-3 py-2 bg-gray-100 font-semibold text-sm text-gray-700">Length/Size
+                                Measurements
+                            </div>
+                            <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="in">Inch
+                                (in)
+                            </div>
+                            <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="cm">
+                                Centimeter
+                                (cm)
+                            </div>
+
+                            <!-- Cooking-Specific Terms -->
+                            <div class="px-3 py-2 bg-gray-100 font-semibold text-sm text-gray-700">Cooking-Specific
+                                Terms
+                            </div>
+                            <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="to taste"
+                                 data-auto-zero="true">To taste (enter 0 for qty)
+                            </div>
+                            <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="handful">
+                                Handful
+                            </div>
+                            <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="sprig">Sprig
+                            </div>
+                            <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="bunch">Bunch
+                            </div>
+                            <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="clove">Clove
+                            </div>
+                            <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="head">Head
+                            </div>
+                            <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="slice">Slice
+                            </div>
+                            <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="wedge">Wedge
+                            </div>
+                            <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="stalk">Stalk
+                            </div>
+                            <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="leaf">Leaf
+                            </div>
+                            <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="leaves">
+                                Leaves
+                            </div>
+                            <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="scoop">Scoop
+                            </div>
+                            <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="stick">Stick
+                            </div>
+                            <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="strip">Strip
+                            </div>
+                            <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="piece">Piece
+                            </div>
+                            <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="cube">Cube
+                            </div>
+
+                            <!-- Approximate Measures -->
+                            <div class="px-3 py-2 bg-gray-100 font-semibold text-sm text-gray-700">Approximate Measures
+                            </div>
+                            <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="small">Small
+                            </div>
+                            <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="medium">
+                                Medium
+                            </div>
+                            <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="large">Large
+                            </div>
+                            <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="heaping">
+                                Heaping
+                            </div>
+                            <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="level">Level
+                            </div>
+                            <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="rounded">
+                                Rounded
+                            </div>
+                            <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="scant">Scant
+                            </div>
+
+                            <!-- Traditional/Regional Measures -->
+                            <div class="px-3 py-2 bg-gray-100 font-semibold text-sm text-gray-700">Traditional/Regional
+                                Measures
+                            </div>
+                            <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="jigger">
+                                Jigger
+                            </div>
+                            <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="shot">Shot
+                            </div>
+                            <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="peck">Peck
+                            </div>
+                            <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="bushel">
+                                Bushel
+                            </div>
+                            <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="gill">Gill
+                            </div>
+                            <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="dram">Dram
+                            </div>
+
+                            <!-- Non-Specific Terms -->
+                            <div class="px-3 py-2 bg-gray-100 font-semibold text-sm text-gray-700">Non-Specific Terms
+                            </div>
+                            <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="as needed"
+                                 data-auto-zero="true">As needed (enter 0 for qty)
+                            </div>
+                            <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="for garnish"
+                                 data-auto-zero="true">For garnish (enter 0 for qty)
+                            </div>
+                            <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="for serving"
+                                 data-auto-zero="true">For serving (enter 0 for qty)
+                            </div>
+                            <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer" data-value="optional"
+                                 data-auto-zero="true">Optional (enter 0 for qty)
+                            </div>
+                            <div class="unit-option px-3 py-2 hover:bg-blue-100 cursor-pointer"
+                                 data-value="to preference"
+                                 data-auto-zero="true">To preference (enter 0 for qty)
+                            </div>
+                        </div>
+                    </div>
+
+                    <input
+                            type="text"
+                            id="new-ingredient"
+                            placeholder="Flour"
+                            oninput="this.value = this.value.replace(/[^A-Za-z\s]/g, '')"
+                            class="col-span-3 border border-gray-300 rounded px-3 py-1"
+                    />
+                    <button type="button" id="add-ingredient-btn"
+                            class="text-green-400 hover:text-green-600 flex items-center justify-center">
                     <span class="material-symbols-outlined">
                         add
                     </span>
+                    </button>
+                </div>
+                <div id="ingredient-error" class="text-red-500 text-sm mb-1" aria-live="polite"></div>
+                <input type="hidden" name="ingredients_json" id="ingredients-json">
+            </div>
+
+            <!-- Row 6: Cooking steps -->
+            <div class="space-y-1">
+                <h2 class="text-lg font-semibold">Cooking Steps</h2>
+                <textarea
+                        name="instructions"
+                        id="instructions"
+                        rows="4"
+                        required
+                        maxlength="500"
+                        pattern="^[A-Za-z0-9\s\.,!?;:()\-_'" &@#$%*+=\[\]{}|\\/]{1,1000}$"
+                        title="Must contain only letters, numbers, spaces, and common symbols (1–1000 characters)."
+                        class="w-full border border-gray-300 rounded px-3 py-2   resize-y min-h-20"
+                        placeholder="Preheat oven to 275°C (525°F) with pizza stone/steel for 45 min.
+Stretch ~250 g dough to 28–30 cm; brush rim with olive oil.
+Spread 3 tbsp tomato sauce and 120 g sliced fior di latte.
+Top with 80 g sautéed mushrooms, 60 g artichoke hearts, 60 g cooked ham, 20 g pitted olives.
+Bake 8–10 min until crust is golden.
+Finish with a drizzle of extra virgin olive oil and a sprinkle of oregano."
+                ></textarea>
+            </div>
+
+            <!-- Row 7: Actions -->
+            <div class="flex justify-between">
+                <button type="button" id="clear-all-btn"
+                        class="px-4 py-2 text-white bg-red-500 rounded-lg hover:bg-red-700 cursor-pointer">
+                    Clear All
+                </button>
+                <button type="submit"
+                        class="px-4 py-2 text-white bg-green-500 rounded-lg hover:bg-green-700 cursor-pointer">
+                    Save Recipe
                 </button>
             </div>
-            <div id="ingredient-error" class="text-red-500 text-sm mb-1" aria-live="polite"></div>
-            <input type="hidden" name="ingredients_json" id="ingredients-json">
-        </div>
-
-        <!-- Row 6: Cooking steps -->
-        <div class="space-y-1">
-            <h2 class="text-lg font-semibold">Cooking Steps</h2>
-            <textarea
-                    name="instructions"
-                    id="instructions"
-                    rows="4"
-                    required
-                    maxlength="500"
-                    pattern="^[A-Za-z0-9\s\.,!?;:()\-_'" &@#$%*+=\[\]{}|\\/]{1,1000}$"
-                    title="Must contain only letters, numbers, spaces, and common symbols (1–1000 characters)."
-                    class="w-full border border-gray-300 rounded px-3 py-2   resize-y min-h-20"
-                    placeholder="Describe here specific steps to follow for your recipe..."
-            ></textarea>
-        </div>
-
-        <!-- Row 7: Actions -->
-        <div class="flex justify-between">
-            <button type="button" id="clear-all-btn"
-                    class="px-4 py-2 text-white bg-red-500 rounded-lg hover:bg-red-700 cursor-pointer">
-                Clear All
-            </button>
-            <button type="submit"
-                    class="px-4 py-2 text-white bg-green-500 rounded-lg hover:bg-green-700 cursor-pointer">
-                Save Recipe
-            </button>
-        </div>
-    </form>
+        </form>
     </div>
 
     <script>
@@ -794,26 +839,26 @@
 
     <!-- javascr*pt to manage fancy ingredient components -->
     <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        const form = document.querySelector("form"); // Adjust if needed
-        const ingredientsList = document.getElementById("ingredients-list");
-        const ingredientsJsonInput = document.getElementById("ingredients-json");
+        document.addEventListener("DOMContentLoaded", () => {
+            const form = document.querySelector("form"); // Adjust if needed
+            const ingredientsList = document.getElementById("ingredients-list");
+            const ingredientsJsonInput = document.getElementById("ingredients-json");
 
-        form.addEventListener("submit", () => {
-          const ingredients = [];
+            form.addEventListener("submit", () => {
+                const ingredients = [];
 
-          ingredientsList.querySelectorAll(".ingredient-row").forEach(row => {
-            const cells = row.querySelectorAll("div.text-sm");
-            if (cells.length === 3) {
-              const quantity = cells[0].textContent.trim();
-              const unit = cells[1].textContent.trim();
-              const name = cells[2].textContent.trim();
-              ingredients.push({ quantity, unit, name });
-            }
-          });
+                ingredientsList.querySelectorAll(".ingredient-row").forEach(row => {
+                    const cells = row.querySelectorAll("div.text-sm");
+                    if (cells.length === 3) {
+                        const quantity = cells[0].textContent.trim();
+                        const unit = cells[1].textContent.trim();
+                        const name = cells[2].textContent.trim();
+                        ingredients.push({quantity, unit, name});
+                    }
+                });
 
-          ingredientsJsonInput.value = JSON.stringify(ingredients);
+                ingredientsJsonInput.value = JSON.stringify(ingredients);
+            });
         });
-      });
     </script>
 {% endblock %}

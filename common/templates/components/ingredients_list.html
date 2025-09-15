@@ -1,7 +1,7 @@
-<div class="pl-6 grid grid-cols-3 grid-rows-4" id="available_ingredients">
+<div class="grid grid-cols-3 auto-rows-min gap-2 items-start" id="available_ingredients">
   {% for item in ingredients %}
     <div
-      class="clickable-ingredient text-gray-800 relative cursor-pointer hover:bg-gray-200 rounded px-2 py-1"
+      class="clickable-ingredient inline-flex items-center text-gray-800 relative cursor-pointer border border-transparent hover:border-black transition-colors duration-150 rounded p-1"
       data-ingredient="{{ item }}"
     >
       {{ item }}

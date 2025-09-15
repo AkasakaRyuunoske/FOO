@@ -6,323 +6,589 @@
      hx-get="{% url 'load_recipe_modal' recipe.id %}"
      hx-target="#recipe-modal-content"
      hx-swap="innerHTML"
-     class="bg-white p-1.5 rounded-md shadow-lg transition duration-200 hover:shadow-xl hover:scale-105 max-w-[380px] mx-auto w-full {% if show_description_inline %}p-2{% else %}aspect-square{% endif %}"> <!-- External Padding -->
-  <div class="border-2 border-black p-2 bg-white w-full flex flex-col justify-between group relative rounded min-w-0 min-h-0 min-h-[280px] transition-all duration-300 ease-in-out overflow-visible">    <!-- Black line inside square -->
+     class="bg-white rounded-md shadow-lg transition duration-200 hover:shadow-xl hover:scale-105 max-w-[380px] mx-auto w-full {% if show_description_inline %}p-2{% else %}{% endif %}">
+    <!-- External Padding -->
+    <div class="border border-black p-2 bg-white w-full flex flex-col justify-between group relative rounded min-w-0 min-h-0 min-h-[280px] transition-all duration-300 ease-in-out overflow-visible">
+        <!-- Black line inside square -->
 
-    <!-- Bookmark on the right with a transition on hover -->
-    <button class="bookmark-btn absolute top-3 right-1 aspect-square w-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10" aria-label="Toggle bookmark" type="button">
-      <img class="bookmark-icon w-full h-full transition-opacity duration-200" src="{% static 'icons/bookmark-white.png' %}" alt="Bookmark">
-    </button>
-
-    <!-- Recipe Name -->
-    <div class="flex-1 flex flex-col min-w-0">
-      <h2 class="text-center font-bold mb-2 text-sm sm:text-base break-words {% if show_description_inline %}line-clamp-2{% else %}line-clamp-1{% endif %} leading-tight">
-          {{ recipe.name|truncatechars:40 }}
-      </h2>
-
-      <!-- Recipe Image -->
-      <div class="w-4/5 mx-auto mb-2">
-        <img src="https://d2sj0xby2hzqoy.cloudfront.net/kenwood_italy/attachments/data/000/008/122/medium/parmigiana-di-melanzane.jpg" alt="Melanzane alla Parmigiana" class="w-full h-auto max-h-[160px] object-contain border border-gray-300 rounded">
-      </div> <!-- image is 1055*608, consider it when putting other images -->
-
-      <!-- Info & Tags -->
-      {% if show_description_inline %}
-        <!-- === DESCRIPTION VISIBLE VERSION === -->
-        <div class="flex gap-2 flex-1 items-stretch overflow-hidden text-[8px] md:text-[10px] min-w-0">
-          <!-- Left Tags -->
-          <div class="flex flex-col justify-between w-1/2 overflow-hidden h-full space-y-2 min-w-0">
-            <div class="space-y-1">
-              <div class="flex flex-wrap gap-x-2 gap-y-1">
-                <div class="flex items-center gap-1"><img src="{% static 'icons/difficulty.png' %}" class="w-4 h-4"><span>Easy</span></div>
-                <div class="flex items-center gap-1"><img src="{% static 'icons/time.png' %}" class="w-4 h-4"><span>Medium</span></div>
-                <div class="flex items-center gap-1"><img src="{% static 'icons/cost.png' %}" class="w-4 h-4"><span>Average</span></div>
-              </div>
-              <div class="flex items-center gap-2 flex-wrap">
-                <span class="font-semibold">Tags:</span>
-                <div class="flex flex-wrap gap-1">
-                  <img src="{% static 'icons/boil.png' %}" class="w-4 h-4">
-                  <img src="{% static 'icons/lactose-free.png' %}" class="w-4 h-4">
-                  <img src="{% static 'icons/gluten-free.png' %}" class="w-4 h-4">
-                  <img src="{% static 'icons/vegetarian.png' %}" class="w-4 h-4">
-                  <img src="{% static 'icons/vegan.png' %}" class="w-4 h-4">
-                  {{ tag }}
-                </div>
-              </div>
-              <div class="flex items-center gap-2 flex-wrap">
-                <span class="font-semibold">Ingredients:</span>
-                <div class="flex flex-wrap gap-1">
-                  <img src="{% static 'icons/meat.png' %}" class="w-4 h-4">
-                  <img src="{% static 'icons/cheese.png' %}" class="w-4 h-4">
-                  <img src="{% static 'icons/vegetables.png' %}" class="w-4 h-4">
-                </div>
-              </div>
-            </div>
-          </div>
-          <!-- Divider -->
-          <div class="w-px bg-black"></div>
-          <!-- Right Description -->
-          <div class="w-1/2 overflow-auto h-full min-w-0">
-            <p class="leading-tight text-[8px] md:text-[9px] break-words">
-              {{ recipe.Instructions|truncatechars:350 }}
-            </p>
-          </div>
-        </div>
-      {% else %}
-        <!-- === ON HOVER DESCRIPTION === -->
-        <div class="flex flex-col gap-2 text-[8px] md:text-[10px] min-w-0 max-h-[100px] overflow-hidden transition-[max-height] duration-500 ease-in-out group-hover:max-h-[300px]">
-          <!-- TAGS WRAPPER -->
-          <div class="flex flex-col gap-2" data-tags>
-            <!-- Difficulty, Time and Cost Tags -->
-            <div class="flex flex-wrap gap-x-2 gap-y-1">
-              {% for type, data in meta_tag_icon_pairs.items %}
-                <div class="flex items-center gap-1">
-                  <img src="{% static 'icons/' %}{{ data.icon }}" alt="{{ data.label }}" title="{{ type }}: {{ data.label }}" class="w-4 h-4">
-                  <span>{{ data.label }}</span>
-                </div>
-              {% empty %}
-              {% endfor %}
-            </div>
-
-            <!-- General Tags -->
-            <div class="flex items-center gap-2 flex-wrap">
-              <span class="font-semibold">Tags:</span>
-              <div class="flex flex-wrap gap-1">
-              {% for type, data in tag_icon_pairs.items %}
-                <img src="{% static 'icons/' %}{{ data.icon }}" alt="{{ data.label }}" title="{{ type }}: {{ data.label }}" class="w-4 h-4">
-
-                {% empty %}
-              {% endfor %}
-              </div>
-            </div>
-
-            <!-- Ingredients -->
-            <div class="flex items-center gap-2 flex-wrap">
-              <span class="font-semibold">Ingredients:</span>
-              <div class="flex flex-wrap gap-1">
-                <img src="{% static 'icons/meat.png' %}" class="w-4 h-4">
-                <img src="{% static 'icons/cheese.png' %}" class="w-4 h-4">
-                <img src="{% static 'icons/vegetables.png' %}" class="w-4 h-4">
-              </div>
-            </div>
-          </div>
-
-          <!-- DESCRIPTION WRAPPER -->
-          <div class="absolute top-0 left-0 w-full h-full bg-white z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-2 overflow-auto rounded">
-            <h2 class="text-center font-bold mb-2 text-sm sm:text-base break-words">
-               {{ recipe.name }}
+        <!-- Recipe Name -->
+        <div class="flex-1 flex flex-col min-w-0 gap-2">
+            <h2 class="text-center font-bold text-sm sm:text-base break-words {% if show_description_inline %}line-clamp-2{% else %}line-clamp-1{% endif %} leading-tight">
+                {{ recipe.name|truncatechars:40 }}
             </h2>
-            <p>{{ recipe.Instructions|truncatechars:310 }}</p>
-            <div class="flex justify-center space-x-1 text-sm text-yellow-500 mt-1">
-              {% for i in "12345" %}
-                {% if forloop.counter <= rating_value %}
-                  <span>★</span>
-                {% else %}
-                  <span class="text-black">★</span>
-                {% endif %}
-              {% endfor %}
-            </div>
-          </div>
+
+            <!-- Recipe Image -->
+            <div class="w-4/5 mx-auto">
+                <img src="https://d2sj0xby2hzqoy.cloudfront.net/kenwood_italy/attachments/data/000/008/122/medium/parmigiana-di-melanzane.jpg"
+                     alt="Melanzane alla Parmigiana"
+                     class="w-full h-auto max-h-[160px] object-contain rounded">
+            </div> <!-- image is 1055*608, consider it when putting other images -->
+
+            <!-- Info & Tags -->
+            {% if show_description_inline %}
+                <!-- === DESCRIPTION VISIBLE VERSION === -->
+                <div class="flex gap-2 flex-1 items-stretch overflow-hidden text-[8px] md:text-[10px] min-w-0">
+                    <!-- Left Tags -->
+                    <div class="flex flex-col justify-between w-1/2 overflow-hidden h-full space-y-2 min-w-0">
+                        <div class="space-y-1">
+                            <div class="flex flex-wrap gap-x-2 gap-y-1">
+                                <div class="flex items-center gap-1"><img src="{% static 'icons/difficulty.png' %}"
+                                                                          class="w-4 h-4"><span>Easy</span></div>
+                                <div class="flex items-center gap-1"><img src="{% static 'icons/time.png' %}"
+                                                                          class="w-4 h-4"><span>Medium</span></div>
+                                <div class="flex items-center gap-1"><img src="{% static 'icons/cost.png' %}"
+                                                                          class="w-4 h-4"><span>Average</span></div>
+                            </div>
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span class="font-semibold">Tags:</span>
+                                <div class="flex flex-wrap gap-1">
+                                    <img src="{% static 'icons/boil.png' %}" class="w-4 h-4">
+                                    <img src="{% static 'icons/lactose-free.png' %}" class="w-4 h-4">
+                                    <img src="{% static 'icons/gluten-free.png' %}" class="w-4 h-4">
+                                    <img src="{% static 'icons/vegetarian.png' %}" class="w-4 h-4">
+                                    <img src="{% static 'icons/vegan.png' %}" class="w-4 h-4">
+                                    {{ tag }}
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span class="font-semibold">Ingredients:</span>
+                                <div class="flex flex-wrap gap-1">
+                                    <img src="{% static 'icons/meat.png' %}" class="w-4 h-4">
+                                    <img src="{% static 'icons/cheese.png' %}" class="w-4 h-4">
+                                    <img src="{% static 'icons/vegetables.png' %}" class="w-4 h-4">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Divider -->
+                    <div class="w-px bg-black"></div>
+                    <!-- Right Description -->
+                    <div class="w-1/2 overflow-auto h-full min-w-0">
+                        <p class="leading-tight text-[8px] md:text-[9px] break-words">
+                            {{ recipe.Instructions|truncatechars:350 }}
+                        </p>
+                    </div>
+                </div>
+            {% else %}
+                <!-- === ON HOVER DESCRIPTION === -->
+                <div class="flex flex-col gap-2 text-[8px] md:text-[10px] min-w-0 max-h-[100px] overflow-hidden transition-[max-height] duration-500 ease-in-out group-hover:max-h-[300px] mx-auto">
+                    <!-- TAGS WRAPPER -->
+                    <div class="flex flex-col gap-2" data-tags>
+                        <!-- Difficulty, Time and Cost Tags -->
+                        <div class="flex flex-wrap gap-x-2 gap-y-1">
+                            {% for type, data in meta_tag_icon_pairs.items %}
+                                <div class="flex items-center gap-1">
+                                    <img src="{% static 'icons/' %}{{ data.icon }}" alt="{{ data.label }}"
+                                         title="{{ type }}: {{ data.label }}" class="w-4 h-4">
+                                    <span>{{ data.label }}</span>
+                                </div>
+                            {% empty %}
+                            {% endfor %}
+                        </div>
+
+                        <!-- General Tags -->
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span class="font-semibold">Tags:</span>
+                            <div class="flex flex-wrap gap-1">
+                                {% for type, data in tag_icon_pairs.items %}
+                                    <img src="{% static 'icons/' %}{{ data.icon }}" alt="{{ data.label }}"
+                                         title="{{ type }}: {{ data.label }}" class="w-4 h-4">
+
+                                {% empty %}
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Ingredients -->
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span class="font-semibold">Ingredients:</span>
+                            <div class="flex flex-wrap gap-1">
+                                <img src="{% static 'icons/meat.png' %}" class="w-4 h-4">
+                                <img src="{% static 'icons/cheese.png' %}" class="w-4 h-4">
+                                <img src="{% static 'icons/vegetables.png' %}" class="w-4 h-4">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- DESCRIPTION WRAPPER -->
+                    <div class="absolute top-0 left-0 w-full h-full bg-white z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-4 overflow-auto rounded">
+                        <h2 class="text-center font-bold text-sm sm:text-base break-words mb-2">
+                            {{ recipe.name }}
+                        </h2>
+                        <div class="instructions-block">
+                            <div class="instructions-preview text-xs text-gray-800 whitespace-pre-wrap"
+                                 data-raw='{{ recipe.Instructions|escapejs }}'>
+                                {{ recipe.Instructions|default:"No instructions available."|truncatechars:310 }}
+                            </div>
+                        </div>
+                        <div class="flex justify-center space-x-1 text-sm text-yellow-500 mt-1">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= rating_value %}
+                                    <span>★</span>
+                                {% else %}
+                                    <span class="text-black">★</span>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
         </div>
-      {% endif %}
-    </div>
 
-    <!-- Stars -->
-    <div class="flex justify-center space-x-1 text-sm text-yellow-500 mt-1">
-      {% for i in "12345" %}
-        {% if forloop.counter <= rating_value %}
-          <span>★</span>
-        {% else %}
-          <span class="text-black">★</span>
-        {% endif %}
-      {% endfor %}
-    </div>
+        <!-- Stars -->
+        <div class="flex justify-center space-x-1 text-sm text-yellow-500 mt-1">
+            {% for i in "12345" %}
+                {% if forloop.counter <= rating_value %}
+                    <span>★</span>
+                {% else %}
+                    <span class="text-black">★</span>
+                {% endif %}
+            {% endfor %}
+        </div>
 
-  </div>
+    </div>
 </div>
 
 
-<div id="recipe-modal" class="fixed inset-0 bg-black bg-opacity-0 flex items-center justify-center z-50 pointer-events-none opacity-0 transition-opacity duration-300"
-  onclick="handleBackdropClick(event)">
-  <!-- MODAL CONTENT -->
-  <div id="recipe-modal-content"
-       class="border-2 border-black bg-white max-w-2xl w-full overflow-y-auto rounded-lg shadow-xl p-6 transform transition-all duration-300 scale-95 opacity-0"
-       style="font-family: 'Inclusive Sans', sans-serif;">
-    <!-- Il contenuto verrà caricato dinamicamente -->
-    <div class="text-center text-gray-400">Caricamento...</div>
-  </div>
+<div id="recipe-modal"
+     class="fixed inset-0 bg-black bg-opacity-0 flex items-center justify-center z-50 pointer-events-none opacity-0 transition-opacity duration-300"
+     onclick="handleBackdropClick(event)">
+    <!-- MODAL CONTENT -->
+    <div id="recipe-modal-content"
+         class="border-2 border-black bg-white max-w-2xl w-full overflow-y-auto rounded-lg shadow-xl p-6 transform transition-all duration-300 scale-95 opacity-0"
+         style="font-family: 'Inclusive Sans', sans-serif;">
+        <!-- Il contenuto verrà caricato dinamicamente -->
+        <div class="text-center text-gray-400">Caricamento...</div>
+    </div>
 </div>
-
 
 
 <!-- Script for the Bookmark button -->
 <script>
-  function toggleBookmark() {
-    const buttons = document.querySelectorAll('.bookmark-btn');
+    function toggleBookmark() {
+        const buttons = document.querySelectorAll('.bookmark-btn');
 
-    buttons.forEach(button => {
-      const icon = button.querySelector('img');
+        buttons.forEach(button => {
+            const icon = button.querySelector('img');
 
 
-      button.dataset.bookmarked = 'false';
+            button.dataset.bookmarked = 'false';
 
-      button.addEventListener('click', function (e) {
-        e.preventDefault();
-        e.stopPropagation();
+            button.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
 
-        const isBookmarked = button.dataset.bookmarked === 'true';
-        button.dataset.bookmarked = (!isBookmarked).toString();
+                const isBookmarked = button.dataset.bookmarked === 'true';
+                button.dataset.bookmarked = (!isBookmarked).toString();
 
-        icon.src = isBookmarked
-          ? "{% static 'icons/bookmark-white.png' %}"
-          : "{% static 'icons/bookmark-black.png' %}";
-      });
+                icon.src = isBookmarked
+                    ? "{% static 'icons/bookmark-white.png' %}"
+                    : "{% static 'icons/bookmark-black.png' %}";
+            });
 
-      button.addEventListener('mouseenter', function () {
-        if (button.dataset.bookmarked === 'false') {
-          icon.src = "{% static 'icons/bookmark-black.png' %}";
-        }
-      });
+            button.addEventListener('mouseenter', function () {
+                if (button.dataset.bookmarked === 'false') {
+                    icon.src = "{% static 'icons/bookmark-black.png' %}";
+                }
+            });
 
-      button.addEventListener('mouseleave', function () {
-        if (button.dataset.bookmarked === 'false') {
-          icon.src = "{% static 'icons/bookmark-white.png' %}";
-        }
-      });
-    });
-  }
+            button.addEventListener('mouseleave', function () {
+                if (button.dataset.bookmarked === 'false') {
+                    icon.src = "{% static 'icons/bookmark-white.png' %}";
+                }
+            });
+        });
+    }
 </script>
-
 
 
 <!-- Script for the Ratings -->
 <script>
-  function bindStarRatings() {
-    const cards = document.querySelectorAll('div.border-2');
+    function bindStarRatings() {
+        const cards = document.querySelectorAll('div.border-2');
 
-    cards.forEach(card => {
-      const starButtons = card.querySelectorAll('.star-btn');
-      let currentRating = 2.5; // 2.5 starting rating
+        cards.forEach(card => {
+            const starButtons = card.querySelectorAll('.star-btn');
+            let currentRating = 2.5; // 2.5 starting rating
 
-      function updateStars(rating) {
-        starButtons.forEach((btn, i) => {
-          const starIndex = i + 1;
-          btn.innerHTML = '';
+            function updateStars(rating) {
+                starButtons.forEach((btn, i) => {
+                    const starIndex = i + 1;
+                    btn.innerHTML = '';
 
-          if (starIndex <= Math.floor(rating)) {
-            btn.classList.remove('text-black');
-            btn.classList.add('text-yellow-500');
-            btn.textContent = '★';
-          } else if (starIndex === Math.ceil(rating) && rating % 1 !== 0) {
-            btn.classList.remove('text-yellow-500', 'text-black');
-            btn.innerHTML = `
+                    if (starIndex <= Math.floor(rating)) {
+                        btn.classList.remove('text-black');
+                        btn.classList.add('text-yellow-500');
+                        btn.textContent = '★';
+                    } else if (starIndex === Math.ceil(rating) && rating % 1 !== 0) {
+                        btn.classList.remove('text-yellow-500', 'text-black');
+                        btn.innerHTML = `
               <div class="relative inline-block text-black">
                 <span class="absolute top-0 left-0 w-1/2 overflow-hidden text-yellow-500">★</span>
                 <span>★</span>
               </div>
             `;
-          } else {
-            btn.classList.remove('text-yellow-500');
-            btn.classList.add('text-black');
-            btn.textContent = '★';
-          }
+                    } else {
+                        btn.classList.remove('text-yellow-500');
+                        btn.classList.add('text-black');
+                        btn.textContent = '★';
+                    }
+                });
+            }
+
+            starButtons.forEach((btn, i) => {
+                btn.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    currentRating = i + 1;
+                    updateStars(currentRating);
+                    console.log('Valutazione selezionata:', currentRating);
+                });
+
+                btn.addEventListener('mouseenter', () => updateStars(i + 1));
+                btn.addEventListener('mouseleave', () => updateStars(currentRating));
+            });
+
+            updateStars(currentRating);
         });
-      }
+    }
 
-      starButtons.forEach((btn, i) => {
-        btn.addEventListener('click', (event) => {
-          event.stopPropagation();
-          currentRating = i + 1;
-          updateStars(currentRating);
-          console.log('Valutazione selezionata:', currentRating);
-        });
+    document.addEventListener('DOMContentLoaded', bindStarRatings);
 
-        btn.addEventListener('mouseenter', () => updateStars(i + 1));
-        btn.addEventListener('mouseleave', () => updateStars(currentRating));
-      });
-
-      updateStars(currentRating);
+    document.body.addEventListener('htmx:afterSettle', (evt) => {
+        bindStarRatings();
     });
-  }
-
-  document.addEventListener('DOMContentLoaded', bindStarRatings);
-
-  document.body.addEventListener('htmx:afterSettle', (evt) => {
-    bindStarRatings();
-  });
 </script>
-
 
 
 <!-- Script for the modal -->
 <script>
-  function openModal() {
-    const backdrop = document.getElementById('recipe-modal');
-    const content = document.getElementById('recipe-modal-content');
+    function openModal() {
+        const backdrop = document.getElementById('recipe-modal');
+        const content = document.getElementById('recipe-modal-content');
 
-    backdrop.classList.remove('opacity-0', 'bg-opacity-0', 'pointer-events-none');
-    backdrop.classList.add('opacity-100', 'bg-opacity-50');
+        backdrop.classList.remove('opacity-0', 'bg-opacity-0', 'pointer-events-none');
+        backdrop.classList.add('opacity-100', 'bg-opacity-50');
 
-    setTimeout(() => {
-      content.classList.remove('scale-95', 'opacity-0');
-      content.classList.add('scale-100', 'opacity-100');
-    }, 10);
-  }
-
-  function closeModal() {
-    const backdrop = document.getElementById('recipe-modal');
-    const content = document.getElementById('recipe-modal-content');
-
-    content.classList.remove('scale-100', 'opacity-100');
-    content.classList.add('scale-95', 'opacity-0');
-
-    backdrop.classList.remove('opacity-100', 'bg-opacity-50');
-    backdrop.classList.add('opacity-0', 'bg-opacity-0', 'pointer-events-none');
-
-    setTimeout(() => {
-    }, 300);
-  }
-
-  // Closing by clicking out of the content
-  function handleBackdropClick(event) {
-    const content = document.getElementById('recipe-modal-content');
-    if (!content.contains(event.target)) {
-      closeModal();
+        setTimeout(() => {
+            content.classList.remove('scale-95', 'opacity-0');
+            content.classList.add('scale-100', 'opacity-100');
+        }, 10);
     }
-  }
 
-  document.body.addEventListener("openRecipeModal", function () {
-    openModal();
-  });
+    function closeModal() {
+        const backdrop = document.getElementById('recipe-modal');
+        const content = document.getElementById('recipe-modal-content');
+
+        content.classList.remove('scale-100', 'opacity-100');
+        content.classList.add('scale-95', 'opacity-0');
+
+        backdrop.classList.remove('opacity-100', 'bg-opacity-50');
+        backdrop.classList.add('opacity-0', 'bg-opacity-0', 'pointer-events-none');
+
+        setTimeout(() => {
+        }, 300);
+    }
+
+    // Closing by clicking out of the content
+    function handleBackdropClick(event) {
+        const content = document.getElementById('recipe-modal-content');
+        if (!content.contains(event.target)) {
+            closeModal();
+        }
+    }
+
+    document.body.addEventListener("openRecipeModal", function () {
+        openModal();
+    });
 </script>
 
 <!-- Script for the buttons inside the modal -->
 <script>
-  function showTab(tabName, btnElement) {
-    // Hide all sections
-    document.querySelectorAll('.tab-content').forEach(tab => {
-      tab.classList.add('hidden');
-    });
+    function showTab(tabName, btnElement) {
+        // Hide all sections
+        document.querySelectorAll('.tab-content').forEach(tab => {
+            tab.classList.add('hidden');
+        });
 
-    // Show selected section
-    document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+        // Show selected section
+        document.getElementById(`tab-${tabName}`).classList.remove('hidden');
 
-    // Reset button style
-    const buttons = document.querySelectorAll('#tab-buttons > button');
-    buttons.forEach(btn => {
-      btn.classList.remove('border-black', 'text-black');
-      btn.classList.add('text-gray-500', 'border-transparent');
-    });
+        // Reset button style
+        const buttons = document.querySelectorAll('#tab-buttons > button');
+        buttons.forEach(btn => {
+            btn.classList.remove('border-black', 'text-black');
+            btn.classList.add('text-gray-500', 'border-transparent');
+        });
 
-    // Activates clicked button
-    btnElement.classList.remove('text-gray-500', 'border-transparent');
-    btnElement.classList.add('border-black', 'text-black');
-  }
-
-  // Activates Description at the start
-  document.addEventListener("DOMContentLoaded", () => {
-    const defaultBtn = document.querySelector('#tab-buttons > button');
-    if (defaultBtn) {
-      showTab('description', defaultBtn);
+        // Activates clicked button
+        btnElement.classList.remove('text-gray-500', 'border-transparent');
+        btnElement.classList.add('border-black', 'text-black');
     }
-  });
+
+    // Activates Description at the start
+    document.addEventListener("DOMContentLoaded", () => {
+        const defaultBtn = document.querySelector('#tab-buttons > button');
+        if (defaultBtn) {
+            showTab('description', defaultBtn);
+        }
+    });
+</script>
+
+<script>
+(function() {
+    'use strict';
+
+    // Namespace to avoid global pollution
+    const InstructionSystem = window.InstructionSystem = window.InstructionSystem || {};
+
+    // Early exit if already initialized
+    if (InstructionSystem.initialized) return;
+
+    /**
+     *  Handles only text decoding operations
+     */
+    class TextDecoder {
+        static decodeUnicodeEscapes(text) {
+            if (!text) return text;
+            const unicodeRegex = /\\u([\da-fA-F]{4})/g;
+            return text.replace(unicodeRegex, (_, hex) =>
+                String.fromCharCode(parseInt(hex, 16))
+            );
+        }
+
+        static unescapeCommonSequences(text) {
+            return text
+                .replace(/\\r\\n/g, '\n')
+                .replace(/\\n/g, '\n')
+                .replace(/\\t/g, '\t')
+                .replace(/\\\\/g, '\\');
+        }
+
+        static normalizeText(raw) {
+            if (!raw) return '';
+
+            let text = String(raw);
+            let previousText;
+
+            // Decode repeatedly until no more changes
+            do {
+                previousText = text;
+                text = this.decodeUnicodeEscapes(text);
+                text = this.unescapeCommonSequences(text);
+            } while (text !== previousText && /\\u[\da-fA-F]{4}/.test(text));
+
+            // Clean up formatting
+            return text
+                .replace(/^\s*\d+\.\s*/, '')
+                .replace(/^\s*\[\s*/, '')
+                .replace(/\s*\]\s*$/, '')
+                .trim();
+        }
+    }
+
+    /**
+     *  Handles only JSON parsing operations
+     */
+    class JsonParser {
+        static tryParse(text) {
+            try {
+                const parsed = JSON.parse(text);
+                return Array.isArray(parsed) ? parsed : null;
+            } catch {
+                return null;
+            }
+        }
+    }
+
+    /**
+     *  Extracts quoted strings from text
+     */
+    class QuotedStringExtractor {
+        static extract(text) {
+            const quotedRegex = /"([^"]*)"|'([^']*)'/g;
+            const items = [];
+            let match;
+
+            while ((match = quotedRegex.exec(text)) !== null) {
+                const value = (match[1] ?? match[2]).trim();
+                if (value) items.push(value);
+            }
+
+            return items.length > 0 ? items : null;
+        }
+    }
+
+    /**
+     *  Handles text splitting strategies
+     */
+    class TextSplitter {
+        static split(text) {
+            if (text.includes('\n')) {
+                return text.split(/\r?\n/);
+            }
+            if (text.includes(',')) {
+                return text.split(',');
+            }
+            return [text];
+        }
+    }
+
+    /**
+     *  Cleans and formats step arrays
+     */
+    class StepCleaner {
+        static clean(items) {
+            return items
+                .map(step => String(step).replace(/^\s*\d+\.\s*/, '').trim())
+                .filter(Boolean);
+        }
+    }
+
+    /**
+     * Open/Closed Principle: Parser strategies can be extended without modification
+     * Dependency Inversion: Depends on abstractions (strategies) not concrete implementations
+     */
+    class InstructionParser {
+        constructor() {
+            // Strategy pattern for parsing approaches
+            this.strategies = [
+                text => JsonParser.tryParse(text),
+                text => QuotedStringExtractor.extract(text),
+                text => TextSplitter.split(text)
+            ];
+        }
+
+        parse(rawText) {
+            const normalizedText = TextDecoder.normalizeText(rawText);
+            if (!normalizedText) return [];
+
+            // Try each parsing strategy until one succeeds
+            for (const strategy of this.strategies) {
+                const result = strategy(normalizedText);
+                if (result && result.length > 0) {
+                    return StepCleaner.clean(result);
+                }
+            }
+
+            return [];
+        }
+    }
+
+    /**
+     *  Creates DOM elements for different step formats
+     * Open/Closed: Can be extended with new rendering strategies
+     */
+    class StepRenderer {
+        static createFallbackElement() {
+            const paragraph = document.createElement('p');
+            paragraph.className = 'text-xs text-gray-500';
+            paragraph.textContent = 'No instructions available.';
+            return paragraph;
+        }
+
+        static createSingleStepElement(step) {
+            const div = document.createElement('div');
+            div.className = 'text-xs text-gray-800 whitespace-pre-wrap';
+            div.textContent = step;
+            return div;
+        }
+
+        static createMultiStepElement(steps) {
+            const orderedList = document.createElement('ol');
+            orderedList.className = 'list-decimal list-inside text-xs space-y-1';
+
+            steps.forEach(step => {
+                const listItem = document.createElement('li');
+                listItem.className = 'leading-snug text-xs';
+                listItem.textContent = step;
+                orderedList.appendChild(listItem);
+            });
+
+            return orderedList;
+        }
+
+        static render(steps) {
+            if (!steps || steps.length === 0) {
+                return this.createFallbackElement();
+            }
+
+            if (steps.length === 1) {
+                return this.createSingleStepElement(steps[0]);
+            }
+
+            return this.createMultiStepElement(steps);
+        }
+    }
+
+    /**
+     *  Coordinates parsing and rendering
+     * Dependency Inversion: Depends on parser and renderer abstractions
+     */
+    class InstructionProcessor {
+        constructor(parser, renderer) {
+            this.parser = parser;
+            this.renderer = renderer;
+        }
+
+        processElement(element) {
+            const rawData = element.getAttribute('data-raw');
+            if (!rawData) return;
+
+            const steps = this.parser.parse(rawData);
+            const renderedElement = this.renderer.render(steps);
+            element.replaceWith(renderedElement);
+        }
+
+        processAllElements() {
+            const elements = document.querySelectorAll('.instructions-preview[data-raw]');
+            elements.forEach(element => this.processElement(element));
+        }
+    }
+
+    /**
+     *  Manages initialization and DOM events
+     */
+    class InstructionSystemManager {
+        constructor() {
+            this.processor = new InstructionProcessor(
+                new InstructionParser(),
+                StepRenderer
+            );
+            this.isInitialized = false;
+        }
+
+        initialize() {
+            if (this.isInitialized) return;
+
+            this.setupEventListeners();
+            this.isInitialized = true;
+        }
+
+        setupEventListeners() {
+            // Handle initial page load
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', () => {
+                    this.processor.processAllElements();
+                });
+            } else {
+                // DOM already loaded
+                this.processor.processAllElements();
+            }
+
+            // Handle dynamic content updates
+            document.body.addEventListener('htmx:afterSettle', () => {
+                this.processor.processAllElements();
+            });
+        }
+    }
+
+    // Initialize the system
+    const manager = new InstructionSystemManager();
+    manager.initialize();
+
+    // Mark as initialized and expose for testing/debugging
+    InstructionSystem.initialized = true;
+    InstructionSystem.manager = manager;
+
+})();
 </script>
