@@ -360,77 +360,82 @@
 
     </script>
 
-    <script>
-        (function () {
-            // rotate dice on hover
-            const dice = document.getElementById('dice-icon');
-            if (dice) {
-                dice.addEventListener('mouseenter', () => dice.style.transform = 'rotate(20deg) scale(1.05)');
-                dice.addEventListener('mouseleave', () => dice.style.transform = '');
-            }
+<script>
+    (function () {
+        // rotate dice on hover
+        const dice = document.getElementById('dice-icon');
+        if (dice) {
+            dice.addEventListener('mouseenter', () => dice.style.transform = 'rotate(20deg) scale(1.05)');
+            dice.addEventListener('mouseleave', () => dice.style.transform = '');
+        }
 
-            // small confetti effect: create emoji spans that fly up and fade
-            function burstConfetti(count = 18) {
-                const root = document.getElementById('confetti-root');
-                if (!root) return;
-                const colors = ['#F87171', '#F59E0B', '#10B981', '#3B82F6', '#A78BFA'];
-                const frag = document.createDocumentFragment();
+        // small confetti effect: create emoji spans that fly up and fade
+        function burstConfetti(count = 18) {
+            const root = document.getElementById('confetti-root');
+            if (!root) return;
+            const colors = ['#F87171', '#F59E0B', '#10B981', '#3B82F6', '#A78BFA'];
+            const frag = document.createDocumentFragment();
 
-                for (let i = 0; i < count; i++) {
-                    const el = document.createElement('span');
-                    el.textContent = '🎉';
-                    el.style.position = 'absolute';
-                    el.style.left = (20 + Math.random() * (window.innerWidth - 40)) + 'px';
-                    el.style.top = (window.innerHeight * 0.4 + Math.random() * 80) + 'px';
-                    el.style.fontSize = (12 + Math.random() * 18) + 'px';
-                    el.style.opacity = '1';
-                    el.style.transform = `translateY(0) rotate(${Math.random() * 360}deg)`;
-                    el.style.transition = 'transform 900ms cubic-bezier(.2,.8,.2,1), opacity 900ms ease-out';
-                    el.style.zIndex = 9999;
-                    frag.appendChild(el);
+            for (let i = 0; i < count; i++) {
+                const el = document.createElement('span');
+                el.textContent = '🎉';
+                el.style.position = 'absolute';
+                el.style.left = (20 + Math.random() * (window.innerWidth - 40)) + 'px';
+                el.style.top = (window.innerHeight * 0.4 + Math.random() * 80) + 'px';
+                el.style.fontSize = (12 + Math.random() * 18) + 'px';
+                el.style.opacity = '1';
+                el.style.transform = `translateY(0) rotate(${Math.random() * 360}deg)`;
+                el.style.transition = 'transform 900ms cubic-bezier(.2,.8,.2,1), opacity 900ms ease-out';
+                el.style.zIndex = 9999;
+                frag.appendChild(el);
 
-                    // animate in next tick
-                    requestAnimationFrame(() => {
-                        el.style.transform = `translateY(-${80 + Math.random() * 160}px) rotate(${Math.random() * 720 - 360}deg)`;
-                        el.style.opacity = '0';
-                    });
-                    // cleanup
-                    setTimeout(() => {
-                        el.remove();
-                    }, 900);
-                }
-                root.appendChild(frag);
-            }
-
-            // Listen to HTMX events: after swap on #cards-wrapper -> trigger confetti & badge
-            document.body.addEventListener('htmx:afterSwap', (evt) => {
-                try {
-                    // ensure the swap target is cards-wrapper (or descendant)
-                    const target = evt.detail.target;
-                    if (!target) return;
-                    const isCards = target.id === 'cards-wrapper' || target.closest('#cards-wrapper');
-                    if (isCards) {
-                        // small delay so user sees the new card before effects
-                        setTimeout(() => {
-                            burstConfetti(14);
-                        }, 100);
-                    }
-                } catch (e) { /* noop */
-                }
-            });
-
-            // Attach confetti to button click
-            const btn = document.getElementById('gamble-btn');
-            if (btn) {
-                btn.addEventListener('click', () => {
-                    // subtle click pulse
-                    btn.animate([{transform: 'scale(1)'}, {transform: 'scale(0.98)'}, {transform: 'scale(1)'}], {duration: 180});
-
-                    // trigger confetti on every click
-                    burstConfetti(14);
+                // animate in next tick
+                requestAnimationFrame(() => {
+                    el.style.transform = `translateY(-${80 + Math.random() * 160}px) rotate(${Math.random() * 720 - 360}deg)`;
+                    el.style.opacity = '0';
                 });
+                // cleanup
+                setTimeout(() => {
+                    el.remove();
+                }, 900);
             }
-        })();
-    </script>
+            root.appendChild(frag);
+        }
+
+        // Track if user has clicked the button
+        let userHasClicked = false;
+
+        // Listen to HTMX events: after swap on #cards-wrapper -> trigger confetti & badge
+        document.body.addEventListener('htmx:afterSwap', (evt) => {
+            try {
+                // ensure the swap target is cards-wrapper (or descendant)
+                const target = evt.detail.target;
+                if (!target) return;
+                const isCards = target.id === 'cards-wrapper' || target.closest('#cards-wrapper');
+                if (isCards && userHasClicked) {
+                    // small delay so user sees the new card before effects
+                    setTimeout(() => {
+                        burstConfetti(14);
+                    }, 100);
+                }
+            } catch (e) { /* noop */ }
+        });
+
+        // Attach confetti to button click
+        const btn = document.getElementById('gamble-btn');
+        if (btn) {
+            btn.addEventListener('click', () => {
+                // mark that user has clicked
+                userHasClicked = true;
+
+                // subtle click pulse
+                btn.animate([{transform: 'scale(1)'}, {transform: 'scale(0.98)'}, {transform: 'scale(1)'}], {duration: 180});
+
+                // trigger confetti on every click
+                burstConfetti(14);
+            });
+        }
+    })();
+</script>
 
 {% endblock %}
