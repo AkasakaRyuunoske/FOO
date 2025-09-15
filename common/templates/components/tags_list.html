@@ -2,7 +2,7 @@
   {% for tag_type_name, tag_dict in tags_by_type_and_name.items %}
     <div class="flex items-start gap-4">
       <!-- Tipo di tag come intestazione -->
-      <div class="w-40 font-semibold capitalize text-gray-700">
+      <div class="w-40 font-semibold capitalize text-gray-800">
         {{ tag_type_name }}
       </div>
 
@@ -18,7 +18,7 @@
           >
             <button
               type="submit"
-              class="clickable-tag text-gray-800 relative cursor-pointer hover:bg-gray-200 rounded px-2 py-1"
+              class="clickable-tag text-gray-800 relative cursor-pointer border border-transparent hover:border-black transition-colors duration-150 rounded px-2 py-1"
               data-tag="{{ tag.name }}"
             >
               {{ tag.name }}
