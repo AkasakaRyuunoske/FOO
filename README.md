@@ -10,6 +10,12 @@ Gli obiettivi principali sono:
 - Educare l’utente alla cucina, fornendo ricette dettagliate, chiare e adatte al livello di abilità individuale.
 - Promuovere la salute e il benessere, favorendo scelte alimentari più consapevoli e bilanciate.
 
+Come vengono risolti i problemi che FOO promette di risolvere? Attraverso 3 agenti intelligenti:
+-	TagManager: Grazie all'uso di algoritmi di classificazione, è in grado di categorizzare le ricette per diversi tag, come tempo di preparazione, difficoltà, metodo di preparazione ecc.
+-	IngredientManager: Permette all'utente di effettuare ricerche inserendo gli ingredienti con cui vuole preparare una ricetta.
+-	UserPreferenceManager: Utilizzando la tecnica del clustering, vengono raggruppati utenti con preferenze simili.
+
+
 # Setup
 Istruzioni per far partire l'applicativo (Server):
 1. clonare il repository e installare le dipendenze (`pip install -r requirements.txt`)
